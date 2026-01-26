@@ -1,51 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>LifeOS</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      font-family: Arial;
-      background: #0f172a;
-      color: white;
-      padding: 16px;
-    }
-    .card {
-      background: #111827;
-      padding: 16px;
-      border-radius: 12px;
-      margin-bottom: 12px;
-    }
-    .big {
-      font-size: 28px;
-      font-weight: bold;
-    }
-    button {
-      background: #22c55e;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      width: 100%;
-      font-size: 16px;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeOS</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; background-color: #0f172a; color: white; padding: 20px; text-align: center; }
+        .card { background-color: #1e293b; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+        .user-name { color: #3b82f6; font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        .money { font-size: 42px; font-weight: 800; margin: 10px 0; }
+        button { background: #22c55e; color: black; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 18px; }
+    </style>
 </head>
-
 <body>
-  <h2>💰 Today</h2>
 
-  <div class="card">
-    Сегодня можно
-    <div class="big">1 250 ₽</div>
-  </div>
+    <div id="user-info" class="user-name">Загрузка...</div>
 
-  <div class="card">
-    🔥 Стрик: 6 дней
-  </div>
+    <div class="card">
+        <div>Бюджет на сегодня</div>
+        <div class="money">1 250 ₽</div>
+        <div style="color: #fbbf24;">🔥 Стрик: 6 дней</div>
+    </div>
 
-  <button onclick="alert('День засчитан')">Я в бюджете</button>
+    <button onclick="saveAction()">✅ Я в бюджете</button>
 
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Достаем имя пользователя из Телеграма
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            document.getElementById('user-info').innerText = `Привет, ${user.first_name}! 👋`;
+        } else {
+            document.getElementById('user-info').innerText = `Привет, Инкогнито!`;
+        }
+
+        function saveAction() {
+            tg.HapticFeedback.impactOccurred('medium'); // Вибрация при нажатии
+            tg.showPopup({
+                title: 'Данные записаны',
+                message: 'Ты молодец! Дисциплина — это путь к свободе.',
+                buttons: [{type: 'ok'}]
+            });
+        }
+    </script>
 </body>
 </html>
