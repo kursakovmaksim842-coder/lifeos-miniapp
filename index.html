@@ -1,613 +1,157 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>LifeOS Money — MiniApp</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeOS Money Coach</title>
+
 <style>
-  :root{
-    --bg:#0b1220;
-    --card:#0f1724;
-    --muted:#94a3b8;
-    --accent:#22c55e;
-    --danger:#ef4444;
-    --glass: rgba(255,255,255,0.03);
-    --glass-2: rgba(255,255,255,0.02);
-    --radius:14px;
-    --mono: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  }
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,#041021 0%, #071026 60%);font-family:var(--mono);color:#e6eef6;}
-  .wrap{max-width:760px;margin:18px auto;padding:16px;}
-  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-  header h1{font-size:18px;margin:0;font-weight:700}
-  header p{margin:0;color:var(--muted);font-size:12px}
-  .grid{display:grid;grid-template-columns:1fr 340px;gap:14px}
-  .col{display:flex;flex-direction:column;gap:12px}
-  .card{background:linear-gradient(180deg,var(--card),#0b1220);border-radius:var(--radius);padding:14px;box-shadow:0 6px 18px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.02)}
-  .big{font-size:34px;font-weight:800;letter-spacing:0.5px}
-  .muted{color:var(--muted);font-size:13px}
-  .btn{display:inline-block;padding:11px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
-  .btn-accent{background:var(--accent);color:#041017}
-  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.05);color:#dbeafe}
-  .row{display:flex;gap:8px;align-items:center}
-  .small{font-size:13px}
-  .progress{height:12px;background:var(--glass);border-radius:10px;overflow:hidden}
-  .progress > .bar{height:100%;background:linear-gradient(90deg,var(--accent),#8ef1b0);width:0%}
-  .stat{display:flex;justify-content:space-between;align-items:center}
-  label{display:block;font-size:13px;margin-bottom:6px;color:var(--muted)}
-  input[type="number"],input[type="text"],select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:#e6eef6;outline:none;font-size:15px}
-  .center{text-align:center}
-  .tiny{font-size:12px;color:var(--muted)}
-  footer{margin-top:16px;color:var(--muted);font-size:12px;text-align:center}
-  nav{display:flex;gap:8px;flex-wrap:wrap}
-  .pill{background:var(--glass-2);padding:8px 10px;border-radius:999px;font-weight:600;font-size:13px;cursor:pointer}
-  .tag{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:8px;font-size:13px}
-  .danger{background:var(--danger);color:#fff}
-  .mini{font-size:12px;color:var(--muted)}
-  /* modal */
-  .modalWrap{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;z-index:999}
-  .modal{width:100%;max-width:620px;background:linear-gradient(180deg,#071026,#071019);border-radius:16px;padding:18px;border:1px solid rgba(255,255,255,0.03)}
-  .modal h3{margin:0 0 8px 0}
-  .flex{display:flex;gap:8px}
-  .spaced{display:flex;justify-content:space-between;align-items:center}
-  .tinyBtn{padding:8px 10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff;cursor:pointer}
-  /* responsive */
-  @media (max-width:900px){
-    .grid{grid-template-columns:1fr; }
-    .wrap{padding:10px}
-  }
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(180deg, #041021, #071026);
+  color: #e6eef6;
+  margin: 0;
+  padding: 20px;
+}
+
+.card {
+  background: rgba(255,255,255,0.05);
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+}
+
+button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.green { background:#21c55d; color:black; }
+.red { background:#ef4444; color:white; }
+.gray { background:#1f2937; color:white; }
+
+input {
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  width: 100%;
+  margin-top: 6px;
+}
 </style>
 </head>
+
 <body>
-<div class="wrap">
-  <header>
-    <div>
-      <h1>LifeOS — Money Coach</h1>
-      <p class="tiny">Спокойный финансовый ассистент — 30 секунд в день</p>
-    </div>
-    <div class="spaced">
-      <div class="tag" id="userTag">Гость</div>
-      <button class="pill" id="openOnboard">Настроить</button>
-    </div>
-  </header>
 
-  <div class="grid">
-    <div class="col">
-      <!-- TODAY CARD -->
-      <div class="card" id="todayCard">
-        <div class="spaced">
-          <div>
-            <div class="muted small">Сегодня твой безопасный лимит</div>
-            <div class="big" id="dailyLimit">— ₽</div>
-            <div class="tiny" id="safeExplain">Мы считаем: доход — накопления — обязательные</div>
-          </div>
-          <div class="center" style="min-width:110px">
-            <div class="muted mini">Стрик</div>
-            <div id="streak" style="font-weight:800;font-size:20px">0</div>
-            <div class="tiny">дней</div>
-          </div>
-        </div>
+<h2>LifeOS — Money Coach</h2>
 
-        <div style="height:12px"></div>
-        <div class="row">
-          <button id="btnIn" class="btn btn-accent" style="flex:1">Я в бюджете</button>
-          <button id="btnSpent" class="btn btn-ghost" style="flex:1">Я потратил</button>
-        </div>
-
-        <div style="height:12px"></div>
-        <div class="stat">
-          <div class="muted small">Месяц: <span id="monthLabel">—</span></div>
-          <div class="muted small" id="monthSummary">Потрачено: — · Осталось: —</div>
-        </div>
-      </div>
-
-      <!-- Progress / Month -->
-      <div class="card" id="monthCard">
-        <div class="spaced">
-          <div>
-            <div class="muted small">Текущий месяц</div>
-            <div style="font-weight:800;font-size:18px" id="monthSpent">Потрачено 0 ₽</div>
-          </div>
-          <div class="tiny" id="daysInBudget">0 / 0</div>
-        </div>
-        <div style="height:10px"></div>
-        <div class="progress" aria-hidden><div class="bar" id="monthBar"></div></div>
-        <div style="height:12px"></div>
-        <div class="spaced">
-          <div class="muted small">Лимит (вход)</div>
-          <div class="muted small" id="limitSummary">—</div>
-        </div>
-      </div>
-
-      <!-- LifeOS space -->
-      <div class="card" id="lifeCard">
-        <div class="muted small">LifeOS: привычки и прогресс</div>
-        <div style="height:10px"></div>
-        <div class="row">
-          <div style="flex:1">
-            <div class="muted tiny">Дисциплина</div>
-            <div style="font-weight:800;font-size:20px" id="disciplineScore">—%</div>
-            <div class="tiny">Financial Discipline Score</div>
-          </div>
-          <div style="flex:1">
-            <div class="muted tiny">Годовой прогресс</div>
-            <div class="progress"><div class="bar" id="yearBar" style="width:15%"></div></div>
-            <div class="tiny" id="yearSummary">—</div>
-          </div>
-        </div>
-
-        <div style="height:12px"></div>
-        <div class="spaced">
-          <button id="openProgress" class="tinyBtn">Подробнее</button>
-          <button id="openSettings" class="tinyBtn">Настройки</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right column: quick controls, onboarding summary -->
-    <div class="col">
-      <div class="card">
-        <div class="muted small">Onboarding</div>
-        <div style="height:8px"></div>
-        <div class="muted tiny">Доход</div>
-        <div style="font-weight:800;font-size:20px" id="uiIncome">— ₽</div>
-        <div style="height:6px"></div>
-        <div class="muted tiny">Откладывать</div>
-        <div style="font-weight:700" id="uiSavings">—%</div>
-        <div style="height:6px"></div>
-        <div class="muted tiny">Обязательные</div>
-        <div style="font-weight:700" id="uiFixed">— ₽</div>
-
-        <div style="height:12px"></div>
-        <div class="row">
-          <button id="btnRecalc" class="btn btn-ghost" style="flex:1">Пересчитать</button>
-          <button id="btnExport" class="btn btn-ghost" style="flex:1">Экспорт</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="muted small">Быстрые советы</div>
-        <ul class="tiny" style="margin:8px 0 0 18px;padding:0">
-          <li>Нажимай «Я в бюджете» каждый день</li>
-          <li>Если потратил больше — отмечай расход</li>
-          <li>Через 7 дней развивается привычка</li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <div class="muted small">Интеграция с ботом</div>
-        <div class="tiny" style="margin-top:8px">Открой бота и прикрепи это приложение для быстрых напоминаний.</div>
-        <div style="height:12px"></div>
-        <button id="openBot" class="btn btn-accent">Открыть бота</button>
-      </div>
-
-    </div>
-  </div>
-
-  <footer>Версия прототипа · данные сохраняются локально в браузере</footer>
+<div class="card">
+  <b>Сегодня твой лимит:</b>
+  <h3 id="dailyLimit">— ₽</h3>
+  <button class="green" onclick="markInBudget()">Я в бюджете</button>
+  <button class="red" onclick="addExpense()">Я потратил</button>
 </div>
 
-<!-- Modal / Onboarding -->
-<div class="modalWrap" id="modalWrap">
-  <div class="modal" role="dialog" aria-modal="true">
-    <h3 id="modalTitle">Настройка бюджета</h3>
-    <div id="modalBody">
-      <label>Сколько вы зарабатываете в месяц? (₽)</label>
-      <input id="inpIncome" type="number" min="0" placeholder="60000" />
-      <div style="height:10px"></div>
-      <label>Какой % откладывать? (рекомендуем 30)</label>
-      <input id="inpSavings" type="number" min="0" max="90" placeholder="30" />
-      <div style="height:10px"></div>
-      <label>Обязательные траты в месяц (квартплата, еда, транспорт) (₽)</label>
-      <input id="inpFixed" type="number" min="0" placeholder="20000" />
-      <div style="height:12px"></div>
-      <div class="row">
-        <button id="saveOnboard" class="btn btn-accent" style="flex:1">Сохранить</button>
-        <button id="closeModal" class="btn btn-ghost" style="flex:1">Отмена</button>
-      </div>
-      <div style="height:8px"></div>
-      <div class="tiny muted">Подсказка: если не знаете — введите примерный доход. Можно изменить в любой момент.</div>
-    </div>
-  </div>
+<div class="card">
+  <b>Настройки дохода</b>
+  <input id="incomeInput" type="number" placeholder="Месячный доход (₽)">
+  <input id="savePercentInput" type="number" placeholder="Процент накоплений (по умолчанию 30)">
+  <button class="gray" onclick="calculateBudget()">Рассчитать бюджет</button>
 </div>
 
-<!-- Modal spent -->
-<div class="modalWrap" id="modalSpentWrap">
-  <div class="modal">
-    <h3>Отметить расход</h3>
-    <div>
-      <label>Сумма (₽)</label>
-      <input id="inpSpent" type="number" min="0" placeholder="500" />
-      <div style="height:10px"></div>
-      <label>Категория (необязательно)</label>
-      <input id="inpSpentCat" type="text" placeholder="Кафе / Транспорт" />
-      <div style="height:12px"></div>
-      <div class="row">
-        <button id="saveSpent" class="btn btn-accent" style="flex:1">Сохранить</button>
-        <button id="closeSpent" class="btn btn-ghost" style="flex:1">Отменить</button>
-      </div>
-    </div>
-  </div>
+<div class="card">
+  <b>Статистика</b><br>
+  Доход: <span id="incomeDisplay">—</span><br>
+  Накопления: <span id="savingsDisplay">—</span><br>
+  Обязательные: <span id="mandatoryDisplay">—</span><br>
+  Развлечения: <span id="funDisplay">—</span><br>
+  Стрик дисциплины: <span id="streakDisplay">0</span> дней
 </div>
-
-<!-- Tiny toast -->
-<div id="toast" style="position:fixed;left:50%;transform:translateX(-50%);bottom:26px;display:none;background:rgba(0,0,0,0.6);padding:10px 14px;border-radius:10px;color:#fff;"></div>
 
 <script>
-/*
-  LifeOS MiniApp — single-file prototype
-  - All data stored in localStorage by userKey
-  - If Telegram WebApp available, will try to use user id
-  - Features:
-    * Onboarding: income, savingsPercent, fixedExpenses
-    * Compute savings, freeMonthly, dailyLimit
-    * Mark "in budget" per day -> streak increments
-    * Record spends -> monthSpent, recalc dynamic daily limit
-    * Month/year progress & Financial Discipline Score
-    * Export/Import JSON
-*/
-
-const APP_KEY = 'lifeos_v1';
-let tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-let userTagEl = document.getElementById('userTag');
-let userKey = APP_KEY + '_guest'; // default guest
-try {
-  if(tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id){
-    userKey = APP_KEY + '_' + tg.initDataUnsafe.user.id;
-    userTagEl.textContent = (tg.initDataUnsafe.user && (tg.initDataUnsafe.user.first_name || tg.initDataUnsafe.user.username)) || 'Пользователь';
-  } else if (navigator.userAgent){
-    // fallback: derive from hostname + local
-    userKey = APP_KEY + '_local';
-    userTagEl.textContent = 'Гость';
-  }
-} catch(e){
-  userKey = APP_KEY + '_local';
-  userTagEl.textContent = 'Гость';
-}
-
-const defaultState = {
-  income: null,
+// ================= STATE =================
+let state = {
+  income: 0,
   savingsPercent: 30,
-  fixedExpenses: null,
-  savingsAmount: 0,
-  remaining: 0,
-  freeMonthly: 0,
+  savings: 0,
+  mandatory: 0,
+  fun: 0,
   dailyLimit: 0,
-  monthSpent: 0,
-  monthId: null,
-  daysInBudget: 0,
+  spentToday: 0,
   streak: 0,
-  lastMarkDate: null,
-  history: {}, // months
-  createdAt: Date.now()
+  lastCheck: null
 };
 
-let state = loadState();
+// ================= STORAGE =================
+function saveState() {
+  localStorage.setItem("lifeos_state", JSON.stringify(state));
+}
 
-function loadState(){
-  try {
-    const raw = localStorage.getItem(userKey);
-    if(!raw) {
-      const s = {...defaultState};
-      s.monthId = monthIdNow();
-      saveState(s);
-      return s;
-    }
-    const parsed = JSON.parse(raw);
-    // migrate missing fields
-    const merged = {...defaultState, ...parsed};
-    // ensure month reset if needed
-    if(merged.monthId !== monthIdNow()){
-      // roll to history
-      if(!merged.history) merged.history = {};
-      merged.history[merged.monthId || monthIdNow()] = {
-        spent: merged.monthSpent || 0,
-        daysInBudget: merged.daysInBudget || 0
-      };
-      merged.monthId = monthIdNow();
-      merged.monthSpent = 0;
-      merged.daysInBudget = 0;
-      merged.lastMarkDate = null;
-    }
-    return merged;
-  } catch(e){
-    console.error(e);
-    const s = {...defaultState};
-    s.monthId = monthIdNow();
-    saveState(s);
-    return s;
+function loadState() {
+  const saved = localStorage.getItem("lifeos_state");
+  if (saved) state = JSON.parse(saved);
+}
+
+// ================= LOGIC =================
+function calculateBudget() {
+  const income = Number(document.getElementById("incomeInput").value);
+  const percent = Number(document.getElementById("savePercentInput").value) || 30;
+
+  if (!income) return alert("Введи доход");
+
+  state.income = income;
+  state.savingsPercent = percent;
+
+  state.savings = income * percent / 100;
+  const remaining = income - state.savings;
+
+  state.mandatory = remaining * 0.6;
+  state.fun = remaining * 0.2;
+  const daily = (remaining - state.mandatory - state.fun) / 30;
+
+  state.dailyLimit = Math.round(daily);
+
+  saveState();
+  updateUI();
+}
+
+function addExpense() {
+  const amount = Number(prompt("Сколько потратил сегодня?"));
+  if (!amount) return;
+
+  state.spentToday += amount;
+  saveState();
+  updateUI();
+}
+
+function markInBudget() {
+  const today = new Date().toDateString();
+
+  if (state.lastCheck !== today) {
+    state.streak += 1;
+    state.lastCheck = today;
   }
+
+  saveState();
+  updateUI();
 }
 
-function saveState(s){
-  state = s;
-  localStorage.setItem(userKey, JSON.stringify(state));
-  renderAll();
+// ================= UI =================
+function updateUI() {
+  document.getElementById("dailyLimit").innerText = state.dailyLimit + " ₽";
+  document.getElementById("incomeDisplay").innerText = state.income + " ₽";
+  document.getElementById("savingsDisplay").innerText = Math.round(state.savings) + " ₽";
+  document.getElementById("mandatoryDisplay").innerText = Math.round(state.mandatory) + " ₽";
+  document.getElementById("funDisplay").innerText = Math.round(state.fun) + " ₽";
+  document.getElementById("streakDisplay").innerText = state.streak;
 }
 
-function monthIdNow(){
-  const d = new Date();
-  return `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`;
-}
-
-function calculateFromInputs(s){
-  const income = Number(s.income) || 0;
-  const percent = Number(s.savingsPercent) || 0;
-  const fixed = Number(s.fixedExpenses) || 0;
-  const savingsAmount = Math.round(income * percent / 100);
-  const remaining = income - savingsAmount;
-  const freeMonthly = Math.max(0, remaining - fixed);
-  const dailyLimit = Math.floor(freeMonthly / 30);
-  s.savingsAmount = savingsAmount;
-  s.remaining = remaining;
-  s.freeMonthly = freeMonthly;
-  s.dailyLimit = dailyLimit;
-  // ensure monthSpent exists
-  if(typeof s.monthSpent !== 'number') s.monthSpent = 0;
-  return s;
-}
-
-/* UI helpers */
-function el(id){ return document.getElementById(id); }
-function showToast(msg,timeout=1800){ const t = el('toast'); t.innerText = msg; t.style.display='block'; clearTimeout(t._t); t._t = setTimeout(()=>t.style.display='none', timeout); }
-
-/* Renderers */
-function renderAll(){
-  renderOnboardSummary();
-  renderToday();
-  renderMonth();
-  renderLife();
-}
-
-function renderOnboardSummary(){
-  el('uiIncome').textContent = state.income ? formatRub(state.income) : '— ₽';
-  el('uiSavings').textContent = state.savingsPercent !== null ? state.savingsPercent + '%' : '—%';
-  el('uiFixed').textContent = state.fixedExpenses ? formatRub(state.fixedExpenses) : '— ₽';
-  el('monthLabel').textContent = humanMonthLabel(state.monthId || monthIdNow());
-  el('limitSummary').textContent = state.dailyLimit ? `${formatRub(state.dailyLimit)} / день` : '—';
-  el('monthSummary').textContent = `Потрачено: ${formatRub(state.monthSpent || 0)} · Осталось: ${formatRub(Math.max(0, state.freeMonthly - (state.monthSpent||0)))}`;
-  el('dailyLimit').textContent = state.dailyLimit ? `${formatRub(state.dailyLimit)}` : '— ₽';
-  el('streak').textContent = state.streak || 0;
-}
-
-function renderToday(){
-  // if monthSpent changed, dynamic daily recalculation
-  const freeLeft = Math.max(0, state.freeMonthly - (state.monthSpent||0));
-  const d = new Date();
-  const daysLeft = daysLeftInMonth(d);
-  const dynamicDaily = daysLeft > 0 ? Math.floor(freeLeft / daysLeft) : Math.floor(freeLeft);
-  // show dynamic suggestion
-  if(dynamicDaily >= 0){
-    el('safeExplain').textContent = `Динамический лимит: ${formatRub(dynamicDaily)} (остаток месяца ${formatRub(freeLeft)})`;
-  } else {
-    el('safeExplain').textContent = `Нулевой лимит — пересмотрите бюджет`;
-  }
-}
-
-function renderMonth(){
-  const spent = state.monthSpent || 0;
-  const freeLeft = Math.max(0, state.freeMonthly - spent);
-  el('monthSpent').textContent = `Потрачено ${formatRub(spent)}`;
-  const percent = state.freeMonthly > 0 ? Math.round((state.freeMonthly - freeLeft)/state.freeMonthly*100) : 0;
-  el('monthBar').style.width = Math.min(100, Math.max(0, percent)) + '%';
-  // days in budget: track days where user marked as "in budget"
-  el('daysInBudget').textContent = `${state.daysInBudget || 0} / ${new Date().getDate()}`;
-}
-
-function renderLife(){
-  const yearTotalDays = daysElapsedThisYear();
-  const daysInBudget = totalDaysInBudgetYear();
-  const score = yearTotalDays > 0 ? Math.round(daysInBudget / yearTotalDays * 100) : 0;
-  el('disciplineScore').textContent = `${score}%`;
-  el('yearBar').style.width = Math.min(100,score) + '%';
-  el('yearSummary').textContent = `${daysInBudget} / ${yearTotalDays} дней`;
-}
-
-/* Utilities */
-function formatRub(n){ return `${Number(n).toLocaleString('ru-RU')} ₽`; }
-function humanMonthLabel(monthId){
-  const [y,m] = (monthId || monthIdNow()).split('-'); 
-  const mm = Number(m);
-  const name = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
-  return `${name[mm-1]} ${y}`;
-}
-function daysLeftInMonth(d){
-  const year = d.getFullYear(), month = d.getMonth();
-  const lastDay = new Date(year, month+1, 0).getDate();
-  return Math.max(1, lastDay - d.getDate() + 1);
-}
-function daysElapsedThisYear(){
-  const start = new Date(new Date().getFullYear(),0,1);
-  const now = new Date();
-  const diff = Math.floor((now-start)/(24*60*60*1000))+1;
-  return diff;
-}
-function totalDaysInBudgetYear(){
-  // aggregate daysInBudget from history + current
-  let sum = 0;
-  if(state.history){
-    Object.values(state.history).forEach(m => { if(m && m.daysInBudget) sum += m.daysInBudget; });
-  }
-  sum += state.daysInBudget || 0;
-  return sum;
-}
-
-/* Actions */
-function openModal(){
-  el('modalWrap').style.display = 'flex';
-  // prefill
-  el('inpIncome').value = state.income || '';
-  el('inpSavings').value = state.savingsPercent || 30;
-  el('inpFixed').value = state.fixedExpenses || '';
-}
-function closeModal(){
-  el('modalWrap').style.display = 'none';
-}
-function openSpent(){
-  el('modalSpentWrap').style.display = 'flex';
-  el('inpSpent').value = '';
-  el('inpSpentCat').value = '';
-}
-function closeSpent(){
-  el('modalSpentWrap').style.display = 'none';
-}
-document.getElementById('openOnboard').onclick = openModal;
-document.getElementById('closeModal').onclick = closeModal;
-document.getElementById('openSettings').onclick = openModal;
-document.getElementById('openProgress').onclick = ()=>{ showToast('Progress открыт — в этом прототипе подробный экран пока заглушка',2000); };
-document.getElementById('openBot').onclick = ()=>{
-  if(tg && tg.openTelegram){
-    try{ tg.openTelegram(); } catch(e){ window.open('https://t.me/'+(tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.username : ''));}
-  } else {
-    showToast('Откройте бота в Telegram вручную');
-  }
-};
-
-document.getElementById('saveOnboard').onclick = ()=>{
-  const inc = Number(el('inpIncome').value || 0);
-  const sav = Number(el('inpSavings').value || 0);
-  const fix = Number(el('inpFixed').value || 0);
-  if(inc <= 0){ showToast('Введите корректный доход'); return; }
-  const s = {...state, income: inc, savingsPercent: sav, fixedExpenses: fix};
-  calculateFromInputs(s);
-  saveState(s);
-  closeModal();
-  showToast('Сохранено');
-};
-
-document.getElementById('btnRecalc').onclick = ()=>{
-  openModal();
-};
-
-document.getElementById('btnIn').onclick = ()=>{
-  markInBudgetToday();
-};
-document.getElementById('btnSpent').onclick = openSpent;
-document.getElementById('closeSpent').onclick = closeSpent;
-document.getElementById('saveSpent').onclick = ()=>{
-  const amount = Number(el('inpSpent').value || 0);
-  const cat = el('inpSpentCat').value || '';
-  if(amount <= 0){ showToast('Введите сумму > 0'); return; }
-  recordSpent(amount, cat);
-  closeSpent();
-  showToast('Сохранено');
-};
-
-/* Core logic: mark in budget */
-function isSameDateISO(a,b){
-  if(!a || !b) return false;
-  const da = new Date(a); const db = new Date(b);
-  return da.getFullYear()===db.getFullYear() && da.getMonth()===db.getMonth() && da.getDate()===db.getDate();
-}
-
-function markInBudgetToday(){
-  const todayISO = (new Date()).toISOString();
-  if(state.lastMarkDate && isSameDateISO(state.lastMarkDate, todayISO)){
-    showToast('Сегодня уже отмечено');
-    return;
-  }
-  // increment streak and daysInBudget
-  const last = state.lastMarkDate ? new Date(state.lastMarkDate) : null;
-  const now = new Date();
-  // if yesterday was marked -> streak+1 else reset to 1
-  let newStreak = 1;
-  if(last){
-    const diffDays = Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate()) - new Date(last.getFullYear(),last.getMonth(),last.getDate()))/(24*3600*1000));
-    if(diffDays === 1) newStreak = state.streak + 1;
-  }
-  const s = {...state};
-  s.lastMarkDate = todayISO;
-  s.streak = newStreak;
-  s.daysInBudget = (s.daysInBudget || 0) + 1;
-  // save history for year stats later
-  saveState(s);
-  showToast('День засчитан в стрик. Отлично!');
-}
-
-/* Record spend */
-function recordSpent(amount, category){
-  const s = {...state};
-  s.monthSpent = (s.monthSpent || 0) + amount;
-  // Save a small log in history for optional future use
-  if(!s.logs) s.logs = [];
-  s.logs.push({ts:Date.now(), amount, category:category || '—', month:s.monthId});
-  // if spent > dailyLimit, optionally reduce streak? we keep streak but user marks heavy spend.
-  // recalc dynamic daily limit (calculation done in render)
-  saveState(s);
-}
-
-/* Export / Import */
-document.getElementById('btnExport').onclick = ()=>{
-  const data = localStorage.getItem(userKey);
-  const blob = new Blob([data], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${userKey}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-};
-
-function importFromJson(jsonStr){
-  try{
-    const obj = JSON.parse(jsonStr);
-    if(obj && typeof obj === 'object'){
-      // merge carefully
-      const merged = {...defaultState, ...obj};
-      merged.monthId = monthIdNow();
-      calculateFromInputs(merged);
-      saveState(merged);
-      showToast('Импортировано');
-    }
-  } catch(e){ showToast('Ошибка импорта'); }
-}
-
-/* Initialization */
-(function init(){
-  // ensure some defaults
-  if(!state.income){ /* open onboarding after a slight delay */ setTimeout(()=>openModal(),500); }
-  calculateFromInputs(state);
-  saveState(state);
-  renderAll();
-  // expand telegram webapp if present
-  try{ if(tg && tg.expand) tg.expand(); } catch(e){}
-  // attach keyboard shortcuts (for developer)
-  window.addEventListener('keydown',(e)=>{ if(e.key==='i' && e.ctrlKey){ openModal(); }});
-})();
-
-/* Optional: auto-month rollover on daily load (safe) */
-(function monthRolloverCheck(){
-  const cur = monthIdNow();
-  if(state.monthId !== cur){
-    // push history
-    if(!state.history) state.history = {};
-    state.history[state.monthId || cur] = {spent: state.monthSpent || 0, daysInBudget: state.daysInBudget || 0};
-    state.monthId = cur;
-    state.monthSpent = 0;
-    state.daysInBudget = 0;
-    state.lastMarkDate = null;
-    saveState(state);
-  }
-})();
-
-/* Helper: dynamically recalc daily suggested limit for user action (exposed) */
-function getDynamicDailySuggestion(){
-  const spent = state.monthSpent || 0;
-  const freeLeft = Math.max(0, state.freeMonthly - spent);
-  const daysLeft = daysLeftInMonth(new Date());
-  return daysLeft > 0 ? Math.floor(freeLeft / daysLeft) : Math.floor(freeLeft);
-}
-
-/* Expose for console debugging (dev only) */
-window.__lifeos = {
-  state,
-  saveState,
-  loadState,
-  getDynamicDailySuggestion,
-  importFromJson
-};
+// ================= INIT =================
+loadState();
+updateUI();
 </script>
+
 </body>
 </html>
