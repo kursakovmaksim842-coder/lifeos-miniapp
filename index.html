@@ -3,153 +3,255 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LifeOS Money Coach</title>
+<title>LifeOS — Personal Operating System</title>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(180deg, #041021, #071026);
-  color: #e6eef6;
-  margin: 0;
-  padding: 20px;
+:root{
+--bg1:#040d1a;
+--bg2:#071428;
+--card:#0d1b2a;
+--accent:#22c55e;
+--red:#ef4444;
+--blue:#3b82f6;
+--text:#e5eef7;
+--muted:#94a3b8;
+--radius:16px;
 }
 
-.card {
-  background: rgba(255,255,255,0.05);
-  padding: 16px;
-  border-radius: 16px;
-  margin-bottom: 12px;
+*{box-sizing:border-box;font-family:Inter,Arial,sans-serif}
+body{
+margin:0;padding:20px;
+background:linear-gradient(180deg,var(--bg1),var(--bg2));
+color:var(--text);
 }
 
-button {
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
+h1{font-size:20px;margin:0 0 12px}
+h2{font-size:16px;margin:0 0 10px;color:#fff}
+small{color:var(--muted)}
+
+.grid{display:grid;gap:12px}
+.card{
+background:rgba(255,255,255,.04);
+padding:16px;border-radius:var(--radius);
+backdrop-filter:blur(6px);
+border:1px solid rgba(255,255,255,.06);
 }
 
-.green { background:#21c55d; color:black; }
-.red { background:#ef4444; color:white; }
-.gray { background:#1f2937; color:white; }
-
-input {
-  padding: 8px;
-  border-radius: 8px;
-  border: none;
-  width: 100%;
-  margin-top: 6px;
+button{
+padding:10px 14px;border-radius:12px;border:none;
+font-weight:600;cursor:pointer
 }
+.green{background:var(--accent);color:#062c16}
+.red{background:var(--red);color:white}
+.blue{background:var(--blue);color:white}
+.gray{background:#1f2937;color:white}
+
+input,select{
+width:100%;padding:10px;border-radius:10px;border:none;
+background:#0f172a;color:white
+}
+
+.flex{display:flex;gap:8px;align-items:center}
+.space{display:flex;justify-content:space-between;align-items:center}
+
+.progress{
+width:100%;height:10px;background:#0f172a;border-radius:10px;overflow:hidden
+}
+.bar{height:100%;background:var(--accent)}
+
+.habit{
+display:flex;justify-content:space-between;align-items:center;
+padding:8px;border-radius:10px;background:#0f172a;margin-top:6px
+}
+
+footer{opacity:.4;margin-top:20px;font-size:12px;text-align:center}
 </style>
 </head>
 
 <body>
 
-<h2>LifeOS — Money Coach</h2>
+<h1>LifeOS — Personal Operating System</h1>
 
+<div class="grid">
+
+<!-- DAILY FINANCE -->
 <div class="card">
-  <b>Сегодня твой лимит:</b>
-  <h3 id="dailyLimit">— ₽</h3>
-  <button class="green" onclick="markInBudget()">Я в бюджете</button>
-  <button class="red" onclick="addExpense()">Я потратил</button>
+<h2>Сегодняшний лимит</h2>
+<div class="space">
+<div style="font-size:28px;font-weight:700" id="dailyLimit">— ₽</div>
+<div>
+<button class="green" onclick="markInBudget()">Я в бюджете</button>
+<button class="red" onclick="addExpense()">Я потратил</button>
+</div>
+</div>
+<small>Стрик дисциплины: <b id="streak">0</b> дней</small>
 </div>
 
+<!-- BUDGET SETUP -->
 <div class="card">
-  <b>Настройки дохода</b>
-  <input id="incomeInput" type="number" placeholder="Месячный доход (₽)">
-  <input id="savePercentInput" type="number" placeholder="Процент накоплений (по умолчанию 30)">
-  <button class="gray" onclick="calculateBudget()">Рассчитать бюджет</button>
+<h2>Финансовый план</h2>
+<input id="incomeInput" type="number" placeholder="Месячный доход ₽">
+<input id="savePercentInput" type="number" placeholder="Накопления % (30)">
+<input id="mandatoryInput" type="number" placeholder="Обязательные траты % (60)">
+<input id="funInput" type="number" placeholder="Развлечения % (20)">
+<button class="blue" onclick="calcBudget()">Рассчитать</button>
+
+<div class="grid" style="margin-top:10px">
+<div>Доход: <b id="incomeDisplay">—</b></div>
+<div>Накопления: <b id="savingsDisplay">—</b></div>
+<div>Обязательные: <b id="mandatoryDisplay">—</b></div>
+<div>Развлечения: <b id="funDisplay">—</b></div>
+</div>
 </div>
 
+<!-- HABITS -->
 <div class="card">
-  <b>Статистика</b><br>
-  Доход: <span id="incomeDisplay">—</span><br>
-  Накопления: <span id="savingsDisplay">—</span><br>
-  Обязательные: <span id="mandatoryDisplay">—</span><br>
-  Развлечения: <span id="funDisplay">—</span><br>
-  Стрик дисциплины: <span id="streakDisplay">0</span> дней
+<h2>Привычки</h2>
+
+<div class="flex">
+<input id="habitInput" placeholder="Новая привычка (например: холодный душ)">
+<button class="green" onclick="addHabit()">+</button>
 </div>
+
+<div id="habitList"></div>
+
+<div style="margin-top:10px">
+Прогресс дисциплины
+<div class="progress"><div id="habitBar" class="bar"></div></div>
+</div>
+</div>
+
+<!-- ANALYTICS -->
+<div class="card">
+<h2>Аналитика LifeOS</h2>
+<div>Financial Discipline Score: <b id="score">0</b>/100</div>
+<div>Потрачено сегодня: <b id="spentToday">0</b> ₽</div>
+<div>Остаток дня: <b id="leftToday">0</b> ₽</div>
+</div>
+
+</div>
+
+<footer>LifeOS v1 • данные хранятся локально</footer>
 
 <script>
-// ================= STATE =================
+// ================= GLOBAL STATE =================
 let state = {
-  income: 0,
-  savingsPercent: 30,
-  savings: 0,
-  mandatory: 0,
-  fun: 0,
-  dailyLimit: 0,
-  spentToday: 0,
-  streak: 0,
-  lastCheck: null
+  income:0,
+  savingsPercent:30,
+  mandatoryPercent:60,
+  funPercent:20,
+  savings:0,
+  mandatory:0,
+  fun:0,
+  dailyLimit:0,
+  spentToday:0,
+  streak:0,
+  lastCheck:null,
+  habits:[],
+  habitLog:{}
 };
 
 // ================= STORAGE =================
-function saveState() {
-  localStorage.setItem("lifeos_state", JSON.stringify(state));
+function save(){localStorage.setItem("lifeos",JSON.stringify(state))}
+function load(){
+  const s=localStorage.getItem("lifeos");
+  if(s) state=JSON.parse(s);
 }
 
-function loadState() {
-  const saved = localStorage.getItem("lifeos_state");
-  if (saved) state = JSON.parse(saved);
+// ================= BUDGET =================
+function calcBudget(){
+  const income=+incomeInput.value;
+  const sp=+savePercentInput.value||30;
+  const mp=+mandatoryInput.value||60;
+  const fp=+funInput.value||20;
+
+  if(!income) return alert("Введи доход");
+
+  state.income=income;
+  state.savingsPercent=sp;
+  state.mandatoryPercent=mp;
+  state.funPercent=fp;
+
+  state.savings=income*sp/100;
+  const remain=income-state.savings;
+  state.mandatory=remain*mp/100;
+  state.fun=remain*fp/100;
+  state.dailyLimit=Math.round((remain-state.mandatory-state.fun)/30);
+
+  save(); updateUI();
 }
 
-// ================= LOGIC =================
-function calculateBudget() {
-  const income = Number(document.getElementById("incomeInput").value);
-  const percent = Number(document.getElementById("savePercentInput").value) || 30;
-
-  if (!income) return alert("Введи доход");
-
-  state.income = income;
-  state.savingsPercent = percent;
-
-  state.savings = income * percent / 100;
-  const remaining = income - state.savings;
-
-  state.mandatory = remaining * 0.6;
-  state.fun = remaining * 0.2;
-  const daily = (remaining - state.mandatory - state.fun) / 30;
-
-  state.dailyLimit = Math.round(daily);
-
-  saveState();
-  updateUI();
+// ================= EXPENSE =================
+function addExpense(){
+  const v=+prompt("Сколько потратил?");
+  if(!v) return;
+  state.spentToday+=v;
+  save(); updateUI();
 }
 
-function addExpense() {
-  const amount = Number(prompt("Сколько потратил сегодня?"));
-  if (!amount) return;
-
-  state.spentToday += amount;
-  saveState();
-  updateUI();
-}
-
-function markInBudget() {
-  const today = new Date().toDateString();
-
-  if (state.lastCheck !== today) {
-    state.streak += 1;
-    state.lastCheck = today;
+// ================= STREAK =================
+function markInBudget(){
+  const today=new Date().toDateString();
+  if(state.lastCheck!==today){
+    state.streak++;
+    state.lastCheck=today;
   }
+  save(); updateUI();
+}
 
-  saveState();
-  updateUI();
+// ================= HABITS =================
+function addHabit(){
+  const name=habitInput.value.trim();
+  if(!name) return;
+  state.habits.push({name});
+  habitInput.value="";
+  save(); renderHabits();
+}
+
+function toggleHabit(name){
+  const d=new Date().toDateString();
+  if(!state.habitLog[d]) state.habitLog[d]={};
+  state.habitLog[d][name]=!state.habitLog[d][name];
+  save(); renderHabits();
+}
+
+function renderHabits(){
+  habitList.innerHTML="";
+  const d=new Date().toDateString();
+  let done=0;
+  state.habits.forEach(h=>{
+    const checked=state.habitLog[d]?.[h.name];
+    if(checked) done++;
+    habitList.innerHTML+=`
+      <div class="habit">
+        <span>${h.name}</span>
+        <input type="checkbox" ${checked?"checked":""} onchange="toggleHabit('${h.name}')">
+      </div>`;
+  });
+
+  const pct=state.habits.length?done/state.habits.length*100:0;
+  habitBar.style.width=pct+"%";
 }
 
 // ================= UI =================
-function updateUI() {
-  document.getElementById("dailyLimit").innerText = state.dailyLimit + " ₽";
-  document.getElementById("incomeDisplay").innerText = state.income + " ₽";
-  document.getElementById("savingsDisplay").innerText = Math.round(state.savings) + " ₽";
-  document.getElementById("mandatoryDisplay").innerText = Math.round(state.mandatory) + " ₽";
-  document.getElementById("funDisplay").innerText = Math.round(state.fun) + " ₽";
-  document.getElementById("streakDisplay").innerText = state.streak;
+function updateUI(){
+  dailyLimit.innerText=state.dailyLimit+" ₽";
+  incomeDisplay.innerText=state.income+" ₽";
+  savingsDisplay.innerText=Math.round(state.savings)+" ₽";
+  mandatoryDisplay.innerText=Math.round(state.mandatory)+" ₽";
+  funDisplay.innerText=Math.round(state.fun)+" ₽";
+  streak.innerText=state.streak;
+  spentToday.innerText=state.spentToday+" ₽";
+  leftToday.innerText=Math.max(state.dailyLimit-state.spentToday,0)+" ₽";
+
+  const habitScore=(Object.values(state.habitLog[new Date().toDateString()]||{}).filter(Boolean).length/(state.habits.length||1))*50;
+  const budgetScore=state.spentToday<=state.dailyLimit?50:0;
+  score.innerText=Math.round(habitScore+budgetScore);
 }
 
 // ================= INIT =================
-loadState();
+load();
+renderHabits();
 updateUI();
 </script>
 
