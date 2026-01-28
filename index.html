@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LifeOS v8 Architect</title>
+    <title>LifeOS v9 Vision Gold</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,153 +11,144 @@
     <style>
         :root {
             --bg: #020617;
-            --card: rgba(15, 23, 42, 0.7);
+            --card: rgba(15, 23, 42, 0.75);
             --primary: #3b82f6;
             --lava: #f97316;
+            --danger: #ef4444;
             --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc;
             --text-sec: #94a3b8;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { background: var(--bg); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
 
-        /* --- NAV BAR --- */
+        /* --- iOS 26 TAB BAR --- */
         .tab-bar {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 92%; height: 68px; background: rgba(15, 23, 42, 0.92);
-            backdrop-filter: blur(25px); border-radius: 30px;
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            width: 92%; height: 70px; background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(25px); border-radius: 35px;
             display: flex; justify-content: space-around; align-items: center;
-            border: 1px solid var(--border); z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border: 1px solid var(--border); z-index: 1000;
         }
-        .tab-item { display: flex; flex-direction: column; align-items: center; color: var(--text-sec); font-size: 10px; cursor: pointer; transition: 0.3s; }
+        .tab-item { display: flex; flex-direction: column; align-items: center; color: var(--text-sec); font-size: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .tab-item.active { color: var(--primary); }
-        .icon-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; margin-bottom: 2px; }
+        .icon-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-bottom: 2px; }
         .tab-item.active .icon-circle { background: var(--primary); color: white; box-shadow: 0 0 15px var(--primary); }
 
-        /* --- UI COMPONENTS --- */
-        .container { padding: 20px; padding-bottom: 120px; display: none; width: 100%; max-width: 500px; margin: 0 auto; }
-        .container.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- LAYOUT --- */
+        .container { padding: 25px; padding-bottom: 120px; display: none; width: 100%; max-width: 500px; margin: 0 auto; }
+        .container.active { display: block; animation: slideUp 0.4s ease forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .glass-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 20px; margin-bottom: 15px; }
-        .title-sm { font-size: 11px; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 1px; }
-        .val-lg { font-size: 36px; font-weight: 800; color: var(--primary); margin: 5px 0; }
+        .glass-card { background: var(--card); border: 1px solid var(--border); border-radius: 26px; padding: 22px; margin-bottom: 18px; backdrop-filter: blur(10px); }
+        .title-sm { font-size: 11px; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
 
         /* --- LAVA WIDGET --- */
-        .lava-box { width: 60px; height: 85px; background: #0f172a; border-radius: 15px; position: relative; overflow: hidden; border: 1px solid var(--border); }
+        .lava-widget { width: 65px; height: 95px; background: #0f172a; border-radius: 18px; position: relative; overflow: hidden; border: 1px solid var(--border); }
         .lava-fill { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(0deg, #ea580c 0%, #fb923c 100%); transition: height 1s cubic-bezier(0.4, 0, 0.2, 1); }
-        .lava-fill::after { content: ""; position: absolute; top: -10px; left: -50%; width: 200%; height: 20px; background: rgba(251, 146, 60, 0.3); border-radius: 40%; animation: wave 3s infinite linear; }
+        .lava-fill::after { content: ""; position: absolute; top: -15px; left: -50%; width: 200%; height: 30px; background: rgba(251, 146, 60, 0.3); border-radius: 40%; animation: wave 4s infinite linear; }
         @keyframes wave { from { transform: translateX(0); } to { transform: translateX(50%); } }
 
-        /* --- BUTTONS --- */
-        .btn-p { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 16px; width: 100%; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s; }
-        .btn-p:active { transform: scale(0.98); opacity: 0.9; }
-        .btn-sec { background: var(--glass); color: white; border: 1px solid var(--border); }
+        /* --- SWIPE TO DELETE --- */
+        .tx-wrapper { position: relative; overflow: hidden; border-radius: 18px; margin-bottom: 10px; touch-action: pan-y; }
+        .tx-content { position: relative; background: var(--glass); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 2; transition: transform 0.3s ease; border: 1px solid var(--border); border-radius: 18px; }
+        .tx-delete-btn { position: absolute; top: 0; right: 0; width: 80px; height: 100%; background: var(--danger); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; z-index: 1; border-radius: 0 18px 18px 0; }
+        .swiped .tx-content { transform: translateX(-80px); }
 
         /* --- HABITS --- */
-        .bubble-row { display: flex; justify-content: space-between; margin: 15px 0; }
-        .day-bubble { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; background: var(--glass); }
-        .day-bubble.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
-        .progress-mini { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; margin-top: 10px; }
-        .progress-bar { height: 100%; background: var(--primary); transition: 0.5s; }
+        .bubble-row { display: flex; justify-content: space-between; margin-top: 15px; }
+        .day-bubble { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; background: var(--glass); color: var(--text-sec); }
+        .day-bubble.active { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 0 12px rgba(59, 130, 246, 0.4); }
 
         /* --- SETUP --- */
-        #setup { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; justify-content: center; padding: 30px; }
-        .inp { background: var(--card); border: 1px solid var(--border); color: white; padding: 18px; border-radius: 16px; width: 100%; margin-bottom: 12px; font-size: 16px; outline: none; }
+        #setupOverlay { position: fixed; inset:0; background:var(--bg); z-index: 2000; display:none; flex-direction:column; justify-content:center; padding:40px; }
+        .premium-input { background: var(--card); border: 1px solid var(--border); color: white; padding: 20px; border-radius: 18px; width: 100%; margin: 10px 0; font-size: 18px; font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <div id="setup">
-        <h1 style="font-size: 28px; margin-bottom: 5px;">Персонализация</h1>
-        <p style="color:var(--text-sec); margin-bottom: 25px;">Настроим твою финансовую крепость.</p>
-        <input type="number" id="inInc" class="inp" placeholder="Месячный доход (₽)">
-        <input type="number" id="inFix" class="inp" placeholder="Сумма обязательных счетов (₽)">
-        <button class="btn-p" onclick="startApp()">Создать LifeOS</button>
+    <div id="setupOverlay">
+        <h1 style="font-size: 32px; letter-spacing: -1px;">Настройка LifeOS</h1>
+        <p style="color:var(--text-sec); margin-bottom: 30px;">Создадим идеальную финансовую модель.</p>
+        <input type="number" id="setupInc" class="premium-input" placeholder="Твой доход (₽)">
+        <input type="number" id="setupFix" class="premium-input" placeholder="Обязательные счета (₽)">
+        <button onclick="initApp()" class="premium-input" style="background:var(--primary); border:none; margin-top: 20px;">Начать</button>
     </div>
 
     <div id="tab-fin" class="container active">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:30px;">
             <div>
-                <div class="title-sm">Безопасный лимит / день</div>
-                <div class="val-lg" id="dailyShow">0 ₽</div>
+                <div class="title-sm">Дневной бюджет</div>
+                <div id="dailyVal" style="font-size: 42px; font-weight: 800; color: var(--primary);">0 ₽</div>
             </div>
-            <div class="lava-box">
-                <div id="lava" class="lava-fill" style="height: 10%;"></div>
-                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px;"><span id="streakNum">1</span></div>
+            <div class="lava-widget" onclick="alert('Это твой стрик! Веди бюджет каждый день, чтобы лава достигла верха.')">
+                <div id="lavaFill" class="lava-fill"></div>
             </div>
         </div>
 
-        <div class="glass-card" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-            <div>
-                <div class="title-sm">Копилка (20%)</div>
-                <div id="saveVal" style="font-weight:700; color:var(--lava); margin-top:4px;">0 ₽</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom: 20px;">
+            <div class="glass-card" style="margin:0;">
+                <div class="title-sm">Сейф (20%)</div>
+                <div id="saveVal" style="font-weight:800; color:var(--lava); font-size: 20px;">0 ₽</div>
             </div>
-            <div>
-                <div class="title-sm">Резерв на счета</div>
-                <div id="fixPoolVal" style="font-weight:700; color:var(--primary); margin-top:4px;">0 / 0 ₽</div>
+            <div class="glass-card" style="margin:0;">
+                <div class="title-sm">На счета</div>
+                <div id="fixVal" style="font-weight:800; color:var(--primary); font-size: 20px;">0 / 0 ₽</div>
             </div>
         </div>
 
-        <div class="glass-card" style="background: linear-gradient(to right, rgba(59, 130, 246, 0.1), transparent); display: flex; justify-content: space-between; align-items: center;">
+        <div class="glass-card" style="display:flex; justify-content:space-between; align-items:center; border: 1px solid rgba(59, 130, 246, 0.3);">
             <div>
-                <div class="title-sm">Оплата счетов</div>
-                <div style="font-size:12px; color:var(--text-sec)">Спишется из резерва</div>
+                <div class="title-sm" style="color:var(--primary)">Оплата обязательств</div>
+                <div style="font-size:12px; color:var(--text-sec)">Списание из резерва счетов</div>
             </div>
-            <button onclick="payBill()" style="background:var(--primary); border:none; color:white; padding:8px 15px; border-radius:12px; font-weight:700; font-size:12px;">Оплатить</button>
+            <button onclick="payBill()" style="background:var(--primary); color:white; border:none; padding:10px 18px; border-radius:14px; font-weight:700;">Оплатить</button>
         </div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <button class="btn-p btn-sec" onclick="modMoney(true)">+ Доход</button>
-            <button class="btn-p" onclick="modMoney(false)">- Трата</button>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <button onclick="addEntry(true)" class="premium-input" style="background:var(--primary); border:none; margin:0; font-size:14px;">+ Доход</button>
+            <button onclick="addEntry(false)" class="premium-input" style="background:var(--glass); border:1px solid var(--border); margin:0; font-size:14px;">- Трата</button>
         </div>
 
-        <h3 class="title-sm" style="margin: 25px 0 10px 0;">История и управление</h3>
-        <div id="txHistory"></div>
+        <h3 class="title-sm" style="margin-top:30px;">Недавние транзакции (свайп влево)</h3>
+        <div id="historyList"></div>
     </div>
 
     <div id="tab-hab" class="container">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 style="margin:0;">Задачи</h2>
-            <button onclick="newHabit()" style="background:var(--primary); border:none; color:white; width:40px; height:40px; border-radius:50%; font-size:20px;">+</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+            <h1 style="margin:0; letter-spacing:-1px;">Задачи</h1>
+            <button onclick="addHabit()" style="background:var(--primary); border:none; color:white; width:40px; height:40px; border-radius:50%; font-size:20px;">+</button>
         </div>
-
         <div id="habitList"></div>
-
-        <div class="glass-card" style="margin-top:25px;">
+        <div class="glass-card" style="margin-top:30px;">
             <div class="title-sm">Активность по дням</div>
-            <p style="font-size:12px; color:var(--text-sec); margin-bottom:15px;">Реальный график твоей продуктивности.</p>
-            <canvas id="habChart" height="180"></canvas>
+            <canvas id="habChart" height="150"></canvas>
         </div>
     </div>
 
     <div id="tab-ins" class="container">
-        <h2 style="margin-bottom:20px;">Итоги</h2>
-        
+        <h1 style="margin-bottom:25px; letter-spacing:-1px;">Итоги</h1>
         <div class="glass-card">
-            <h3 style="margin:0 0 15px 0;">Радар Дисциплины</h3>
+            <div class="title-sm">Анализ дисциплины</div>
             <canvas id="radarChart"></canvas>
-            <p style="font-size:12px; color:var(--text-sec); text-align:center; margin-top:15px;">Твой баланс между финансами и целями. Стремись к ровному пятиугольнику!</p>
         </div>
-
-        <div class="glass-card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent);">
-            <div class="title-sm">Твой стрик ведения</div>
-            <div style="font-size:24px; font-weight:800; margin:10px 0;" id="streakLong">0 Дней</div>
-            <div style="font-size:12px; color:var(--text-sec)">Заполни полностью месяц, чтобы лава достигла верха и открыла Premium-статус.</div>
+        <div class="glass-card">
+            <div class="title-sm">Распределение капитала</div>
+            <canvas id="doughnutChart" height="200"></canvas>
         </div>
     </div>
 
     <div class="tab-bar">
-        <div class="tab-item active" onclick="sw('fin', this)">
-            <div class="icon-circle">🏛</div><span>Финансы</span>
+        <div class="tab-item active" onclick="switchTab('fin', this)">
+            <div class="icon-circle">🏛</div><span>Кошелек</span>
         </div>
-        <div class="tab-item" onclick="sw('hab', this)">
+        <div class="tab-item" onclick="switchTab('hab', this)">
             <div class="icon-circle">⚡</div><span>Задачи</span>
         </div>
-        <div class="tab-item" onclick="sw('ins', this)">
-            <div class="icon-circle">📊</div><span>Итоги</span>
+        <div class="tab-item" onclick="switchTab('ins', this)">
+            <div class="icon-circle">📈</div><span>Итоги</span>
         </div>
     </div>
 
@@ -172,37 +163,35 @@
         fixCurrent: 0,
         savings: 0,
         balance: 0,
-        streak: 1,
-        lastLog: new Date().toDateString(),
         txs: [],
-        habits: [] // {id, name, goal, doneDates:[]}
+        habits: [],
+        lastEntry: null,
+        streak: 1
     };
 
+    // --- INITIALIZATION ---
     const load = () => {
-        const s = localStorage.getItem('lifeos_v8');
-        if(s) db = JSON.parse(s);
-        if(!db.setup) document.getElementById('setup').style.display = 'flex';
-        else render();
+        const saved = localStorage.getItem('lifeos_v9');
+        if(saved) db = JSON.parse(saved);
+        if(!db.setup) document.getElementById('setupOverlay').style.display = 'flex';
+        render();
     };
+    const save = () => { localStorage.setItem('lifeos_v9', JSON.stringify(db)); render(); };
 
-    const save = () => { localStorage.setItem('lifeos_v8', JSON.stringify(db)); render(); };
-
-    function startApp() {
-        const inc = +document.getElementById('inInc').value;
-        const fix = +document.getElementById('inFix').value;
-        if(!inc) return;
-        db.incTotal = inc;
-        db.fixTarget = fix;
-        db.setup = true;
-        distribute(inc);
-        document.getElementById('setup').style.display = 'none';
+    function initApp() {
+        const i = +document.getElementById('setupInc').value;
+        const f = +document.getElementById('setupFix').value;
+        if(!i) return;
+        db.incTotal = i; db.fixTarget = f; db.setup = true;
+        distribute(i);
+        document.getElementById('setupOverlay').style.display = 'none';
         save();
     }
 
-    function distribute(amount) {
-        let s = Math.floor(amount * 0.2);
-        db.savings += s;
-        let rem = amount - s;
+    function distribute(val) {
+        let toSave = Math.floor(val * 0.2);
+        db.savings += toSave;
+        let rem = val - toSave;
         let fixNeed = db.fixTarget - db.fixCurrent;
         if(fixNeed > 0) {
             let toFix = Math.min(rem, fixNeed);
@@ -212,101 +201,58 @@
         db.balance += rem;
     }
 
-    function modMoney(isInc) {
-        if(isInc) {
-            const v = +prompt("Сумма дохода:");
-            if(v) distribute(v);
-        } else {
-            const v = +prompt("Сумма траты:");
-            const c = prompt("Категория:");
-            if(v) {
-                db.balance -= v;
-                db.txs.unshift({id: Date.now(), val: v, cat: c || 'Трата', t: new Date().toLocaleTimeString().slice(0,5)});
-            }
+    // --- FINANCE ---
+    function addEntry(isInc) {
+        const v = +prompt(isInc ? "Сумма дохода:" : "Сумма траты:");
+        if(!v) return;
+        if(isInc) distribute(v);
+        else {
+            const cat = prompt("На что?");
+            db.balance -= v;
+            db.txs.unshift({id: Date.now(), val: v, cat: cat || 'Трата', t: new Date().toLocaleTimeString().slice(0,5)});
         }
-        checkStreak(); save();
-    }
-
-    function delTx(id) {
-        const t = db.txs.find(x => x.id === id);
-        db.balance += t.val;
-        db.txs = db.txs.filter(x => x.id !== id);
-        save();
+        updateStreak(); save();
     }
 
     function payBill() {
-        const v = +prompt("Сумма к оплате?");
+        const v = +prompt("Сколько оплатить по счетам?");
         if(v && v <= db.fixedCurrent) {
             db.fixedCurrent -= v;
             tg.HapticFeedback.notificationOccurred('success');
             save();
-        } else alert("Недостаточно в резерве!");
+        } else alert("В резерве недостаточно средств!");
     }
 
-    function checkStreak() {
+    function deleteTx(id) {
+        const tx = db.txs.find(x => x.id === id);
+        db.balance += tx.val;
+        db.txs = db.txs.filter(x => x.id !== id);
+        save();
+    }
+
+    function updateStreak() {
         const today = new Date().toDateString();
-        if(db.lastLog === today) return;
-        const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-        db.streak = (db.lastLog === yesterday.toDateString()) ? db.streak + 1 : 1;
-        db.lastLog = today;
+        if(db.lastEntry === today) return;
+        db.streak = (db.lastEntry === new Date(Date.now()-86400000).toDateString()) ? db.streak + 1 : 1;
+        db.lastEntry = today;
     }
 
-    function sw(id, el) {
-        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-        document.getElementById('tab-' + id).classList.add('active');
-        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-        if(id === 'ins' || id === 'hab') initCharts();
+    // --- HABITS ---
+    function addHabit() {
+        const name = prompt("Что будем делать?");
+        const goal = +prompt("Сколько раз в месяц?");
+        if(name && goal) {
+            db.habits.push({id: Date.now(), name, goal, done: []});
+            save();
+        }
     }
 
-    function render() {
-        const days = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate() - new Date().getDate() + 1;
-        document.getElementById('dailyShow').innerText = Math.max(0, Math.floor(db.balance / days)).toLocaleString() + ' ₽';
-        document.getElementById('saveVal').innerText = db.savings.toLocaleString() + ' ₽';
-        document.getElementById('fixPoolVal').innerText = `${db.fixedCurrent.toLocaleString()} / ${db.fixTarget.toLocaleString()} ₽`;
-        
-        document.getElementById('lava').style.height = Math.min(100, (db.streak/30)*100) + '%';
-        document.getElementById('streakNum').innerText = db.streak;
-        document.getElementById('streakLong').innerText = db.streak + ' Дней';
-
-        document.getElementById('txHistory').innerHTML = db.txs.slice(0, 5).map(t => `
-            <div class="glass-card" style="display:flex; justify-content:space-between; align-items:center; padding:12px 18px; margin-bottom:8px;">
-                <div><div style="font-weight:700;">${t.cat}</div><div style="font-size:10px; color:var(--text-sec);">${t.t}</div></div>
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <span style="color:var(--lava); font-weight:800;">-${t.val} ₽</span>
-                    <span onclick="delTx(${t.id})" style="font-size:16px;">🗑</span>
-                </div>
-            </div>
-        `).join('');
-
-        renderHabits();
-    }
-
-    function renderHabits() {
-        const list = document.getElementById('habitList');
-        list.innerHTML = '';
-        db.habits.forEach(h => {
-            const current = h.doneDates.length;
-            const pct = Math.min(100, (current / h.goal) * 100);
-            const daysArr = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
-            let bubbles = '';
-            daysArr.forEach((d, i) => {
-                const date = getWeekDate(i);
-                const act = h.doneDates.includes(date) ? 'active' : '';
-                bubbles += `<div class="day-bubble ${act}" onclick="togHab(${h.id}, '${date}')">${d}</div>`;
-            });
-
-            list.innerHTML += `
-                <div class="glass-card">
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="font-weight:800;">${h.name}</span>
-                        <span style="font-size:12px; font-weight:700; color:var(--primary);">${current} / ${h.goal}</span>
-                    </div>
-                    <div class="bubble-row">${bubbles}</div>
-                    <div class="progress-mini"><div class="progress-bar" style="width:${pct}%"></div></div>
-                </div>
-            `;
-        });
+    function toggleDay(hId, date) {
+        const h = db.habits.find(x => x.id === hId);
+        if(h.done.includes(date)) h.done = h.done.filter(d => d !== date);
+        else { h.done.push(date); tg.HapticFeedback.impactOccurred('medium'); }
+        save();
+        initCharts(); // Мгновенное обновление графика
     }
 
     function getWeekDate(i) {
@@ -315,53 +261,124 @@
         return new Date(d.setDate(diff)).toDateString();
     }
 
-    function togHab(id, date) {
-        const h = db.habits.find(x => x.id === id);
-        if(h.doneDates.includes(date)) h.doneDates = h.doneDates.filter(d => d !== date);
-        else { h.doneDates.push(date); tg.HapticFeedback.impactOccurred('light'); }
-        save();
+    // --- UI RENDERING ---
+    function switchTab(id, el) {
+        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('active');
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        if(id !== 'fin') initCharts();
     }
 
-    function newHabit() {
-        const n = prompt("Название задачи:");
-        const g = +prompt("Сколько раз в месяц планируешь выполнить?");
-        if(n && g) { db.habits.push({id: Date.now(), name: n, goal: g, doneDates: []}); save(); }
+    function render() {
+        const days = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate() - new Date().getDate() + 1;
+        document.getElementById('dailyVal').innerText = Math.max(0, Math.floor(db.balance / days)).toLocaleString() + ' ₽';
+        document.getElementById('saveVal').innerText = db.savings.toLocaleString() + ' ₽';
+        document.getElementById('fixVal').innerText = `${db.fixedCurrent.toLocaleString()} / ${db.fixTarget.toLocaleString()} ₽`;
+        document.getElementById('lavaFill').style.height = Math.min(100, (db.streak/30)*100) + '%';
+
+        // History with Swipe
+        const hList = document.getElementById('historyList');
+        hList.innerHTML = db.txs.slice(0, 8).map(t => `
+            <div class="tx-wrapper" id="tx-${t.id}">
+                <div class="tx-delete-btn" onclick="deleteTx(${t.id})">🗑</div>
+                <div class="tx-content" 
+                     ontouchstart="handleTouchStart(event)" 
+                     ontouchmove="handleTouchMove(event, ${t.id})"
+                     ontouchend="handleTouchEnd(event, ${t.id})">
+                    <div>
+                        <div style="font-weight:700;">${t.cat}</div>
+                        <div style="font-size:10px; color:var(--text-sec);">${t.t}</div>
+                    </div>
+                    <div style="color:var(--lava); font-weight:800;">-${t.val} ₽</div>
+                </div>
+            </div>
+        `).join('');
+
+        // Habits
+        const habList = document.getElementById('habitList');
+        habList.innerHTML = db.habits.map(h => {
+            const daysArr = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+            let bubbles = daysArr.map((d, i) => {
+                const dt = getWeekDate(i);
+                return `<div class="day-bubble ${h.done.includes(dt) ? 'active' : ''}" onclick="toggleDay(${h.id}, '${dt}')">${d}</div>`;
+            }).join('');
+            
+            return `
+                <div class="glass-card">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <span style="font-weight:800;">${h.name}</span>
+                        <span style="color:var(--primary); font-size:12px; font-weight:700;">${h.done.length} / ${h.goal}</span>
+                    </div>
+                    <div class="bubble-row">${bubbles}</div>
+                </div>
+            `;
+        }).join('');
     }
 
+    // --- TOUCH SWIPE LOGIC ---
+    let startX = 0;
+    function handleTouchStart(e) { startX = e.touches[0].clientX; }
+    function handleTouchMove(e, id) {
+        let diff = startX - e.touches[0].clientX;
+        if(diff > 50) document.getElementById('tx-'+id).classList.add('swiped');
+        if(diff < -50) document.getElementById('tx-'+id).classList.remove('swiped');
+    }
+    function handleTouchEnd(e, id) { /* Handled in move */ }
+
+    // --- CHARTS ---
     function initCharts() {
-        const habCtx = document.getElementById('habChart')?.getContext('2d');
-        const radCtx = document.getElementById('radarChart')?.getContext('2d');
-        if(!habCtx || !radCtx) return;
-
-        // Реальные данные для активности недели
-        const counts = [0,0,0,0,0,0,0];
-        db.habits.forEach(h => {
-            h.doneDates.forEach(d => {
+        // Activity Chart
+        const actCtx = document.getElementById('habChart')?.getContext('2d');
+        if(actCtx) {
+            const counts = [0,0,0,0,0,0,0];
+            db.habits.forEach(h => h.done.forEach(d => {
                 const day = new Date(d).getDay();
                 counts[day === 0 ? 6 : day - 1]++;
+            }));
+            if(window.chart1) window.chart1.destroy();
+            window.chart1 = new Chart(actCtx, {
+                type: 'bar',
+                data: { labels: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'], datasets: [{ data: counts, backgroundColor: '#3b82f6', borderRadius: 8 }] },
+                options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
             });
-        });
+        }
 
-        new Chart(habCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
-                datasets: [{ data: counts, backgroundColor: '#3b82f6', borderRadius: 6 }]
-            },
-            options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
-        });
+        // Radar Chart
+        const radCtx = document.getElementById('radarChart')?.getContext('2d');
+        if(radCtx) {
+            const habitScore = db.habits.length ? (db.habits.reduce((a,b)=>a+b.done.length,0)/(db.habits.length*30))*100 : 0;
+            if(window.chart2) window.chart2.destroy();
+            window.chart2 = new Chart(radCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Бюджет', 'Счета', 'Задачи', 'Стрик', 'Сейф'],
+                    datasets: [{
+                        data: [80, (db.fixedCurrent/db.fixTarget)*100, habitScore, (db.streak/30)*100, 95],
+                        backgroundColor: 'rgba(59, 130, 246, 0.3)', borderColor: '#3b82f6', borderWidth: 2, pointRadius: 0
+                    }]
+                },
+                options: { scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, angleLines: { color: 'rgba(255,255,255,0.05)' }, display: true, ticks: { display: false } } }, plugins: { legend: { display: false } } }
+            });
+        }
 
-        new Chart(radCtx, {
-            type: 'radar',
-            data: {
-                labels: ['Финансы', 'Задачи', 'Стрик', 'Сбережения', 'Счета'],
-                datasets: [{
-                    data: [80, 60, (db.streak/30)*100, 90, (db.fixedCurrent/db.fixTarget)*100],
-                    backgroundColor: 'rgba(59, 130, 246, 0.2)', borderColor: '#3b82f6', pointRadius: 0
-                }]
-            },
-            options: { scales: { r: { display: false } }, plugins: { legend: { display: false } } }
-        });
+        // Doughnut Chart
+        const douCtx = document.getElementById('doughnutChart')?.getContext('2d');
+        if(douCtx) {
+            if(window.chart3) window.chart3.destroy();
+            window.chart3 = new Chart(douCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Баланс', 'Счета', 'Сейф'],
+                    datasets: [{
+                        data: [db.balance, db.fixedCurrent, db.savings],
+                        backgroundColor: ['#3b82f6', '#1e293b', '#f97316'],
+                        borderWidth: 0, hoverOffset: 4
+                    }]
+                },
+                options: { cutout: '75%', plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 10 } } } } }
+            });
+        }
     }
 
     load();
