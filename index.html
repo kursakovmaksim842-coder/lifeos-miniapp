@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LifeOS v11.1 Pure Vision</title>
+    <title>LifeOS v11.2 Pure Vision</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,6 +27,8 @@
         /* --- SETUP --- */
         #setupOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: column; justify-content: center; padding: 35px; backdrop-filter: blur(20px); }
         .input-gold { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 20px; border-radius: 20px; width: 100%; margin: 10px 0; font-size: 18px; text-align: center; font-weight: 700; }
+        /* Стили для инпута даты, чтобы он выглядел как остальные */
+        input[type="date"] { font-family: 'Plus Jakarta Sans', sans-serif; color-scheme: dark; }
 
         /* --- LAYOUT --- */
         .container { padding: 20px; padding-bottom: 110px; display: none; width: 100%; max-width: 500px; margin: 0 auto; }
@@ -34,7 +36,7 @@
         @keyframes appleShow { from { opacity: 0; transform: scale(0.98) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
         .glass-card { background: var(--card); border: 1px solid var(--border); border-radius: 28px; padding: 20px; margin-bottom: 15px; position: relative; }
-        .title-sm { font-size: 10px; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 6px; }
+        .title-sm { font-size: 10px; font-weight: 800; color: var(--text-sec); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
 
         /* --- PREMIUIM LAVA (EXCLUSIVE TO FINANCE) --- */
         .lava-box { 
@@ -78,18 +80,23 @@
             <h2 style="letter-spacing: -1px;">LifeOS Setup</h2>
             <input type="number" id="initBalance" class="input-gold" placeholder="Текущий баланс (₽)">
             <input type="number" id="initFixed" class="input-gold" placeholder="Обязательные траты (₽)">
+            <label style="font-size:12px; color:var(--text-sec); display:block; margin-top:10px;">Дата следующей зарплаты:</label>
+            <input type="date" id="initDate" class="input-gold" style="font-size:16px;">
             <button onclick="completeSetup()" class="input-gold" style="background:var(--primary); border:none; margin-top:15px; color:white;">Начать путь</button>
         </div>
     </div>
 
     <div id="tab-fin" class="container active">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-top: 20px; margin-bottom: 30px;">
-            <div>
-                <div class="title-sm">Доступно на сегодня</div>
+            <div style="flex-grow: 1;">
+                <div class="title-sm">
+                    Доступно на сегодня
+                    <span id="salaryDateBtn" onclick="changeSalaryDate()" style="cursor:pointer; background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:6px; color:var(--primary); text-transform:none;">📅 ...</span>
+                </div>
                 <div id="dailyVal" style="font-size: 46px; font-weight: 800; letter-spacing: -2px;">0 ₽</div>
             </div>
             
-            <div class="lava-box">
+            <div class="lava-box" style="flex-shrink: 0; margin-left: 15px;">
                 <div class="lava-wave-wrapper" id="lavaFill">
                     <div class="wave"></div>
                 </div>
@@ -128,7 +135,7 @@
     <div id="tab-ins" class="container">
         <h1 style="margin-bottom:25px; letter-spacing:-1.5px;">Итоги</h1>
         <div class="glass-card" style="text-align:center; padding:35px 20px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent);">
-            <div class="title-sm">Твой Ранг</div>
+            <div class="title-sm" style="justify-content: center;">Твой Ранг</div>
             <div id="rankTitle" style="font-size:34px; font-weight:900; color:var(--primary); margin:10px 0; letter-spacing:-1px;">НОВИЧОК</div>
             <div style="font-size:12px; color:var(--text-sec);">Стань легендой, ведя учет каждый день.</div>
         </div>
@@ -146,22 +153,39 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+    // Добавил salaryDate в структуру данных
     let db = {
         setup: false, balance: 0, fixedTarget: 0, fixedCurrent: 0,
-        savings: 0, txs: [], fixedTasks: [], habits: [], streak: 1, lastLog: new Date().toDateString()
+        savings: 0, txs: [], fixedTasks: [], habits: [], streak: 1, 
+        lastLog: new Date().toDateString(), salaryDate: null
     };
 
     const load = () => {
-        const s = localStorage.getItem('lifeos_v11.1');
+        const s = localStorage.getItem('lifeos_v11.2'); // Обновил версию ключа, чтобы сбросить старый конфиг для корректной настройки
         if(s) db = JSON.parse(s);
-        if(!db.setup) document.getElementById('setupOverlay').style.display = 'flex';
+        
+        // Если база есть, но даты нет (для старых пользователей), показываем дату по умолчанию (+30 дней)
+        if(db.setup && !db.salaryDate) {
+             let d = new Date(); d.setDate(d.getDate() + 30);
+             db.salaryDate = d.toISOString().split('T')[0];
+        }
+
+        if(!db.setup) {
+            document.getElementById('setupOverlay').style.display = 'flex';
+            // Установка сегодняшней даты как placeholder
+            document.getElementById('initDate').valueAsDate = new Date();
+        }
         render();
     };
-    const save = () => { localStorage.setItem('lifeos_v11.1', JSON.stringify(db)); render(); };
+    const save = () => { localStorage.setItem('lifeos_v11.2', JSON.stringify(db)); render(); };
 
     function completeSetup() {
         db.balance = +document.getElementById('initBalance').value;
         db.fixedTarget = +document.getElementById('initFixed').value;
+        db.salaryDate = document.getElementById('initDate').value; // Сохраняем дату
+        
+        if(!db.salaryDate) { alert("Укажи дату зарплаты!"); return; }
+
         db.setup = true;
         save();
         document.getElementById('setupOverlay').style.display = 'none';
@@ -212,9 +236,48 @@
         db.lastLog = today;
     }
 
+    // Новая функция смены даты
+    function changeSalaryDate() {
+        // Создаем временный невидимый инпут для удобного выбора даты
+        const input = document.createElement('input');
+        input.type = 'date';
+        input.value = db.salaryDate;
+        input.style.opacity = 0;
+        input.style.position = 'absolute';
+        document.body.appendChild(input);
+        
+        // Симуляция клика для открытия нативного пикера
+        input.showPicker();
+        
+        input.addEventListener('change', (e) => {
+            if(input.value) {
+                db.salaryDate = input.value;
+                save();
+            }
+            input.remove();
+        });
+    }
+
     function render() {
-        const dRem = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate() - new Date().getDate() + 1;
+        // --- НОВАЯ ЛОГИКА РАСЧЕТА ДНЕЙ ---
+        const now = new Date();
+        now.setHours(0,0,0,0);
+        
+        let targetDate = new Date(db.salaryDate);
+        targetDate.setHours(0,0,0,0);
+        
+        // Если дата прошла, считаем просрочено (или можно переносить на след месяц, но пока оставим 1 день как минимум)
+        const diffTime = targetDate - now;
+        let dRem = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if(dRem < 1) dRem = 1; 
+
+        // Отображение даты на кнопке
+        const dateStr = targetDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'numeric' });
+        document.getElementById('salaryDateBtn').innerText = `📅 до ${dateStr}`;
+
         document.getElementById('dailyVal').innerText = Math.max(0, Math.floor(db.balance / dRem)).toLocaleString() + ' ₽';
+        // ---------------------------------
+
         document.getElementById('saveVal').innerText = db.savings.toLocaleString() + ' ₽';
         document.getElementById('fixVal').innerText = `${db.fixedCurrent.toLocaleString()} / ${db.fixedTarget.toLocaleString()} ₽`;
         
@@ -332,4 +395,3 @@
 </script>
 </body>
 </html>
-
