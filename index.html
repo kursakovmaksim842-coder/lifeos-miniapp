@@ -3,348 +3,424 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LifeOS V3</title>
+    <title>LifeOS v4 Blue</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg: #000000;
-            --card-bg: #1c1c1e;
-            --primary: #32d74b;
-            --danger: #ff453a;
+            --bg: #050505; /* Почти черный */
+            --card-bg: #141416;
+            --primary: #3b82f6; /* Приятный синий */
+            --primary-glow: rgba(59, 130, 246, 0.4);
+            --danger: #ef4444;
             --text-main: #ffffff;
-            --text-sec: #8e8e93;
-            --radius: 16px;
+            --text-sec: #94a3b8;
+            --radius: 20px;
+            --nav-height: 70px;
         }
 
         body {
             background-color: var(--bg);
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
-            margin: 0; padding: 20px; padding-bottom: 100px;
+            margin: 0; padding: 0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* Анимации */
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .fade-in { animation: slideUp 0.4s ease-out forwards; }
+        /* --- UI COMPONENTS --- */
+        .container { padding: 20px; padding-bottom: 100px; display: none; animation: fadeIn 0.3s ease; }
+        .container.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Карточки */
         .card {
             background: var(--card-bg); border-radius: var(--radius); padding: 20px;
-            margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        /* Главный экран бюджета */
-        .budget-header { text-align: center; margin-bottom: 20px; }
-        .big-money { font-size: 48px; font-weight: 800; letter-spacing: -2px; margin: 10px 0; }
-        .sub-text { color: var(--text-sec); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* Прогресс бар */
-        .progress-bg { background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden; margin-top: 10px; }
-        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s ease; }
-
-        /* Кнопки */
         .btn {
-            border: none; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 600;
-            width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: transform 0.1s;
+            background: var(--primary); color: white; border: none; padding: 14px;
+            border-radius: 14px; width: 100%; font-weight: 600; font-size: 16px;
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn:active { transform: scale(0.97); }
-        .btn-green { background: var(--primary); color: #000; }
-        .btn-red { background: rgba(255, 69, 58, 0.15); color: var(--danger); }
-        .btn-outline { background: transparent; border: 1px solid var(--text-sec); color: var(--text-main); margin-top: 10px; }
+        .btn:active { transform: scale(0.96); opacity: 0.9; }
+        .btn-red { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
 
-        /* Сетка кнопок */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        /* --- NAVIGATION --- */
+        .bottom-nav {
+            position: fixed; bottom: 20px; left: 20px; right: 20px;
+            background: rgba(20, 20, 22, 0.85); backdrop-filter: blur(20px);
+            border-radius: 24px; height: 64px; display: flex; justify-content: space-around; align-items: center;
+            border: 1px solid rgba(255,255,255,0.08); z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            color: var(--text-sec); font-size: 11px; cursor: pointer; transition: 0.3s;
+        }
+        .nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 20px; margin-bottom: 2px; }
 
-        /* ЭКРАН НАСТРОЙКИ (Onboarding) */
-        #setupScreen {
+        /* --- ONBOARDING --- */
+        #setupWizard {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 100; padding: 40px 20px; box-sizing: border-box;
-            display: none; flex-direction: column; justify-content: center;
+            background: var(--bg); z-index: 2000; display: none; flex-direction: column;
+            padding: 30px; box-sizing: border-box; justify-content: center;
         }
-        .input-lg {
-            background: #1c1c1e; border: 2px solid #333; color: white;
-            font-size: 24px; padding: 16px; border-radius: 12px; width: 100%;
-            box-sizing: border-box; outline: none; text-align: center; margin: 20px 0;
+        .step-title { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+        .input-big {
+            background: transparent; border: none; border-bottom: 2px solid var(--primary);
+            color: white; font-size: 32px; width: 100%; text-align: center; padding: 10px; margin: 30px 0; outline: none;
         }
-        .input-lg:focus { border-color: var(--primary); }
 
-        /* История транзакций */
-        #historyList { margin-top: 10px; }
-        .history-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        /* --- FINANCE TAB --- */
+        .money-hero { text-align: center; padding: 10px 0; }
+        .money-amount { font-size: 48px; font-weight: 800; letter-spacing: -1px; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .money-label { font-size: 13px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* --- HABITS TAB --- */
+        .habit-item {
+            background: rgba(255,255,255,0.03); padding: 16px; border-radius: 16px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent;
         }
-        .del-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 5px; opacity: 0.5; }
+        .habit-item.done { border-color: rgba(59, 130, 246, 0.3); background: rgba(59, 130, 246, 0.05); }
+        .checkbox {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--text-sec);
+            display: flex; align-items: center; justify-content: center; transition: 0.3s;
+        }
+        .habit-item.done .checkbox { background: var(--primary); border-color: var(--primary); color: white; }
+        
+        .week-days { display: flex; gap: 8px; justify-content: center; margin: 20px 0; }
+        .day-circle {
+            width: 36px; height: 36px; border-radius: 50%; background: #222; color: #666;
+            display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer;
+        }
+        .day-circle.selected { background: var(--primary); color: white; box-shadow: 0 0 10px var(--primary-glow); }
 
-        /* График */
-        canvas { width: 100% !important; height: 200px !important; }
+        /* --- STATS TAB --- */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: var(--card-bg); padding: 15px; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-num { font-size: 24px; font-weight: 700; color: var(--primary); }
     </style>
 </head>
 <body>
 
-    <div id="setupScreen">
-        <h1 style="text-align: center;">Настроим LifeOS</h1>
-        <p style="text-align: center; color: var(--text-sec);">Введи свой доступный бюджет на этот месяц (после вычета квартиры и кредитов).</p>
-        
-        <input type="number" id="budgetInput" class="input-lg" placeholder="30000">
-        
-        <button class="btn btn-green" onclick="finishSetup()">🚀 Поехали</button>
+    <div id="setupWizard">
+        <div id="step1">
+            <div class="step-title">Шаг 1: Доход</div>
+            <p style="color:var(--text-sec)">Сколько всего денег приходит в месяц?</p>
+            <input type="number" id="incomeInput" class="input-big" placeholder="0 ₽">
+            <button class="btn" onclick="nextStep(2)">Далее →</button>
+        </div>
+        <div id="step2" style="display:none;">
+            <div class="step-title">Шаг 2: Обязательства</div>
+            <p style="color:var(--text-sec)">Аренда, кредиты, связь, коммуналка. Сумма обязательных платежей:</p>
+            <input type="number" id="fixedInput" class="input-big" placeholder="0 ₽">
+            <button class="btn" onclick="finishSetup()">Рассчитать бюджет 🚀</button>
+        </div>
     </div>
 
-    <div id="mainApp" style="display:none;">
-        
+    <div id="tab-finance" class="container active">
+        <div class="money-hero">
+            <div class="money-label">Сегодня можно потратить</div>
+            <div class="money-amount" id="dailyLimitDisplay">0 ₽</div>
+        </div>
+
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; color:var(--text-sec); font-size:12px; margin-bottom:10px;">
+                <span>Остаток мес: <b id="balanceDisplay" style="color:#fff">0</b></span>
+                <span>Накопления (20%): <b id="savingsDisplay" style="color:var(--primary)">0</b></span>
+            </div>
+            <div style="background:rgba(255,255,255,0.1); height:6px; border-radius:3px; overflow:hidden;">
+                <div id="financeBar" style="height:100%; width:100%; background:var(--primary); transition:0.5s;"></div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
+                <button class="btn" onclick="logExpense(false)">✅ В бюджете</button>
+                <button class="btn btn-red" onclick="logExpense(true)">💸 Расход</button>
+            </div>
+        </div>
+
+        <h3 style="margin-left:5px;">История сегодня</h3>
+        <div id="txList"></div>
+    </div>
+
+    <div id="tab-habits" class="container">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 id="greeting" style="margin:0;">Привет</h2>
-            <div style="font-size:12px; color:var(--text-sec);" id="todayDate">...</div>
+            <h2>Твои привычки</h2>
+            <button onclick="toggleAddHabit()" style="background:var(--card-bg); border:1px solid rgba(255,255,255,0.1); color:white; width:36px; height:36px; border-radius:50%; font-size:20px;">+</button>
         </div>
 
-        <div class="card fade-in">
-            <div class="budget-header">
-                <div class="sub-text">Сегодня можно потратить</div>
-                <div class="big-money" id="dailyAmount">0 ₽</div>
-                <div class="progress-bg"><div class="progress-fill" id="moneyBar"></div></div>
-            </div>
-            
-            <div style="display:flex; justify-content:space-between; color:var(--text-sec); font-size:13px; margin-top:8px;">
-                <span id="spentLabel">Потрачено: 0</span>
-                <span id="leftLabel">Осталось на мес: 0</span>
-            </div>
-
-            <div class="grid-2">
-                <button class="btn btn-green" onclick="markBudgetOK()">✅ В норме</button>
-                <button class="btn btn-red" onclick="askExpense()">💸 Трата</button>
-            </div>
+        <div id="addHabitBlock" class="card" style="display:none;">
+            <input id="newHabitName" placeholder="Название (напр. Чтение)" style="width:100%; background:transparent; border:none; border-bottom:1px solid #333; color:white; padding:10px; outline:none;">
+            <div class="week-days" id="daySelector"></div>
+            <button class="btn" onclick="saveHabit()">Сохранить задачу</button>
         </div>
 
-        <div class="card fade-in" style="animation-delay: 0.1s;">
-            <div style="display:flex; justify-content:space-between; align-items:center; cursor: pointer;" onclick="toggleHistory()">
-                <h3>📜 История трат (сегодня)</h3>
-                <span>▼</span>
+        <div id="habitsList">
             </div>
-            <div id="historyBlock" style="display:none;">
-                <div id="historyList"></div>
-                <button class="btn btn-outline" onclick="resetAll()">⚙️ Сбросить все настройки</button>
+    </div>
+
+    <div id="tab-stats" class="container">
+        <h2>Твоя Эффективность</h2>
+        
+        <div class="stat-grid">
+            <div class="stat-box">
+                <div class="stat-num" id="disciplineScore">0%</div>
+                <div style="font-size:12px; color:var(--text-sec)">Дисциплина</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-num" id="tasksDoneTotal">0</div>
+                <div style="font-size:12px; color:var(--text-sec)">Задач выполнено</div>
             </div>
         </div>
 
-        <div class="card fade-in" style="animation-delay: 0.2s;">
-            <h3>📊 Динамика лимита</h3>
-            <canvas id="budgetChart"></canvas>
+        <div class="card">
+            <h3 style="margin-top:0">Финансы vs Привычки</h3>
+            <canvas id="mainChart" height="200"></canvas>
         </div>
+        
+        <button class="btn btn-red" onclick="fullReset()" style="margin-top:30px;">⚠️ Сброс всех данных</button>
+    </div>
 
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('finance', this)">
+            <span class="nav-icon">💳</span>
+            <span>Финансы</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('habits', this)">
+            <span class="nav-icon">🔥</span>
+            <span>Привычки</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('stats', this)">
+            <span class="nav-icon">📊</span>
+            <span>Итоги</span>
+        </div>
     </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
     
-    // --- 1. STATE MANAGEMENT ---
-    let state = {
-        isSetup: false,
-        monthlyLimit: 0,     // Лимит на месяц
-        balance: 0,          // Текущий остаток
-        history: [],         // История операций {id, amount, date, type}
-        chartData: [0,0,0,0,0] // Данные для графика
+    // --- ДАННЫЕ И НАСТРОЙКИ ---
+    let db = {
+        setup: false,
+        income: 0,
+        fixed: 0,
+        savings: 0, // 20%
+        dailyBudget: 0, // Расчетный
+        balance: 0, // Текущий
+        spentToday: 0,
+        history: [],
+        habits: [], // {id, name, days:[], doneDates:[]}
+        stats: { daysTracked: 0, totalDone: 0 }
     };
 
-    // Загрузка данных (Ключ V3 - чтобы сбросить старые данные)
-    const loadData = () => {
-        const str = localStorage.getItem('lifeos_v3');
-        if(str) state = JSON.parse(str);
-    };
-    const saveData = () => localStorage.setItem('lifeos_v3', JSON.stringify(state));
+    // Загрузка
+    const saved = localStorage.getItem('lifeos_v4_blue');
+    if(saved) db = JSON.parse(saved);
 
-    // --- 2. INIT LOGIC ---
-    loadData();
-
-    // Определяем пользователя
-    const user = tg.initDataUnsafe?.user;
-    document.getElementById('greeting').innerText = user ? `Привет, ${user.first_name}` : 'LifeOS';
-    document.getElementById('todayDate').innerText = new Date().toLocaleDateString('ru-RU');
-
-    // Проверка: Новый юзер или нет?
-    if (!state.isSetup) {
-        document.getElementById('setupScreen').style.display = 'flex';
+    // --- ЛОГИКА ONBOARDING ---
+    if(!db.setup) {
+        document.getElementById('setupWizard').style.display = 'flex';
     } else {
-        document.getElementById('mainApp').style.display = 'block';
-        updateUI();
-        initChart();
+        updateAllUI();
     }
 
-    // --- 3. CORE FUNCTIONS ---
+    function nextStep(n) {
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'block';
+    }
 
     function finishSetup() {
-        const val = parseInt(document.getElementById('budgetInput').value);
-        if (!val || val < 0) return alert('Введите корректную сумму');
+        const income = +document.getElementById('incomeInput').value;
+        const fixed = +document.getElementById('fixedInput').value;
+        
+        if(!income) return alert('Нужно ввести доход');
 
-        state.monthlyLimit = val;
-        state.balance = val; // На старте баланс равен лимиту
-        state.isSetup = true;
-        // Заполняем график стартовыми значениями
-        state.chartData = [val, val, val, val, val];
+        db.income = income;
+        db.fixed = fixed;
+        db.savings = Math.floor(income * 0.20); // 20% копим
         
-        saveData();
+        // Формула: (Доход - Накопления - Обязательные) / 30 дней
+        const freeMoney = income - db.savings - db.fixed;
+        db.dailyBudget = Math.floor(freeMoney / 30);
         
-        // Переключаем экран
-        document.getElementById('setupScreen').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'block';
-        updateUI();
-        initChart();
+        // Начальный баланс ставим как весь свободный остаток, но показывать будем дневной лимит
+        db.balance = freeMoney;
+        db.setup = true;
+        
+        save();
+        document.getElementById('setupWizard').style.display = 'none';
+        updateAllUI();
     }
 
-    // Расчет дневного лимита
-    function getDailyLimit() {
-        const today = new Date();
-        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-        const daysLeft = lastDay - today.getDate() + 1;
-        return Math.floor(state.balance / daysLeft);
+    // --- UI ЛОГИКА ---
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+        
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+
+        if(tabId === 'stats') renderChart();
     }
 
-    function updateUI() {
-        const daily = getDailyLimit();
-        document.getElementById('dailyAmount').innerText = `${daily.toLocaleString()} ₽`;
-        document.getElementById('leftLabel').innerText = `Остаток: ${state.balance.toLocaleString()} ₽`;
+    function updateAllUI() {
+        // Финансы
+        const todayLimit = db.dailyBudget - db.spentToday;
+        document.getElementById('dailyLimitDisplay').innerText = todayLimit.toLocaleString() + ' ₽';
+        document.getElementById('balanceDisplay').innerText = db.balance.toLocaleString() + ' ₽';
+        document.getElementById('savingsDisplay').innerText = db.savings.toLocaleString() + ' ₽';
         
-        // Расчет трат за сегодня для отображения
-        const todayStr = new Date().toDateString();
-        const spentToday = state.history
-            .filter(x => x.date === todayStr)
-            .reduce((acc, curr) => acc + curr.amount, 0);
+        // Бар бюджета
+        const pct = Math.max(0, (todayLimit / db.dailyBudget) * 100);
+        const bar = document.getElementById('financeBar');
+        bar.style.width = pct + '%';
+        bar.style.background = pct < 20 ? '#ef4444' : '#3b82f6';
+
+        // Привычки
+        renderHabitsList();
+
+        // Статистика
+        document.getElementById('tasksDoneTotal').innerText = db.stats.totalDone;
+        // Расчет дисциплины (примерный)
+        const habitsTotal = db.habits.length * 7; // условно задач в неделю
+        const score = habitsTotal ? Math.round((db.stats.totalDone / habitsTotal) * 100) : 0; // упрощено
+        document.getElementById('disciplineScore').innerText = Math.min(100, score + (db.spentToday < db.dailyBudget ? 10 : 0)) + '%';
+    }
+
+    // --- ФИНАНСЫ ---
+    function logExpense(isRealExpense) {
+        tg.HapticFeedback.impactOccurred('light');
+        if(isRealExpense) {
+            const amount = +prompt("Сумма траты (₽):");
+            if(!amount) return;
             
-        document.getElementById('spentLabel').innerText = `Траты сегодня: ${spentToday} ₽`;
-
-        // Прогресс бар (визуально показывает нагрузку на день)
-        // Если потратил меньше лимита - зеленый, больше - красный
-        const bar = document.getElementById('moneyBar');
-        bar.style.width = '100%';
-        bar.style.backgroundColor = daily > 0 ? '#32d74b' : '#ff453a';
-
+            db.spentToday += amount;
+            db.balance -= amount;
+            
+            db.history.unshift({t: new Date().toLocaleTimeString().slice(0,5), val: amount});
+        } else {
+            tg.showPopup({title:'Супер!', message:'Ты держишься в бюджете.'});
+        }
+        save();
+        updateAllUI();
         renderHistory();
     }
 
-    function askExpense() {
-        tg.showPopup({
-            title: 'Новая трата',
-            message: 'Введи сумму расхода:',
-            buttons: [{id: 'ok', type: 'ok'}]
-        }, () => {
-            // В вебе используем prompt, в нативе лучше свои кнопки
-            const amount = prompt("Сумма (₽):");
-            if (amount && !isNaN(amount)) {
-                addTransaction(parseInt(amount));
-            }
-        });
-    }
-
-    function addTransaction(amount) {
-        state.balance -= amount;
-        state.history.unshift({
-            id: Date.now(),
-            amount: amount,
-            date: new Date().toDateString()
-        });
-        
-        // Обновляем график (сдвигаем данные)
-        state.chartData.shift();
-        state.chartData.push(getDailyLimit()); // Добавляем новый дневной прогноз
-
-        saveData();
-        updateUI();
-        updateChart();
-    }
-
-    // УДАЛЕНИЕ (UNDO)
-    function deleteTransaction(id) {
-        if(!confirm('Удалить эту запись и вернуть деньги?')) return;
-        
-        const index = state.history.findIndex(x => x.id === id);
-        if (index > -1) {
-            state.balance += state.history[index].amount; // Возвращаем деньги
-            state.history.splice(index, 1);
-            saveData();
-            updateUI();
-            updateChart();
-        }
-    }
-
     function renderHistory() {
-        const list = document.getElementById('historyList');
-        list.innerHTML = '';
+        const list = document.getElementById('txList');
+        list.innerHTML = db.history.slice(0,3).map(x => 
+            `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #333; font-size:14px;">
+                <span>Трата</span>
+                <span style="color:#ef4444">-${x.val} ₽</span>
+            </div>`
+        ).join('');
+    }
+
+    // --- ПРИВЫЧКИ ---
+    // Генератор дней недели
+    const daysArr = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+    let selectedDays = [];
+    const ds = document.getElementById('daySelector');
+    daysArr.forEach((d, i) => {
+        const el = document.createElement('div');
+        el.className = 'day-circle';
+        el.innerText = d;
+        el.onclick = () => {
+            el.classList.toggle('selected');
+            const idx = i === 6 ? 0 : i + 1; // JS Date: 0=Sun, but here 0=Pn logic adjustment
+            if(selectedDays.includes(i)) selectedDays = selectedDays.filter(x => x!==i);
+            else selectedDays.push(i);
+        };
+        ds.appendChild(el);
+    });
+
+    function toggleAddHabit() {
+        const b = document.getElementById('addHabitBlock');
+        b.style.display = b.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function saveHabit() {
+        const name = document.getElementById('newHabitName').value;
+        if(!name || !selectedDays.length) return alert('Заполни имя и дни');
         
-        // Берем последние 5 операций
-        state.history.slice(0, 5).forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'history-item';
-            div.innerHTML = `
-                <span>💸 -${item.amount} ₽</span>
-                <button class="del-btn" onclick="deleteTransaction(${item.id})">✖</button>
-            `;
-            list.appendChild(div);
+        db.habits.push({
+            id: Date.now(),
+            name,
+            days: selectedDays, // Индексы 0..6
+            doneDates: []
+        });
+        save();
+        toggleAddHabit();
+        updateAllUI();
+    }
+
+    function renderHabitsList() {
+        const list = document.getElementById('habitsList');
+        list.innerHTML = '';
+        const todayIdx = (new Date().getDay() + 6) % 7; // Делаем Пн=0, Вс=6
+        const todayStr = new Date().toDateString();
+
+        // Фильтр: показываем только те, что сегодня нужны
+        const todayHabits = db.habits.filter(h => h.days.includes(todayIdx));
+
+        if(!todayHabits.length) list.innerHTML = '<div style="text-align:center; color:#555; margin-top:20px">На сегодня задач нет 🎉</div>';
+
+        todayHabits.forEach(h => {
+            const isDone = h.doneDates.includes(todayStr);
+            // Сколько раз выполнено всего
+            const totalCount = h.doneDates.length; 
+            
+            list.innerHTML += `
+            <div class="habit-item ${isDone?'done':''}" onclick="checkHabit(${h.id})">
+                <div>
+                    <div style="font-weight:600">${h.name}</div>
+                    <div style="font-size:12px; color:var(--text-sec)">Выполнено раз: ${totalCount}</div>
+                </div>
+                <div class="checkbox">${isDone?'✔':''}</div>
+            </div>`;
         });
     }
 
-    function markBudgetOK() {
-        tg.showPopup({ title: 'Супер!', message: 'Держишь темп. Так держать!' });
-        tg.HapticFeedback.notificationOccurred('success');
-    }
-
-    function toggleHistory() {
-        const block = document.getElementById('historyBlock');
-        block.style.display = block.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function resetAll() {
-        if(confirm('Сбросить все данные и начать заново?')) {
-            localStorage.removeItem('lifeos_v3');
-            location.reload();
-        }
-    }
-
-    // --- 4. CHART ---
-    let myChart;
-
-    function initChart() {
-        const ctx = document.getElementById('budgetChart').getContext('2d');
+    function checkHabit(id) {
+        const h = db.habits.find(x => x.id === id);
+        const todayStr = new Date().toDateString();
         
-        myChart = new Chart(ctx, {
-            type: 'line',
+        if(h.doneDates.includes(todayStr)) {
+            h.doneDates = h.doneDates.filter(d => d !== todayStr);
+            db.stats.totalDone--;
+        } else {
+            h.doneDates.push(todayStr);
+            db.stats.totalDone++;
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+        save();
+        updateAllUI();
+    }
+
+    // --- CHART & SYSTEM ---
+    function renderChart() {
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
             data: {
-                labels: ['Start', '..', '..', '..', 'Now'],
+                labels: ['Накопления', 'Потрачено', 'Остаток'],
                 datasets: [{
-                    label: 'Дневной лимит',
-                    data: state.chartData,
-                    borderColor: '#32d74b',
-                    backgroundColor: 'rgba(50, 215, 75, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 3
+                    data: [db.savings, db.income - db.balance, db.balance],
+                    backgroundColor: ['#3b82f6', '#ef4444', '#10b981'],
+                    borderWidth: 0
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { display: false },
-                    y: { 
-                        display: false,
-                        grid: { display: false } 
-                    }
-                }
-            }
+            options: { cutout: '70%', plugins: { legend: { position: 'bottom', labels:{color:'#fff'} } } }
         });
     }
 
-    function updateChart() {
-        if(myChart) {
-            myChart.data.datasets[0].data = state.chartData;
-            myChart.update();
-        }
-    }
+    function save() { localStorage.setItem('lifeos_v4_blue', JSON.stringify(db)); }
+    function fullReset() { localStorage.removeItem('lifeos_v4_blue'); location.reload(); }
 
 </script>
 </body>
