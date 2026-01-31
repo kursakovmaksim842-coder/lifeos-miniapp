@@ -3,549 +3,387 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>LifeOS v17 Onyx</title>
+    <title>LifeOS v18 Identity</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* --- CORE VARIABLES & RESET --- */
         :root {
-            --bg-deep: #000000;
-            --surface: rgba(28, 28, 30, 0.65);
-            --surface-highlight: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --primary: #ffffff;
-            --secondary: #8E8E93;
+            --bg: #000000;
+            --surface: #121214;
+            --glass: rgba(255, 255, 255, 0.04);
+            --border: rgba(255, 255, 255, 0.08);
+            --primary: #FFFFFF;
+            --sec: #8E8E93;
             --accent: #0A84FF;
+            --success: #32D74B;
             --gold: #FFD60A;
             --danger: #FF453A;
-            --success: #32D74B;
-            --radius-l: 32px;
-            --radius-m: 24px;
-            --radius-s: 16px;
-            --shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
-            --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+            --radius: 28px;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { 
+            background: var(--bg); color: var(--primary); font-family: 'Inter', sans-serif;
+            margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden;
+        }
+
+        /* --- UI COMPONENTS --- */
+        .container { padding: 20px 24px; max-width: 500px; margin: 0 auto; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; }
+        .sub-text { color: var(--sec); font-size: 13px; font-weight: 500; }
+        .hero-num { font-size: 52px; font-weight: 800; letter-spacing: -2px; margin: 10px 0; }
         
-        body {
-            margin: 0; padding: 0;
-            background-color: var(--bg-deep);
-            color: var(--primary);
-            font-family: var(--font);
-            overflow-x: hidden;
-            min-height: 100vh;
-            padding-bottom: 100px; /* Space for dock */
+        /* Кнопки */
+        .btn-flex { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn { 
+            flex: 1; padding: 18px; border-radius: 20px; border: none; font-size: 16px; font-weight: 600;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
         }
+        .btn-main { background: var(--primary); color: #000; }
+        .btn-sec { background: var(--glass); color: var(--primary); border: 1px solid var(--border); }
+        .btn:active { transform: scale(0.96); opacity: 0.8; }
 
-        /* --- AMBIENT BACKGROUND --- */
-        .ambient-bg {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background: radial-gradient(circle at 50% -20%, #1c1c3d 0%, #000 70%);
-            animation: pulseBg 10s ease-in-out infinite alternate;
+        /* --- HABITS V3 (Identity Based) --- */
+        .habit-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 12px; }
+        .habit-modes { display: flex; gap: 8px; margin-top: 15px; }
+        .mode-btn { 
+            flex: 1; padding: 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+            text-align: center; background: var(--glass); color: var(--sec); border: 1px solid transparent;
         }
-        @keyframes pulseBg {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.1); opacity: 1; }
-        }
+        .mode-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(10,132,255,0.1); }
+        .mode-btn.done { border-color: var(--success); color: var(--success); background: rgba(50,215,75,0.1); }
 
-        /* --- TYPOGRAPHY --- */
-        .h-hero { font-size: 56px; font-weight: 800; letter-spacing: -2px; line-height: 1; margin: 0; }
-        .h-section { font-size: 22px; font-weight: 700; margin-bottom: 16px; padding-left: 4px; }
-        .h-label { font-size: 13px; color: var(--secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-        .h-val { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
-
-        /* --- BENTO GRID SYSTEM --- */
-        .bento-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            padding: 0 20px;
-            margin-bottom: 24px;
-        }
+        /* --- HISTORY HIDDEN --- */
+        #historySection { display: none; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
-        .bento-card {
-            background: var(--surface);
-            backdrop-filter: blur(50px);
-            -webkit-backdrop-filter: blur(50px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-m);
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        .tx-item { 
+            display: flex; justify-content: space-between; align-items: center; padding: 16px;
+            background: var(--glass); border-radius: 18px; margin-bottom: 8px; transition: 0.3s;
         }
-        .bento-card:active { transform: scale(0.96); }
-        .bento-full { grid-column: span 2; }
+        .tx-item.deleting { transform: translateX(100%); opacity: 0; }
 
-        /* --- SPECIAL WIDGETS --- */
-        /* Date Picker Hack: Absolute overlay */
-        .date-trigger-wrapper { position: relative; }
-        .date-input-overlay {
-            position: absolute; inset: 0; width: 100%; height: 100%;
-            opacity: 0; z-index: 10; cursor: pointer;
-        }
-
-        /* Progress Bar inside Card */
-        .progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 10px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 10px; width: 0%; transition: width 1s ease; }
-
-        /* --- BUTTONS --- */
-        .action-row { display: flex; gap: 12px; padding: 0 20px; margin-bottom: 30px; }
-        .btn-action {
-            flex: 1; padding: 18px; border-radius: var(--radius-m);
-            border: none; font-size: 17px; font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: transform 0.1s;
-        }
-        .btn-inc { background: rgba(255,255,255,0.1); color: var(--success); border: 1px solid rgba(50, 215, 75, 0.2); }
-        .btn-exp { background: var(--primary); color: #000; }
-        .btn-action:active { transform: scale(0.95); }
-
-        /* --- LISTS --- */
-        .tx-list { padding: 0 20px; }
-        .tx-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 16px; background: rgba(255,255,255,0.03); border-radius: 20px;
-            margin-bottom: 8px; border: 1px solid transparent;
-            transition: 0.2s;
-        }
-        .tx-icon {
-            width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.1);
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
-            margin-right: 12px;
-        }
-
-        /* --- HABITS (PREMIUM STRIP) --- */
-        .habit-strip {
-            background: var(--surface); backdrop-filter: blur(40px);
-            border-radius: var(--radius-l); padding: 20px; margin: 0 20px 16px 20px;
-            border: 1px solid var(--glass-border);
-        }
-        .week-row { display: flex; justify-content: space-between; margin-top: 15px; }
-        .day-bubble {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: rgba(255,255,255,0.05); color: var(--secondary);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: 700; transition: 0.3s;
-        }
-        .day-bubble.active { background: var(--primary); color: #000; box-shadow: 0 0 15px rgba(255,255,255,0.3); transform: scale(1.1); }
-        .day-bubble.today { border: 1px solid var(--primary); color: var(--primary); }
-
-        /* --- DOCK NAVIGATION --- */
-        .dock {
+        /* --- NAVIGATION --- */
+        .nav {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            width: auto; padding: 6px; background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(40px); border-radius: 100px;
-            border: 1px solid rgba(255,255,255,0.15); display: flex; gap: 8px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6); z-index: 1000;
+            background: rgba(18, 18, 20, 0.8); backdrop-filter: blur(25px);
+            padding: 8px; border-radius: 40px; border: 1px solid var(--border);
+            display: flex; gap: 5px; z-index: 1000;
         }
-        .dock-btn {
-            width: 50px; height: 50px; border-radius: 50%; border: none;
-            background: transparent; color: var(--secondary); font-size: 22px;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .nav-item {
+            padding: 12px 20px; border-radius: 30px; color: var(--sec);
+            font-size: 12px; font-weight: 600; transition: 0.3s; cursor: pointer;
         }
-        .dock-btn.active { background: rgba(255,255,255,0.15); color: #fff; transform: translateY(-5px); }
+        .nav-item.active { background: var(--primary); color: #000; }
 
-        /* --- SETUP MODAL --- */
-        #setupView {
-            position: fixed; inset: 0; z-index: 5000; background: #000;
+        /* --- SETUP/MODALS --- */
+        .modal {
+            position: fixed; inset: 0; background: #000; z-index: 5000;
             display: none; flex-direction: column; padding: 40px 24px;
-            justify-content: flex-end;
         }
         .input-lux {
-            background: rgba(255,255,255,0.1); border: none; color: #fff;
-            padding: 20px; border-radius: 20px; font-size: 18px; width: 100%;
-            margin-bottom: 12px; font-weight: 500;
+            background: var(--surface); border: 1px solid var(--border); color: #fff;
+            padding: 20px; border-radius: 20px; font-size: 18px; width: 100%; margin-bottom: 12px;
         }
 
-        /* --- TABS ANIMATION --- */
-        .tab { display: none; animation: fadeIn 0.4s ease; }
-        .tab.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- PROGRESS VIEW --- */
+        .evolution-text { font-size: 24px; font-weight: 700; line-height: 1.4; margin-bottom: 30px; }
+        .fact-card { padding: 16px; border-left: 2px solid var(--accent); background: var(--glass); margin-bottom: 12px; border-radius: 0 16px 16px 0; }
 
     </style>
 </head>
 <body>
 
-    <div class="ambient-bg"></div>
-
-    <div id="setupView">
-        <h1 class="h-hero" style="font-size:40px; margin-bottom:20px;">Добро<br>пожаловать.</h1>
-        <p style="color:var(--secondary); margin-bottom:40px; font-size:16px;">LifeOS поможет навести порядок в финансах. Настроим систему за минуту.</p>
-        
-        <input type="number" id="s_bal" class="input-lux" placeholder="Текущий баланс">
-        <input type="number" id="s_fix" class="input-lux" placeholder="Обязательные траты (в мес)">
-        <div style="position:relative;">
-            <div style="position:absolute; right:20px; top:20px; color:var(--secondary); pointer-events:none;">📅</div>
-            <input type="text" onfocus="(this.type='date')" id="s_date" class="input-lux" placeholder="Дата следующей ЗП">
+    <div id="view-fin" class="container" style="display: block;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div class="sub-text" id="salaryDateLabel" onclick="triggerSalaryDate()" style="cursor: pointer;">До зарплаты ... ▾</div>
+            <div style="background: var(--glass); padding: 4px 12px; border-radius: 100px; font-size: 11px; color: var(--gold);">PREMIUM IDENTITY</div>
         </div>
-        
-        <button onclick="finishSetup()" class="btn-exp" style="width:100%; padding:20px; margin-top:20px; border-radius:24px; font-size:18px;">Запустить систему</button>
+
+        <div class="sub-text">Доступно на день</div>
+        <div class="hero-num" id="dailyVal">0 ₽</div>
+
+        <div class="btn-flex">
+            <button class="btn btn-sec" onclick="showModal('incomeModal')">+ Доход</button>
+            <button class="btn btn-main" onclick="showModal('expenseModal')">- Трата</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+            <div class="card" style="margin:0; padding: 20px;">
+                <div class="sub-text">Сейф</div>
+                <div style="font-size: 20px; font-weight: 700; margin-top: 5px;" id="safeVal">0 ₽</div>
+            </div>
+            <div class="card" style="margin:0; padding: 20px;" onclick="showModal('fixedModal')">
+                <div class="sub-text">Платежи ▾</div>
+                <div style="font-size: 20px; font-weight: 700; margin-top: 5px;" id="fixedRatio">0 / 0</div>
+            </div>
+        </div>
+
+        <center>
+            <button class="sub-text" style="background:none; border:none; margin-bottom:20px;" onclick="toggleHistory()">Показать историю операций ▾</button>
+        </center>
+
+        <div id="historySection">
+            <div id="txList"></div>
+        </div>
     </div>
 
-    <div id="app" style="display:none;">
+    <div id="view-hab" class="container" style="display: none;">
+        <h2 style="font-size: 32px; font-weight: 800; margin-bottom: 10px;">Сегодня</h2>
+        <p class="sub-text" style="margin-bottom: 30px;">3–5 привычек — это путь к мастерству.</p>
         
-        <div style="padding: 20px 24px 0 24px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-                <div style="font-size:12px; color:var(--secondary); font-weight:600; text-transform:uppercase;">На сегодня</div>
-                <div style="font-size:18px; font-weight:700;" id="userGreeting">Добрый вечер</div>
-            </div>
-            <div id="streakBadge" style="background:rgba(255,214,10,0.15); color:var(--gold); padding:6px 12px; border-radius:100px; font-weight:700; font-size:12px; border:1px solid rgba(255,214,10,0.2);">
-                ★ 1 день
-            </div>
-        </div>
-
-        <div id="tab-fin" class="tab active">
-            <div style="padding: 20px 24px 30px 24px;">
-                <h1 class="h-hero" id="dailyHero">0</h1>
-                <div style="color:var(--secondary); font-weight:500;">доступно на день</div>
-            </div>
-
-            <div class="bento-grid">
-                <div class="bento-card date-trigger-wrapper">
-                    <input type="date" id="dateInputReal" class="date-input-overlay" onchange="updateSalaryDate(this.value)">
-                    <div class="h-label">До зарплаты</div>
-                    <div class="h-val" id="daysLeftVal">0 дн.</div>
-                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="dateBar" style="background:var(--primary)"></div></div>
-                    <div style="font-size:10px; color:var(--secondary); margin-top:5px; text-align:right;">Нажми, чтобы изменить</div>
-                </div>
-
-                <div class="bento-card">
-                    <div class="h-label" style="color:var(--gold)">Сейф</div>
-                    <div class="h-val" id="safeVal">0</div>
-                    <div style="font-size:11px; color:var(--secondary); margin-top:4px;">+20% от доходов</div>
-                </div>
-
-                <div class="bento-card bento-full">
-                    <div style="display:flex; justify-content:space-between;">
-                        <span class="h-label">Обязательные платежи</span>
-                        <span style="font-size:12px; color:var(--secondary);" id="fixRatio">0 / 0</span>
-                    </div>
-                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="fixBar" style="background:var(--accent)"></div></div>
-                    <div style="margin-top:10px; font-size:14px; color:var(--primary); font-weight:600;" id="fixLeft">Осталось внести: 0</div>
-                </div>
-            </div>
-
-            <div class="action-row">
-                <button class="btn-action btn-inc" onclick="addMoney(true)">
-                    <span>↓</span> Пополнить
-                </button>
-                <button class="btn-action btn-exp" onclick="addMoney(false)">
-                    <span>↑</span> Потратить
-                </button>
-            </div>
-
-            <div class="h-section">История</div>
-            <div class="tx-list" id="txList"></div>
-            <div style="height:120px;"></div> </div>
-
-        <div id="tab-hab" class="tab">
-            <div style="padding: 20px 24px;">
-                <h1 class="h-hero" style="font-size:40px;">Трекер</h1>
-                <p style="color:var(--secondary);">Дисциплина определяет результат.</p>
-            </div>
-            
-            <div id="habitsContainer"></div>
-            
-            <div style="padding:20px;">
-                <button onclick="newHabit()" style="width:100%; padding:18px; background:rgba(255,255,255,0.05); border:1px dashed var(--secondary); border-radius:20px; color:var(--secondary);">+ Новая привычка</button>
-            </div>
-        </div>
-
-        <div id="tab-ins" class="tab">
-            <div style="padding: 20px 24px;">
-                <h1 class="h-hero" style="font-size:40px;">Инсайт</h1>
-            </div>
-            <div class="bento-grid">
-                <div class="bento-card bento-full">
-                    <canvas id="chartSpace"></canvas>
-                </div>
-            </div>
-            <div style="padding:20px;">
-                <button onclick="resetAll()" style="color:var(--danger); background:rgba(255,69,58,0.1); width:100%; padding:20px; border-radius:20px; border:none; font-weight:600;">Сброс всех данных</button>
-            </div>
-        </div>
-
+        <div id="habitsList"></div>
+        
+        <button class="btn btn-sec" style="width: 100%; margin-top: 10px;" onclick="addHabit()">+ Добавить привычку</button>
     </div>
 
-    <div class="dock" id="dock">
-        <button class="dock-btn active" onclick="switchTab('fin', this)">●</button>
-        <button class="dock-btn" onclick="switchTab('hab', this)">⋈</button>
-        <button class="dock-btn" onclick="switchTab('ins', this)">∞</button>
+    <div id="view-ins" class="container" style="display: none;">
+        <div class="evolution-text" id="evolutionMsg">Ты создаешь свою лучшую версию.</div>
+        
+        <div class="sub-text" style="margin-bottom: 16px;">Твоя устойчивость</div>
+        <div class="card" style="text-align: center; padding: 40px 20px;">
+            <div style="font-size: 14px; color: var(--sec); margin-bottom: 10px;">РИТМ ЖИЗНИ</div>
+            <div style="font-size: 48px; font-weight: 800; color: var(--accent);" id="rhythmVal">0%</div>
+        </div>
+
+        <div id="factsList"></div>
+
+        <div style="margin-top: 40px; opacity: 0.3;" onclick="resetAll()">
+            <center class="sub-text">Сбросить все данные</center>
+        </div>
+    </div>
+
+    <div id="incomeModal" class="modal">
+        <h2 style="font-size: 32px;">Доход</h2>
+        <input type="number" id="incInput" class="input-lux" placeholder="Сумма ₽">
+        <button class="btn btn-main" onclick="processIncome()">Подтвердить</button>
+        <button class="sub-text" style="background:none; border:none; margin-top:20px;" onclick="hideModals()">Отмена</button>
+    </div>
+
+    <div id="expenseModal" class="modal">
+        <h2 style="font-size: 32px;">Расход</h2>
+        <input type="number" id="expInput" class="input-lux" placeholder="Сумма ₽">
+        <input type="text" id="expDesc" class="input-lux" placeholder="На что?">
+        <button class="btn btn-main" onclick="processExpense()">Записать</button>
+        <button class="sub-text" style="background:none; border:none; margin-top:20px;" onclick="hideModals()">Отмена</button>
+    </div>
+
+    <div id="fixedModal" class="modal">
+        <h2 style="font-size: 24px;">Обязательные траты</h2>
+        <div id="fixedItemsList" style="flex: 1; overflow-y: auto; margin: 20px 0;"></div>
+        <div style="display: flex; gap: 8px;">
+            <input type="text" id="f_name" class="input-lux" style="flex:2;" placeholder="Название">
+            <input type="number" id="f_val" class="input-lux" style="flex:1;" placeholder="₽">
+        </div>
+        <button class="btn btn-main" onclick="addFixedItem()">Добавить статью</button>
+        <button class="btn btn-sec" style="margin-top:10px;" onclick="hideModals()">Закрыть</button>
+    </div>
+
+    <input type="date" id="salaryDatePicker" style="position:fixed; opacity:0; pointer-events:none;">
+
+    <div class="nav">
+        <div class="nav-item active" onclick="switchTab('fin', this)">Финансы</div>
+        <div class="nav-item" onclick="switchTab('hab', this)">Трекер привычек</div>
+        <div class="nav-item" onclick="switchTab('ins', this)">Итоги</div>
     </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // --- DATA STORE ---
     let db = {
-        setup: false, balance: 0, fixedTotal: 0, fixedPaid: 0, savings: 0,
-        salaryDate: null, txs: [], habits: [], streak: 1, lastLogin: ''
+        balance: 0,
+        savings: 0,
+        fixedPaid: 0,
+        salaryDate: new Date(Date.now() + 864000000).toISOString().split('T')[0],
+        txs: [],
+        fixedItems: [], // {id, name, val}
+        habits: [], // {id, name, history: {date: mode}}
+        streak: 1
     };
 
-    // --- INIT ---
     function init() {
-        const saved = localStorage.getItem('lifeos_onyx');
+        const saved = localStorage.getItem('lifeos_v18');
         if(saved) db = JSON.parse(saved);
-
-        if(!db.setup) {
-            document.getElementById('setupView').style.display = 'flex';
-        } else {
-            document.getElementById('app').style.display = 'block';
-            checkStreak();
-            render();
-        }
-        
-        // Greeting
-        const hr = new Date().getHours();
-        const msg = hr < 12 ? "Доброе утро" : hr < 18 ? "Добрый день" : "Добрый вечер";
-        document.getElementById('userGreeting').innerText = msg;
-    }
-
-    function save() {
-        localStorage.setItem('lifeos_onyx', JSON.stringify(db));
         render();
     }
 
-    function finishSetup() {
-        db.balance = +document.getElementById('s_bal').value;
-        db.fixedTotal = +document.getElementById('s_fix').value;
-        db.salaryDate = document.getElementById('s_date').value;
-        if(!db.salaryDate) return alert("Введите дату!");
-        db.setup = true;
-        save();
-        document.getElementById('setupView').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
+    function save() {
+        localStorage.setItem('lifeos_v18', JSON.stringify(db));
+        render();
     }
 
-    // --- ANIMATION ENGINE ---
-    function animateValue(id, start, end, duration) {
-        if (start === end) return;
-        const range = end - start;
-        let current = start;
-        const increment = end > start ? 1 : -1;
-        const stepTime = Math.abs(Math.floor(duration / range));
-        const obj = document.getElementById(id);
-        
-        // Simplified for huge numbers
-        if(Math.abs(range) > 100) {
-            obj.innerText = end.toLocaleString() + ' ₽';
-            return;
-        }
-
-        const timer = setInterval(function() {
-            current += increment;
-            obj.innerText = current.toLocaleString() + ' ₽';
-            if (current == end) clearInterval(timer);
-        }, Math.max(stepTime, 10));
-    }
-
-    // --- CORE LOGIC ---
-    function checkStreak() {
-        const today = new Date().toDateString();
-        if(db.lastLogin !== today) {
-            const yest = new Date(Date.now() - 86400000).toDateString();
-            if(db.lastLogin === yest) db.streak++;
-            else db.streak = 1;
-            db.lastLogin = today;
-            save(); // Quiet save
-        }
-        document.getElementById('streakBadge').innerHTML = `★ ${db.streak} дн`;
-    }
-
-    function updateSalaryDate(val) {
-        if(val) {
-            db.salaryDate = val;
-            save();
-            alert("Дата зарплаты обновлена");
-        }
-    }
-
-    function addMoney(isIncome) {
-        const val = +prompt(isIncome ? "Сумма прихода:" : "Сумма расхода:");
+    // --- FINANCE LOGIC ---
+    function processIncome() {
+        const val = +document.getElementById('incInput').value;
         if(!val) return;
 
-        if(isIncome) {
-            // Smart Split
-            const toSave = Math.floor(val * 0.2); // 20%
-            const needFixed = Math.max(0, db.fixedTotal - db.fixedPaid);
-            const toFixed = Math.min(val - toSave, needFixed);
-            const toBal = val - toSave - toFixed;
+        const toSave = Math.floor(val * 0.2);
+        const totalFixedNeed = db.fixedItems.reduce((a, b) => a + b.val, 0);
+        const neededFixed = Math.max(0, totalFixedNeed - db.fixedPaid);
+        const toFixed = Math.min(val - toSave, neededFixed);
+        const toBal = val - toSave - toFixed;
 
-            db.savings += toSave;
-            db.fixedPaid += toFixed;
-            db.balance += toBal;
+        db.savings += toSave;
+        db.fixedPaid += toFixed;
+        db.balance += toBal;
 
-            db.txs.unshift({
-                id: Date.now(), type: 'inc', val: val, cat: 'Доход',
-                split: { s: toSave, f: toFixed, b: toBal },
-                date: new Date().toLocaleDateString()
-            });
-        } else {
-            const cat = prompt("Категория (Еда, Такси...):") || "Прочее";
-            db.balance -= val;
-            db.txs.unshift({
-                id: Date.now(), type: 'exp', val: val, cat: cat,
-                date: new Date().toLocaleDateString()
-            });
-        }
+        db.txs.unshift({ id: Date.now(), type: 'inc', val, split: {s: toSave, f: toFixed, b: toBal}, date: new Date().toLocaleDateString() });
+        hideModals();
         save();
     }
 
-    function deleteTx(id) {
-        if(!confirm("Удалить операцию?")) return;
-        const idx = db.txs.findIndex(t => t.id === id);
-        if(idx === -1) return;
-        const t = db.txs[idx];
+    function processExpense() {
+        const val = +document.getElementById('expInput').value;
+        const desc = document.getElementById('expDesc').value || 'Расход';
+        if(!val) return;
 
-        if(t.type === 'inc') {
-            db.savings -= t.split.s;
-            db.fixedPaid -= t.split.f;
-            db.balance -= t.split.b;
-        } else {
-            db.balance += t.val;
-        }
-        db.txs.splice(idx, 1);
+        db.balance -= val;
+        db.txs.unshift({ id: Date.now(), type: 'exp', val, desc, date: new Date().toLocaleDateString() });
+        hideModals();
         save();
     }
 
-    // --- RENDERER ---
-    function render() {
-        // Calc Dates
-        const now = new Date(); now.setHours(0,0,0,0);
-        const target = new Date(db.salaryDate); target.setHours(0,0,0,0);
-        let days = Math.ceil((target - now) / (1000 * 3600 * 24));
-        if(days < 1) days = 1;
-
-        // Calc Daily
-        const todayStr = new Date().toLocaleDateString();
-        const spentToday = db.txs.filter(t => t.type === 'exp' && t.date === todayStr).reduce((a,b)=>a+b.val,0);
-        const safeBal = Math.max(0, db.balance);
-        const dailyLimit = Math.floor((safeBal + spentToday) / days);
-        const dailyAvail = dailyLimit - spentToday;
-
-        // Update DOM with Animation logic could be added here, using direct set for stability
-        document.getElementById('dailyHero').innerText = dailyAvail.toLocaleString() + ' ₽';
-        document.getElementById('daysLeftVal').innerText = days + ' дн';
-        document.getElementById('safeVal').innerText = db.savings.toLocaleString() + ' ₽';
-        
-        // Progress Bars
-        document.getElementById('fixRatio').innerText = `${db.fixedPaid.toLocaleString()} / ${db.fixedTotal.toLocaleString()}`;
-        document.getElementById('fixLeft').innerText = `Осталось: ${(db.fixedTotal - db.fixedPaid).toLocaleString()}`;
-        
-        let fixPct = (db.fixedPaid / db.fixedTotal) * 100;
-        if(fixPct > 100) fixPct = 100;
-        document.getElementById('fixBar').style.width = fixPct + '%';
-
-        // Transactions
-        const list = document.getElementById('txList');
-        list.innerHTML = db.txs.slice(0,10).map(t => {
-            const isInc = t.type === 'inc';
-            const icon = isInc ? '↓' : '↗'; 
-            const color = isInc ? 'var(--success)' : '#fff';
-            return `
-            <div class="tx-item" onclick="deleteTx(${t.id})">
-                <div style="display:flex; align-items:center;">
-                    <div class="tx-icon">${icon}</div>
-                    <div>
-                        <div style="font-weight:600; font-size:15px;">${t.cat}</div>
-                        <div style="font-size:11px; color:var(--secondary);">${t.date}</div>
-                    </div>
-                </div>
-                <div style="font-weight:700; color:${color}; font-size:16px;">
-                    ${isInc?'+':'-'}${t.val}
-                </div>
-            </div>`;
-        }).join('');
-
-        renderHabits();
-        renderChart();
-    }
-
-    // --- HABITS ENGINE ---
-    function renderHabits() {
-        const con = document.getElementById('habitsContainer');
-        const todayIdx = (new Date().getDay() + 6) % 7;
-        
-        con.innerHTML = db.habits.map(h => {
-            let bubbles = '';
-            for(let i=0; i<7; i++) {
-                const d = new Date();
-                const diff = d.getDate() - todayIdx + i;
-                const dObj = new Date(d.setDate(diff));
-                const key = dObj.toDateString();
-                const isActive = h.history.includes(key);
-                const isToday = i === todayIdx;
-                const letter = ['П','В','С','Ч','П','С','В'][i];
-
-                bubbles += `<div class="day-bubble ${isActive?'active':''} ${isToday?'today':''}" 
-                            onclick="toggleHabit(${h.id}, '${key}')">${letter}</div>`;
+    function deleteTx(id, el) {
+        el.classList.add('deleting');
+        setTimeout(() => {
+            const idx = db.txs.findIndex(t => t.id === id);
+            const t = db.txs[idx];
+            if(t.type === 'inc') {
+                db.savings -= t.split.s;
+                db.fixedPaid -= t.split.f;
+                db.balance -= t.split.b;
+            } else {
+                db.balance += t.val;
             }
-
-            return `
-            <div class="habit-strip">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:18px; font-weight:700;">${h.name}</span>
-                    <span style="font-size:12px; color:var(--secondary);">Вып: ${h.history.length}</span>
-                </div>
-                <div class="week-row">${bubbles}</div>
-            </div>`;
-        }).join('');
+            db.txs.splice(idx, 1);
+            save();
+        }, 300);
     }
 
-    function toggleHabit(id, key) {
+    // --- FIXED ITEMS ---
+    function addFixedItem() {
+        const name = document.getElementById('f_name').value;
+        const val = +document.getElementById('f_val').value;
+        if(!name || !val) return;
+        db.fixedItems.push({id: Date.now(), name, val});
+        document.getElementById('f_name').value = '';
+        document.getElementById('f_val').value = '';
+        save();
+    }
+
+    function removeFixedItem(id) {
+        db.fixedItems = db.fixedItems.filter(i => i.id !== id);
+        save();
+    }
+
+    // --- HABITS ---
+    function addHabit() {
+        const name = prompt("Что будем делать?");
+        if(name) {
+            db.habits.push({ id: Date.now(), name, history: {} });
+            save();
+        }
+    }
+
+    function logHabit(id, mode) {
         const h = db.habits.find(x => x.id === id);
-        if(h.history.includes(key)) h.history = h.history.filter(k => k !== key);
-        else { h.history.push(key); tg.HapticFeedback.impactOccurred('medium'); }
+        const today = new Date().toLocaleDateString();
+        if(h.history[today] === mode) delete h.history[today];
+        else h.history[today] = mode;
         save();
+        tg.HapticFeedback.impactOccurred('light');
     }
 
-    function newHabit() {
-        const name = prompt("Название привычки:");
-        if(name) { db.habits.push({id:Date.now(), name, history:[]}); save(); }
-    }
-
-    // --- CHART ---
-    function renderChart() {
-        const ctx = document.getElementById('chartSpace').getContext('2d');
-        if(window.myChart) window.myChart.destroy();
+    // --- RENDER ENGINE ---
+    function render() {
+        // Daily
+        const target = new Date(db.salaryDate);
+        const days = Math.ceil((target - new Date()) / (1000 * 3600 * 24)) || 1;
+        document.getElementById('salaryDateLabel').innerText = `До зарплаты ${days} дн. ▾`;
         
-        window.myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
-                datasets: [{
-                    label: 'Баланс',
-                    data: [65, 59, 80, 81, 56, 55, 40], // Placeholder logic
-                    borderColor: '#0A84FF',
-                    backgroundColor: 'rgba(10, 132, 255, 0.1)',
-                    tension: 0.4, fill: true, pointRadius: 0
-                }]
-            },
-            options: {
-                plugins: { legend: { display: false } },
-                scales: { x: { display:false }, y: { display:false } }
-            }
-        });
+        const todayStr = new Date().toLocaleDateString();
+        const spentToday = db.txs.filter(t => t.type === 'exp' && t.date === todayStr).reduce((a,b)=>a+b.val, 0);
+        const daily = Math.floor((Math.max(0, db.balance) + spentToday) / days) - spentToday;
+        document.getElementById('dailyVal').innerText = daily.toLocaleString() + ' ₽';
+        
+        document.getElementById('safeVal').innerText = db.savings.toLocaleString() + ' ₽';
+        const totalFixed = db.fixedItems.reduce((a, b) => a + b.val, 0);
+        document.getElementById('fixedRatio').innerText = `${db.fixedPaid} / ${totalFixed}`;
+
+        // Fixed Items Modal
+        document.getElementById('fixedItemsList').innerHTML = db.fixedItems.map(i => `
+            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border);">
+                <span>${i.name}</span>
+                <span onclick="removeFixedItem(${i.id})" style="color:var(--danger); font-size:12px;">Удалить ${i.val}₽</span>
+            </div>
+        `).join('');
+
+        // Txs
+        document.getElementById('txList').innerHTML = db.txs.map(t => `
+            <div class="tx-item" onclick="deleteTx(${t.id}, this)">
+                <div>
+                    <div style="font-weight:600;">${t.type==='inc'?'Пополнение':t.desc}</div>
+                    <div class="sub-text">${t.date}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-weight:700; color:${t.type==='inc'?'var(--success)':'#fff'}">${t.type==='inc'?'+':'-'}${t.val}</div>
+                    <div style="font-size:9px; color:var(--sec);">Нажми, чтобы удалить</div>
+                </div>
+            </div>
+        `).join('');
+
+        // Habits
+        document.getElementById('habitsList').innerHTML = db.habits.map(h => {
+            const todayMode = h.history[new Date().toLocaleDateString()] || null;
+            return `
+            <div class="habit-card">
+                <div style="font-weight:700;">${h.name}</div>
+                <div class="habit-modes">
+                    <div class="mode-btn ${todayMode==='min'?'active':''}" onclick="logHabit(${h.id}, 'min')">Минимум</div>
+                    <div class="mode-btn ${todayMode==='reg'?'active':''}" onclick="logHabit(${h.id}, 'reg')">Обычно</div>
+                    <div class="mode-btn ${todayMode==='max'?'active':''}" onclick="logHabit(${h.id}, 'max')">Ультра</div>
+                </div>
+            </div>`;
+        }).join('');
+
+        // Insights
+        const totalActions = db.habits.reduce((a, b) => a + Object.keys(b.history).length, 0);
+        const rhythm = Math.min(100, totalActions * 5);
+        document.getElementById('rhythmVal').innerText = rhythm + '%';
+        
+        document.getElementById('factsList').innerHTML = `
+            <div class="fact-card">Твой уровень дисциплины вырос на ${rhythm/10}% за неделю.</div>
+            <div class="fact-card">В сложные дни ты выбираешь "Минимум" — это сохраняет систему.</div>
+            <div class="fact-card">Твой финансовый Сейф пополняется автоматически.</div>
+        `;
     }
 
-    // --- UTILS ---
-    function switchTab(id, el) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById('tab-'+id).classList.add('active');
-        document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+    // --- UI UTILS ---
+    function switchTab(tab, el) {
+        document.querySelectorAll('.container').forEach(v => v.style.display = 'none');
+        document.getElementById('view-'+tab).style.display = 'block';
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
     }
 
-    function resetAll() {
-        if(confirm("ПОЛНЫЙ СБРОС?")) { localStorage.clear(); location.reload(); }
+    function toggleHistory() {
+        const s = document.getElementById('historySection');
+        s.style.display = s.style.display === 'block' ? 'none' : 'block';
     }
 
-    // Start
+    function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function hideModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+    
+    function triggerSalaryDate() {
+        const p = document.getElementById('salaryDatePicker');
+        p.showPicker();
+        p.onchange = (e) => { db.salaryDate = e.target.value; save(); };
+    }
+
+    function resetAll() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
+
     init();
 </script>
 </body>
