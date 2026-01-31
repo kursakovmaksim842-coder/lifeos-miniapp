@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- BASE V13 STYLES --- */
+        /* --- BASE STYLES --- */
         :root {
             --bg: #000000;
             --card: rgba(22, 22, 29, 0.95);
@@ -69,12 +69,6 @@
             50% { transform: scale(1.02); }
             100% { transform: scale(1); }
         }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
 
         .animate-enter { 
             animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
@@ -86,10 +80,6 @@
         
         .pulse-animation {
             animation: pulse 2s infinite;
-        }
-        
-        .shake-animation {
-            animation: shake 0.5s ease;
         }
 
         /* --- UI COMPONENTS --- */
@@ -104,10 +94,6 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             transition: transform 0.2s ease;
         }
-        
-        .glass-panel:hover {
-            transform: translateY(-2px);
-        }
 
         .btn-gold {
             background: linear-gradient(135deg, var(--primary), var(--accent));
@@ -121,11 +107,6 @@
             box-shadow: 0 4px 15px var(--primary-glow);
             transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
             cursor: pointer;
-        }
-        
-        .btn-gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--primary-glow);
         }
         
         .btn-gold:active { 
@@ -167,13 +148,58 @@
             border-color: var(--primary);
         }
 
-        /* --- HEADER & SALARY --- */
+        /* --- HEADER & INFO --- */
         .header-row {
             display: flex; 
             justify-content: space-between; 
             align-items: flex-end;
             margin-top: 10px; 
             margin-bottom: 25px;
+        }
+        
+        .info-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 50%;
+            font-size: 10px;
+            font-weight: 800;
+            margin-left: 6px;
+            cursor: pointer;
+        }
+        
+        .info-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            border: 1px solid var(--glass-border);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 11px;
+            color: var(--text-muted);
+            width: 200px;
+            margin-bottom: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            text-align: left;
+            line-height: 1.4;
+        }
+        
+        .info-container:hover .info-tooltip {
+            opacity: 1;
         }
         
         .date-wrapper { 
@@ -210,96 +236,147 @@
         .salary-badge:hover {
             background: rgba(255,255,255,0.08);
         }
-        
-        .salary-badge .tooltip {
-            position: absolute;
-            bottom: 100%;
-            right: 0;
-            background: var(--card);
-            border: 1px solid var(--glass-border);
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 11px;
-            color: var(--text-muted);
-            width: 200px;
-            margin-bottom: 8px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .salary-badge:hover .tooltip {
-            opacity: 1;
-        }
 
-        /* --- INFO BADGES --- */
-        .info-badge {
-            display: inline-flex;
+        /* --- TASK MANAGER --- */
+        .task-manager-container {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            padding-bottom: 120px;
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .task-date {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        
+        .task-stats {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 800;
+            margin: 30px 0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .add-task-btn {
+            width: 100%;
+            padding: 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 18px;
-            height: 18px;
-            background: var(--primary-light);
-            color: var(--primary);
-            border-radius: 50%;
-            font-size: 10px;
-            font-weight: 800;
-            margin-left: 6px;
-            cursor: help;
-            position: relative;
+            gap: 10px;
+            transition: all 0.2s ease;
+            margin-top: 20px;
         }
         
-        .info-badge .tooltip {
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
+        .add-task-btn:hover {
+            background: rgba(255,255,255,0.08);
+        }
+        
+        .task-item {
             background: var(--card);
             border: 1px solid var(--glass-border);
-            padding: 12px;
-            border-radius: 10px;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            border: 2px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .task-checkbox.completed {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .task-date-small {
             font-size: 11px;
             color: var(--text-muted);
-            width: 200px;
-            margin-bottom: 8px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 1000;
-            text-align: left;
-            line-height: 1.4;
-        }
-        
-        .info-badge:hover .tooltip {
-            opacity: 1;
+            margin-top: 4px;
         }
 
-        /* --- SEGMENTED CONTROL --- */
-        .seg-control {
-            display: flex; 
-            background: rgba(255,255,255,0.05);
-            padding: 4px; 
-            border-radius: 12px; 
-            margin-bottom: 15px;
+        /* --- NOTES SECTION --- */
+        .notes-section {
+            margin-top: 30px;
         }
         
-        .seg-btn {
-            flex: 1; 
-            padding: 8px; 
-            border: none; 
-            background: transparent;
-            color: var(--text-muted); 
-            font-size: 12px; 
+        .notes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .note-card {
+            background: var(--card);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 16px;
+            min-height: 140px;
+        }
+        
+        .note-title {
             font-weight: 700;
-            border-radius: 10px; 
-            transition: 0.3s;
-            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: var(--primary);
         }
         
-        .seg-btn.active { 
-            background: rgba(255,255,255,0.1); 
-            color: white; 
+        .note-content {
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .note-placeholder {
+            color: var(--text-muted);
+            opacity: 0.5;
+            font-style: italic;
         }
 
         /* --- HABIT TRACKER --- */
@@ -307,60 +384,23 @@
             padding: 20px;
             max-width: 500px;
             margin: 0 auto;
+            padding-bottom: 120px;
         }
         
-        /* Fixed Header */
-        .fixed-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: var(--nav-bg);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-bottom: 1px solid var(--glass-border);
-            z-index: 1000;
-            padding: 15px 20px;
+        .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-        
-        .fixed-header h1 {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0;
-        }
-        
-        .fixed-header-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .header-btn {
-            background: none;
-            border: none;
-            color: var(--text-main);
-            font-size: 16px;
-            cursor: pointer;
-            padding: 5px;
-        }
-        
-        /* Period Block */
-        .period-card {
-            margin-top: 70px;
             margin-bottom: 20px;
-            position: relative;
         }
         
-        .period-nav {
+        .month-nav {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            gap: 15px;
         }
         
-        .period-nav-btn {
+        .nav-btn {
             background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
             width: 36px;
@@ -374,37 +414,156 @@
             font-size: 14px;
         }
         
-        .period-center {
+        .current-month {
+            font-size: 18px;
+            font-weight: 700;
+            min-width: 140px;
             text-align: center;
         }
         
-        .period-week {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        
-        .period-dates {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        
-        .period-calendar {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            background: var(--primary);
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+        .view-toggle {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            padding: 4px;
+            border-radius: 12px;
+        }
+        
+        .view-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 10px;
             cursor: pointer;
         }
         
-        /* View Toggle */
-        .view-toggle {
+        .view-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .calendar-grid {
+            margin-bottom: 30px;
+        }
+        
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .weekday {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 5px;
+        }
+        
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .calendar-day.empty {
+            opacity: 0.3;
+            cursor: default;
+        }
+        
+        .calendar-day.today {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .calendar-day.completed {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .habits-list {
+            margin-top: 30px;
+        }
+        
+        .habit-item {
+            background: var(--card);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .habit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .habit-name {
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        .habit-progress {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.05);
+            padding: 4px 8px;
+            border-radius: 10px;
+        }
+        
+        .habit-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        
+        .habit-day {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .habit-day.empty {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+        }
+        
+        .habit-day.completed {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* --- INSIGHTS --- */
+        .insights-container {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            padding-bottom: 120px;
+        }
+        
+        .insights-tabs {
             display: flex;
             background: rgba(255,255,255,0.05);
             padding: 4px;
@@ -412,7 +571,7 @@
             margin-bottom: 20px;
         }
         
-        .view-btn {
+        .insight-tab {
             flex: 1;
             padding: 10px;
             border: none;
@@ -422,147 +581,114 @@
             font-weight: 600;
             border-radius: 10px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
         }
         
-        .view-btn.active {
-            background: var(--primary);
+        .insight-tab.active {
+            background: rgba(255,255,255,0.1);
             color: white;
         }
         
-        /* Total Progress */
-        .total-progress {
-            margin-bottom: 25px;
-        }
-        
-        .progress-bar {
-            height: 8px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: var(--primary);
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-        
-        .progress-text {
+        .time-filter {
             display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-muted);
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
         }
         
-        /* Habit Cards */
-        .habit-card {
-            margin-bottom: 16px;
-        }
-        
-        .habit-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .habit-name {
-            font-weight: 700;
-            font-size: 15px;
-        }
-        
-        .habit-streak {
-            font-size: 12px;
-            color: var(--text-muted);
-            background: rgba(255,255,255,0.05);
-            padding: 4px 8px;
-            border-radius: 10px;
-        }
-        
-        .habit-days-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-        }
-        
-        .habit-day {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .day-label {
-            font-size: 10px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-        
-        .day-circle {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 700;
-            font-size: 12px;
-        }
-        
-        .day-circle.empty {
-            background: rgba(255,255,255,0.05);
-            color: var(--text-muted);
-        }
-        
-        .day-circle.completed {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .day-circle.today {
-            border: 2px solid var(--primary);
-            background: transparent;
-            color: var(--text-main);
-        }
-        
-        .day-circle:hover {
-            transform: scale(1.1);
-        }
-        
-        /* Add Habit Button */
-        .add-habit-btn {
-            width: 100%;
-            padding: 16px;
+        .time-btn {
+            padding: 8px 16px;
             background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            color: var(--text-main);
-            font-size: 15px;
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .time-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .progress-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0% 50%, rgba(255,255,255,0.05) 50% 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            margin-top: 20px;
+            margin: 0 auto 20px;
+            position: relative;
         }
         
-        .add-habit-btn:hover {
-            background: rgba(255,255,255,0.08);
+        .progress-inner {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .progress-value {
+            font-size: 24px;
+            font-weight: 800;
+        }
+        
+        .progress-label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .daily-graph {
+            margin-top: 30px;
         }
 
-        /* --- FINANCE TAB IMPROVEMENTS --- */
+        /* --- FINANCE TAB --- */
+        .finance-container {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            padding-bottom: 120px;
+        }
+        
         .stat-card {
-            position: relative;
             padding: 15px;
             border-radius: 16px;
             margin-bottom: 10px;
@@ -661,130 +787,31 @@
             color: var(--danger);
         }
 
-        /* --- INSIGHTS TAB --- */
-        .insights-container {
-            padding: 20px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        .insights-toggle {
-            display: flex;
+        /* --- SEGMENTED CONTROL --- */
+        .seg-control {
+            display: flex; 
             background: rgba(255,255,255,0.05);
-            padding: 4px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            padding: 4px; 
+            border-radius: 12px; 
+            margin-bottom: 15px;
         }
         
-        .insight-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
+        .seg-btn {
+            flex: 1; 
+            padding: 8px; 
+            border: none; 
             background: transparent;
-            color: var(--text-muted);
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-        
-        .insight-btn.active {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-        
-        .time-filter {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-        }
-        
-        .time-btn {
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            color: var(--text-muted);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        
-        .time-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        
-        .circular-progress {
-            position: relative;
-            width: 180px;
-            height: 180px;
-            margin: 0 auto 30px;
-        }
-        
-        .circular-progress svg {
-            width: 100%;
-            height: 100%;
-            transform: rotate(-90deg);
-        }
-        
-        .circular-progress-bg {
-            fill: none;
-            stroke: rgba(255,255,255,0.05);
-            stroke-width: 8;
-        }
-        
-        .circular-progress-fill {
-            fill: none;
-            stroke: var(--primary);
-            stroke-width: 8;
-            stroke-linecap: round;
-            transition: stroke-dasharray 0.5s ease;
-        }
-        
-        .circular-progress-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-        
-        .circular-progress-value {
-            font-size: 32px;
-            font-weight: 800;
-        }
-        
-        .progress-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-        
-        .progress-stat {
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            padding: 12px;
-        }
-        
-        .progress-stat-label {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-        
-        .progress-stat-value {
-            font-size: 16px;
+            color: var(--text-muted); 
+            font-size: 12px; 
             font-weight: 700;
+            border-radius: 10px; 
+            transition: 0.3s;
+            cursor: pointer;
         }
         
-        .daily-graph {
-            margin-top: 30px;
+        .seg-btn.active { 
+            background: rgba(255,255,255,0.1); 
+            color: white; 
         }
 
         /* --- MODALS --- */
@@ -940,11 +967,6 @@
                 border-radius: 20px;
             }
             
-            .habit-day-circle {
-                width: 32px;
-                height: 32px;
-            }
-            
             .nav-dock {
                 width: 95%;
                 bottom: 15px;
@@ -953,12 +975,6 @@
         }
 
         /* --- UTILITIES --- */
-        .text-center { text-align: center; }
-        .text-muted { color: var(--text-muted); }
-        .mb-10 { margin-bottom: 10px; }
-        .mb-20 { margin-bottom: 20px; }
-        .mt-20 { margin-top: 20px; }
-        .full-width { width: 100%; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -970,16 +986,29 @@
             <h1 style="text-align:center; font-size:28px; font-weight:800; margin-bottom:10px;">LifeOS <span style="color:var(--accent)">Pure</span></h1>
             <p style="text-align:center; color:var(--text-muted); font-size:14px; margin-bottom:30px;">Система чистого контроля</p>
             
-            <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-muted); font-weight: 600;">Текущий баланс (₽)</div>
+            <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-muted); font-weight: 600;">
+                Сколько у вас сейчас денег?
+                <span class="info-container">
+                    <span class="info-icon">i</span>
+                    <div class="info-tooltip">Введите ваш текущий баланс наличными и на картах</div>
+                </span>
+            </div>
             <input type="number" id="initBalance" class="input-mod" placeholder="0">
             
-            <div style="margin: 20px 0 8px; font-size: 12px; color: var(--text-muted); font-weight: 600;">Обязательные траты (₽)</div>
+            <div style="margin: 20px 0 8px; font-size: 12px; color: var(--text-muted); font-weight: 600;">
+                Ежемесячные обязательные платежи (₽)
+                <span class="info-container">
+                    <span class="info-icon">i</span>
+                    <div class="info-tooltip">Сумма, которую вы должны платить каждый месяц (аренда, кредиты, коммуналка)</div>
+                </span>
+            </div>
             <input type="number" id="initFixed" class="input-mod" placeholder="0">
             
             <div style="margin: 20px 0 8px; font-size: 12px; color: var(--text-muted); font-weight: 600;">
                 Дата следующей зарплаты
-                <span class="info-badge">i
-                    <div class="tooltip">Укажите дату, когда вы получите следующую зарплату. Это нужно для расчета дневного бюджета.</div>
+                <span class="info-container">
+                    <span class="info-icon">i</span>
+                    <div class="info-tooltip">Когда вы получите следующую зарплату? Это нужно для расчета дневного бюджета</div>
                 </span>
             </div>
             <input type="date" id="initDate" class="input-mod" style="color-scheme: dark;">
@@ -988,12 +1017,116 @@
         </div>
     </div>
 
+    <!-- Tasks Tab -->
+    <div id="tab-tasks" class="tab-content">
+        <div class="task-manager-container">
+            <div class="task-header animate-enter">
+                <div>
+                    <div style="font-size: 28px; font-weight: 800;">Сегодня</div>
+                    <div class="task-date" id="todayDate">Вс, 1 фев.</div>
+                </div>
+                <button class="nav-icon" style="background:none; border:none; color:var(--text-muted); font-size:20px;">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+
+            <div class="task-stats animate-enter">
+                <div id="taskProgress">0 / 0</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">выполнено</div>
+            </div>
+
+            <div id="tasksList" class="animate-enter"></div>
+
+            <div class="empty-state animate-enter" id="emptyTasksState" style="display: none;">
+                <div class="empty-state-icon">📋</div>
+                <div style="font-weight: 700; margin-bottom: 10px;">На сегодня задач нет</div>
+                <div style="color: var(--text-muted); font-size: 14px;">Добавьте свою первую задачу</div>
+            </div>
+
+            <button onclick="showAddTaskModal()" class="add-task-btn animate-enter">
+                <i class="fas fa-plus"></i>
+                Добавить задачу
+            </button>
+
+            <div class="notes-section animate-enter">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <div style="font-size: 18px; font-weight: 700;">Еще</div>
+                </div>
+                
+                <div class="notes-grid">
+                    <div class="note-card">
+                        <div class="note-title">Заметки</div>
+                        <div class="note-content note-placeholder">Нажмите + чтобы добавить</div>
+                    </div>
+                    <div class="note-card">
+                        <div class="note-title">Урок дня</div>
+                        <div class="note-content note-placeholder">Введите текст...</div>
+                    </div>
+                    <div class="note-card">
+                        <div class="note-title">Благодарность</div>
+                        <div class="note-content note-placeholder">Введите текст...</div>
+                    </div>
+                    <div class="note-card">
+                        <div class="note-title">Мысли</div>
+                        <div class="note-content note-placeholder">Введите текст...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Habits Tab -->
+    <div id="tab-hab" class="tab-content">
+        <div class="habit-tracker-container">
+            <div class="calendar-header animate-enter">
+                <div class="month-nav">
+                    <button class="nav-btn" onclick="changeMonth(-1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="current-month" id="currentMonth">Февраль 2026г.</div>
+                    <button class="nav-btn" onclick="changeMonth(1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="view-toggle">
+                    <button class="view-btn active" onclick="setHabitView('week')">Неделя</button>
+                    <button class="view-btn" onclick="setHabitView('month')">Месяц</button>
+                </div>
+            </div>
+
+            <div class="calendar-grid animate-enter" style="animation-delay: 0.1s;">
+                <div class="calendar-weekdays">
+                    <div class="weekday">ПН</div>
+                    <div class="weekday">ВТ</div>
+                    <div class="weekday">СР</div>
+                    <div class="weekday">ЧТ</div>
+                    <div class="weekday">ПТ</div>
+                    <div class="weekday">СБ</div>
+                    <div class="weekday">ВС</div>
+                </div>
+                <div class="calendar-days" id="calendarDays"></div>
+            </div>
+
+            <div class="habits-list" id="habitsListContainer"></div>
+
+            <button onclick="showAddHabitModal()" class="add-task-btn animate-enter" style="animation-delay: 0.2s;">
+                <i class="fas fa-plus"></i>
+                Добавить привычку
+            </button>
+        </div>
+    </div>
+
     <!-- Finance Tab -->
     <div id="tab-fin" class="tab-content active">
-        <div style="padding: 20px;">
+        <div class="finance-container">
             <div class="header-row animate-enter">
                 <div>
-                    <div class="stat-label" style="margin-bottom:4px;">Бюджет на сегодня</div>
+                    <div class="stat-label" style="margin-bottom:4px;">Бюджет на сегодня
+                        <span class="info-container">
+                            <span class="info-icon">i</span>
+                            <div class="info-tooltip">Сколько можно потратить сегодня. Рассчитывается от остатка до зарплаты</div>
+                        </span>
+                    </div>
                     <div id="dailyVal" style="font-size: 42px; font-weight: 800; letter-spacing: -1px; background: -webkit-linear-gradient(0deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0 ₽</div>
                 </div>
                 
@@ -1002,7 +1135,6 @@
                     <div class="salary-badge">
                         <span>📅</span>
                         <span id="salaryDateText">...</span>
-                        <div class="tooltip">Дата следующей зарплаты. Нажмите, чтобы изменить. До этой даты рассчитывается дневной бюджет.</div>
                     </div>
                 </div>
             </div>
@@ -1011,8 +1143,9 @@
                 <div class="stat-card safe">
                     <div class="stat-label" style="color:var(--gold)">
                         Сейф
-                        <span class="info-badge">i
-                            <div class="tooltip">Автоматические накопления. 20% от каждого дохода откладывается сюда.</div>
+                        <span class="info-container">
+                            <span class="info-icon">i</span>
+                            <div class="info-tooltip">Автоматические накопления. 20% от каждого дохода откладывается сюда</div>
                         </span>
                     </div>
                     <div id="saveVal" style="font-size:20px; font-weight:800;">0 ₽</div>
@@ -1020,8 +1153,9 @@
                 <div class="stat-card fixed">
                     <div class="stat-label" style="color:var(--text-muted)">
                         Обязательные
-                        <span class="info-badge">i
-                            <div class="tooltip">Средства на обязательные платежи (аренда, кредиты, коммуналка). Пополняется из доходов.</div>
+                        <span class="info-container">
+                            <span class="info-icon">i</span>
+                            <div class="info-tooltip">Средства на обязательные платежи (аренда, кредиты, коммуналка). Пополняется из доходов</div>
                         </span>
                     </div>
                     <div id="fixVal" style="font-size:16px; font-weight:800;">0 / 0</div>
@@ -1055,84 +1189,16 @@
         </div>
     </div>
 
-    <!-- Habits Tab -->
-    <div id="tab-hab" class="tab-content">
-        <div class="fixed-header">
-            <button class="header-btn" onclick="switchTab('fin', document.querySelector('.nav-item:nth-child(1)'))">
-                <i class="fas fa-times"></i>
-            </button>
-            <h1>Трекер</h1>
-            <div class="fixed-header-actions">
-                <button class="header-btn">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-            </div>
-        </div>
-
-        <div class="habit-tracker-container">
-            <!-- Period Card -->
-            <div class="glass-panel period-card">
-                <div class="period-nav">
-                    <button class="period-nav-btn" onclick="changeWeek(-1)">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <div class="period-center">
-                        <div class="period-week" id="currentWeek">0 неделя</div>
-                        <div class="period-dates" id="currentDates">1 янв. – 7 янв.</div>
-                    </div>
-                    <button class="period-nav-btn" onclick="changeWeek(1)">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-                <div class="period-calendar" onclick="openCalendar()">
-                    <i class="fas fa-calendar-alt"></i>
-                </div>
-            </div>
-
-            <!-- View Toggle -->
-            <div class="view-toggle">
-                <button class="view-btn active" onclick="setHabitView('week')">
-                    <i class="fas fa-calendar-week"></i>
-                    Неделя
-                </button>
-                <button class="view-btn" onclick="setHabitView('month')">
-                    <i class="fas fa-calendar-alt"></i>
-                    Месяц
-                </button>
-            </div>
-
-            <!-- Total Progress -->
-            <div class="total-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="totalProgressFill" style="width: 0%"></div>
-                </div>
-                <div class="progress-text">
-                    <span>Общий прогресс</span>
-                    <span id="totalProgressText">0 / 0</span>
-                </div>
-            </div>
-
-            <!-- Habits List -->
-            <div id="habitListContainer"></div>
-
-            <!-- Add Habit Button -->
-            <button class="add-habit-btn" onclick="showAddHabitModal()">
-                <i class="fas fa-plus"></i>
-                Добавить привычку
-            </button>
-        </div>
-    </div>
-
     <!-- Insights Tab -->
     <div id="tab-ins" class="tab-content">
         <div class="insights-container">
-            <h1 class="animate-enter" style="margin-bottom:20px; font-size:28px;">Аналитика</h1>
+            <h1 class="animate-enter" style="margin-bottom:10px; font-size:28px;">Аналитика</h1>
             <p class="animate-enter text-muted" style="margin-bottom:30px;">Здесь вы можете посмотреть аналитику ваших задач и привычек</p>
             
-            <!-- Toggle -->
-            <div class="insights-toggle animate-enter">
-                <button class="insight-btn active" onclick="setInsightType('habits', this)">Привычки</button>
-                <button class="insight-btn" onclick="setInsightType('finance', this)">Финансы</button>
+            <!-- Tabs -->
+            <div class="insights-tabs animate-enter">
+                <button class="insight-tab active" onclick="setInsightType('habits', this)">Привычки</button>
+                <button class="insight-tab" onclick="setInsightType('finance', this)">Финансы</button>
             </div>
             
             <!-- Time Filter -->
@@ -1142,43 +1208,76 @@
                 <button class="time-btn" onclick="setTimeFilter('year', this)">Год</button>
             </div>
             
-            <!-- Circular Progress -->
-            <div class="glass-panel animate-enter" style="animation-delay: 0.2s; text-align: center;">
-                <div class="circular-progress">
-                    <svg>
-                        <circle class="circular-progress-bg" cx="90" cy="90" r="80"></circle>
-                        <circle class="circular-progress-fill" cx="90" cy="90" r="80" stroke-dasharray="0 502"></circle>
-                    </svg>
-                    <div class="circular-progress-text">
-                        <div class="circular-progress-value" id="progressValue">0%</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">Выполнено</div>
+            <!-- Habits Insights -->
+            <div id="habitsInsights" class="animate-enter" style="animation-delay: 0.2s;">
+                <div class="progress-container">
+                    <div class="progress-circle">
+                        <div class="progress-inner">
+                            <div class="progress-value" id="habitsProgressValue">0%</div>
+                            <div class="progress-label">Выполнено</div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="progress-stats">
-                    <div class="progress-stat">
-                        <div class="progress-stat-label">Всего задач</div>
-                        <div class="progress-stat-value" id="totalTasks">0</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Всего привычек</div>
+                        <div class="stat-value" id="totalHabits">0</div>
                     </div>
-                    <div class="progress-stat">
-                        <div class="progress-stat-label">Выполнено</div>
-                        <div class="progress-stat-value" id="completedTasks">0</div>
+                    <div class="stat-item">
+                        <div class="stat-label">Выполнено</div>
+                        <div class="stat-value" id="completedHabits">0</div>
                     </div>
-                    <div class="progress-stat">
-                        <div class="progress-stat-label">Невыполнено</div>
-                        <div class="progress-stat-value" id="incompleteTasks">0</div>
+                    <div class="stat-item">
+                        <div class="stat-label">Невыполнено</div>
+                        <div class="stat-value" id="incompleteHabits">0</div>
                     </div>
-                    <div class="progress-stat">
-                        <div class="progress-stat-label">Продуктивный день</div>
-                        <div class="progress-stat-value" id="productiveDay">-</div>
+                    <div class="stat-item">
+                        <div class="stat-label">Продуктивный день</div>
+                        <div class="stat-value" id="productiveDay">-</div>
                     </div>
+                </div>
+                
+                <div class="glass-panel daily-graph">
+                    <div class="stat-label" style="margin-bottom:15px;">Прогресс по дням</div>
+                    <canvas id="habitsChart" height="200"></canvas>
                 </div>
             </div>
             
-            <!-- Daily Graph -->
-            <div class="glass-panel animate-enter daily-graph" style="animation-delay: 0.3s;">
-                <div class="stat-label" style="margin-bottom:15px;">Прогресс по дням</div>
-                <canvas id="dailyChart" height="200"></canvas>
+            <!-- Finance Insights -->
+            <div id="financeInsights" class="animate-enter" style="animation-delay: 0.2s; display: none;">
+                <div class="progress-container">
+                    <div class="progress-circle">
+                        <div class="progress-inner">
+                            <div class="progress-value" id="financeProgressValue">0%</div>
+                            <div class="progress-label">Эффективность</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Доходы</div>
+                        <div class="stat-value" id="totalIncome">0 ₽</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Расходы</div>
+                        <div class="stat-value" id="totalExpenses">0 ₽</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Накоплено</div>
+                        <div class="stat-value" id="totalSavings">0 ₽</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Экономия</div>
+                        <div class="stat-value" id="savingsRate">0%</div>
+                    </div>
+                </div>
+                
+                <div class="glass-panel daily-graph">
+                    <div class="stat-label" style="margin-bottom:15px;">Финансовый поток</div>
+                    <canvas id="financeChart" height="200"></canvas>
+                </div>
             </div>
             
             <button onclick="showResetModal()" class="animate-enter" style="animation-delay: 0.4s; width:100%; padding:15px; border-radius:12px; background:rgba(239, 68, 68, 0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.3); font-weight:700; margin-top:20px; cursor: pointer;">⚠ Сброс системы</button>
@@ -1187,13 +1286,17 @@
 
     <!-- Navigation -->
     <div class="nav-dock">
-        <div class="nav-item active" onclick="switchTab('fin', this)">
-            <span class="nav-icon">❖</span>
-            <span class="nav-label">Сводка</span>
+        <div class="nav-item" onclick="switchTab('tasks', this)">
+            <span class="nav-icon">✓</span>
+            <span class="nav-label">Задачи</span>
         </div>
         <div class="nav-item" onclick="switchTab('hab', this)">
             <span class="nav-icon">⚡</span>
             <span class="nav-label">Привычки</span>
+        </div>
+        <div class="nav-item active" onclick="switchTab('fin', this)">
+            <span class="nav-icon">❖</span>
+            <span class="nav-label">Сводка</span>
         </div>
         <div class="nav-item" onclick="switchTab('ins', this)">
             <span class="nav-icon">⚛</span>
@@ -1230,6 +1333,22 @@
         </div>
     </div>
 
+    <div id="addTaskModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Добавить задачу</div>
+                <button class="modal-close" onclick="closeModal('addTaskModal')">×</button>
+            </div>
+            <div class="modal-form">
+                <input type="text" id="taskName" class="modal-input" placeholder="Введите задачу">
+                <input type="date" id="taskDate" class="modal-input" style="color-scheme: dark;">
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="addTask()" class="btn-gold" style="flex: 1;">Добавить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="addHabitModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
@@ -1239,7 +1358,7 @@
             <div class="modal-form">
                 <input type="text" id="habitName" class="modal-input" placeholder="Название привычки">
                 <div style="font-size: 12px; color: var(--text-muted); text-align: center;">
-                    Привычка будет отслеживаться 7 дней в неделю
+                    Привычка будет отслеживаться каждый день месяца
                 </div>
                 <button onclick="addHabit()" class="btn-gold">Создать привычку</button>
             </div>
@@ -1279,26 +1398,38 @@
         txs: [],
         fixedTasks: [],
         habits: [],
+        tasks: [],
+        notes: {
+            notes: "",
+            lesson: "",
+            gratitude: "",
+            thoughts: ""
+        },
         salaryDate: null,
-        currentWeekOffset: 0, // 0 = текущая неделя, -1 = прошлая и т.д.
-        habitView: 'week',
+        currentMonth: new Date().getMonth(),
+        currentYear: new Date().getFullYear(),
+        habitView: 'month',
         insightType: 'habits',
         timeFilter: 'week'
     };
     
     let currentFilter = 'ALL';
-    let currentWeekStart = null;
 
     // --- CORE FUNCTIONS ---
     function load() {
         const saved = localStorage.getItem('lifeos_v13_pure');
         if(saved) {
-            db = JSON.parse(saved);
+            const parsed = JSON.parse(saved);
+            db = {...db, ...parsed};
+            
             // Initialize new fields if they don't exist
-            if(db.currentWeekOffset === undefined) db.currentWeekOffset = 0;
-            if(db.habitView === undefined) db.habitView = 'week';
-            if(db.insightType === undefined) db.insightType = 'habits';
-            if(db.timeFilter === undefined) db.timeFilter = 'week';
+            if(!db.tasks) db.tasks = [];
+            if(!db.notes) db.notes = { notes: "", lesson: "", gratitude: "", thoughts: "" };
+            if(!db.currentMonth) db.currentMonth = new Date().getMonth();
+            if(!db.currentYear) db.currentYear = new Date().getFullYear();
+            if(!db.habitView) db.habitView = 'month';
+            if(!db.insightType) db.insightType = 'habits';
+            if(!db.timeFilter) db.timeFilter = 'week';
         }
         
         if(db.setup && !db.salaryDate) {
@@ -1314,7 +1445,6 @@
             document.getElementById('initDate').min = today.toISOString().split('T')[0];
         }
         
-        updateCurrentWeek();
         render();
     }
 
@@ -1333,8 +1463,13 @@
             return;
         }
         
-        if(balance < 0 || fixed < 0) {
-            alert("Значения не могут быть отрицательными!");
+        if(isNaN(balance) || balance < 0) {
+            alert("Введите корректную сумму текущего баланса!");
+            return;
+        }
+        
+        if(isNaN(fixed) || fixed < 0) {
+            alert("Введите корректную сумму обязательных платежей!");
             return;
         }
         
@@ -1345,28 +1480,270 @@
         
         save();
         document.getElementById('setupOverlay').style.display = 'none';
+    }
+
+    // --- TASK MANAGEMENT ---
+    function showAddTaskModal() {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
         
-        // Вибрация подтверждения
-        if(tg.HapticFeedback) {
-            tg.HapticFeedback.impactOccurred('medium');
+        document.getElementById('taskDate').valueAsDate = tomorrow;
+        document.getElementById('addTaskModal').classList.remove('hidden');
+        document.getElementById('taskName').focus();
+    }
+
+    function addTask() {
+        const name = document.getElementById('taskName').value;
+        const date = document.getElementById('taskDate').value;
+        
+        if(!name || name.trim() === '') {
+            alert("Введите название задачи!");
+            return;
+        }
+        
+        db.tasks.push({
+            id: Date.now(),
+            name: name.trim(),
+            date: date,
+            completed: false,
+            createdAt: new Date().toISOString()
+        });
+        
+        closeModal('addTaskModal');
+        save();
+    }
+
+    function toggleTask(id) {
+        const task = db.tasks.find(t => t.id === id);
+        if(task) {
+            task.completed = !task.completed;
+            save();
         }
     }
 
-    // --- FINANCE LOGIC ---
-    function smartDistribute(val) {
-        let toSave = Math.floor(val * 0.2);
-        db.savings += toSave;
+    function deleteTask(id) {
+        db.tasks = db.tasks.filter(t => t.id !== id);
+        save();
+    }
+
+    function renderTasks() {
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
         
-        let rem = val - toSave;
-        let needed = db.fixedTarget - db.fixedCurrent;
+        // Update date display
+        const options = { weekday: 'short', day: 'numeric', month: 'short' };
+        document.getElementById('todayDate').textContent = today.toLocaleDateString('ru-RU', options);
         
-        if(needed > 0) {
-            let toFix = Math.min(rem, needed);
-            db.fixedCurrent += toFix;
-            rem -= toFix;
+        // Filter today's tasks
+        const todayTasks = db.tasks.filter(task => task.date === todayStr);
+        const completedCount = todayTasks.filter(t => t.completed).length;
+        const totalCount = todayTasks.length;
+        
+        // Update progress
+        document.getElementById('taskProgress').textContent = `${completedCount} / ${totalCount}`;
+        
+        const tasksList = document.getElementById('tasksList');
+        const emptyState = document.getElementById('emptyTasksState');
+        
+        if(todayTasks.length > 0) {
+            emptyState.style.display = 'none';
+            tasksList.innerHTML = todayTasks.map(task => `
+                <div class="task-item animate-enter">
+                    <div class="task-checkbox ${task.completed ? 'completed' : ''}" 
+                         onclick="toggleTask(${task.id})">
+                        ${task.completed ? '✓' : ''}
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">${task.name}</div>
+                        <div class="task-date-small">Сегодня</div>
+                    </div>
+                    <button onclick="deleteTask(${task.id})" class="tx-delete">✕</button>
+                </div>
+            `).join('');
+        } else {
+            tasksList.innerHTML = '';
+            emptyState.style.display = 'block';
+        }
+    }
+
+    // --- HABIT MANAGEMENT ---
+    function changeMonth(delta) {
+        let newMonth = db.currentMonth + delta;
+        let newYear = db.currentYear;
+        
+        if(newMonth < 0) {
+            newMonth = 11;
+            newYear--;
+        } else if(newMonth > 11) {
+            newMonth = 0;
+            newYear++;
         }
         
-        db.balance += rem;
+        db.currentMonth = newMonth;
+        db.currentYear = newYear;
+        renderHabits();
+    }
+
+    function setHabitView(view) {
+        db.habitView = view;
+        document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        renderHabits();
+    }
+
+    function showAddHabitModal() {
+        document.getElementById('addHabitModal').classList.remove('hidden');
+        document.getElementById('habitName').focus();
+    }
+
+    function addHabit() {
+        const name = document.getElementById('habitName').value;
+        if(!name || name.trim() === '') {
+            alert("Введите название привычки!");
+            return;
+        }
+        
+        db.habits.push({
+            id: Date.now(),
+            name: name.trim(),
+            completedDays: [],
+            goal: 30, // По умолчанию цель - 30 дней в месяц
+            createdAt: new Date().toISOString()
+        });
+        
+        closeModal('addHabitModal');
+        save();
+    }
+
+    function toggleHabitDay(habitId, dateStr) {
+        const habit = db.habits.find(h => h.id === habitId);
+        if(!habit) return;
+        
+        const index = habit.completedDays.indexOf(dateStr);
+        if(index === -1) {
+            habit.completedDays.push(dateStr);
+        } else {
+            habit.completedDays.splice(index, 1);
+        }
+        
+        save();
+    }
+
+    function getDaysInMonth(year, month) {
+        return new Date(year, month + 1, 0).getDate();
+    }
+
+    function renderHabits() {
+        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+        document.getElementById('currentMonth').textContent = `${monthNames[db.currentMonth]} ${db.currentYear}г.`;
+        
+        // Render calendar days
+        const firstDay = new Date(db.currentYear, db.currentMonth, 1);
+        const startingDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1; // Monday = 0
+        const daysInMonth = getDaysInMonth(db.currentYear, db.currentMonth);
+        const today = new Date();
+        
+        let calendarHTML = '';
+        
+        // Empty days at start
+        for(let i = 0; i < startingDay; i++) {
+            calendarHTML += `<div class="calendar-day empty"></div>`;
+        }
+        
+        // Days of the month
+        for(let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(db.currentYear, db.currentMonth, day);
+            const dateStr = date.toISOString().split('T')[0];
+            const isToday = date.toDateString() === today.toDateString();
+            
+            // Check if any habit is completed for this day
+            let isCompleted = false;
+            db.habits.forEach(habit => {
+                if(habit.completedDays.includes(dateStr)) {
+                    isCompleted = true;
+                }
+            });
+            
+            let dayClass = 'calendar-day';
+            if(isToday) dayClass += ' today';
+            if(isCompleted) dayClass += ' completed';
+            
+            calendarHTML += `<div class="${dayClass}">${day}</div>`;
+        }
+        
+        document.getElementById('calendarDays').innerHTML = calendarHTML;
+        
+        // Render habits list
+        const habitsContainer = document.getElementById('habitsListContainer');
+        
+        if(db.habits.length > 0) {
+            habitsContainer.innerHTML = db.habits.map((habit, index) => {
+                // Calculate progress for current month
+                const monthStart = new Date(db.currentYear, db.currentMonth, 1).toISOString().split('T')[0];
+                const monthEnd = new Date(db.currentYear, db.currentMonth + 1, 0).toISOString().split('T')[0];
+                
+                const monthCompleted = habit.completedDays.filter(date => {
+                    return date >= monthStart && date <= monthEnd;
+                }).length;
+                
+                // Generate habit calendar for current month
+                let habitCalendarHTML = '';
+                const daysInMonth = getDaysInMonth(db.currentYear, db.currentMonth);
+                
+                for(let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(db.currentYear, db.currentMonth, day);
+                    const dateStr = date.toISOString().split('T')[0];
+                    const isCompleted = habit.completedDays.includes(dateStr);
+                    
+                    let dayClass = 'habit-day';
+                    if(isCompleted) {
+                        dayClass += ' completed';
+                    } else {
+                        dayClass += ' empty';
+                    }
+                    
+                    habitCalendarHTML += `<div class="${dayClass}" 
+                                           onclick="toggleHabitDay(${habit.id}, '${dateStr}')">${day}</div>`;
+                }
+                
+                return `
+                    <div class="habit-item animate-enter" style="animation-delay: ${index * 0.05}s">
+                        <div class="habit-header">
+                            <div class="habit-name">${habit.name}</div>
+                            <div class="habit-progress">${monthCompleted}/${daysInMonth}</div>
+                        </div>
+                        <div class="habit-calendar">
+                            ${habitCalendarHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            habitsContainer.innerHTML = `
+                <div class="empty-state animate-enter">
+                    <div class="empty-state-icon">📋</div>
+                    <div style="font-weight: 700; margin-bottom: 10px;">Нет привычек</div>
+                    <div style="color: var(--text-muted); font-size: 14px;">Добавьте свою первую привычку</div>
+                </div>
+            `;
+        }
+    }
+
+    // --- FINANCE MANAGEMENT ---
+    function smartDistribute(val) {
+        let toSave = Math.floor(val * 0.2);
+        let rem = val - toSave;
+        let needed = db.fixedTarget - db.fixedCurrent;
+        let toFix = 0;
+        
+        if(needed > 0) { 
+            toFix = Math.min(rem, needed); 
+            rem -= toFix; 
+        }
+        
+        let toBalance = rem;
+        return { toSave, toFix, toBalance };
     }
 
     function showIncomeModal() {
@@ -1388,31 +1765,35 @@
             return;
         }
         
-        smartDistribute(amount);
+        const distribution = smartDistribute(amount);
         
-        db.txs.unshift({
+        // Save distribution to transaction for correct deletion
+        const tx = {
             id: Date.now(),
             val: amount,
             type: 'inc',
             cat: category,
             t: new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'}),
             date: new Date().toLocaleDateString('ru-RU'),
-            fullDate: new Date().toISOString()
-        });
+            fullDate: new Date().toISOString(),
+            distribution: distribution // Save distribution data
+        };
+        
+        // Apply distribution
+        db.savings += distribution.toSave;
+        db.fixedCurrent += distribution.toFix;
+        db.balance += distribution.toBalance;
+        
+        db.txs.unshift(tx);
         
         closeModal('incomeModal');
         save();
         
-        // Анимация успеха
+        // Animation
         document.getElementById('saveVal').classList.add('pulse-animation');
         setTimeout(() => {
             document.getElementById('saveVal').classList.remove('pulse-animation');
         }, 1000);
-        
-        // Вибрация
-        if(tg.HapticFeedback) {
-            tg.HapticFeedback.impactOccurred('light');
-        }
     }
 
     function addExpense() {
@@ -1426,10 +1807,6 @@
         
         if(amount > db.balance) {
             alert("Недостаточно средств!");
-            document.getElementById('expenseAmount').classList.add('shake-animation');
-            setTimeout(() => {
-                document.getElementById('expenseAmount').classList.remove('shake-animation');
-            }, 500);
             return;
         }
         
@@ -1447,11 +1824,6 @@
         
         closeModal('expenseModal');
         save();
-        
-        // Вибрация
-        if(tg.HapticFeedback) {
-            tg.HapticFeedback.impactOccurred('light');
-        }
     }
 
     function deleteTx(id) {
@@ -1462,20 +1834,19 @@
             setTimeout(() => {
                 const tx = db.txs.find(x => x.id === id);
                 if(tx) {
-                    if(tx.type === 'exp') {
+                    // Correctly reverse distribution for income transactions
+                    if(tx.type === 'inc' && tx.distribution) {
+                        db.savings -= tx.distribution.toSave;
+                        db.fixedCurrent -= tx.distribution.toFix;
+                        db.balance -= tx.distribution.toBalance;
+                    } else if(tx.type === 'exp') {
                         db.balance += tx.val;
-                    } else {
-                        db.balance -= tx.val;
                     }
+                    
                     db.txs = db.txs.filter(x => x.id !== id);
                     save();
                 }
             }, 300);
-            
-            // Вибрация
-            if(tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('light');
-            }
         }
     }
 
@@ -1490,7 +1861,7 @@
         currentFilter = type;
         document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
-        render();
+        renderFinance();
     }
 
     function addFixedTask() {
@@ -1530,117 +1901,250 @@
         }
     }
 
-    // --- HABITS LOGIC ---
-    function updateCurrentWeek() {
-        const now = new Date();
-        const dayOfWeek = now.getDay();
-        const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-        
-        currentWeekStart = new Date(now);
-        currentWeekStart.setDate(now.getDate() + diffToMonday + (db.currentWeekOffset * 7));
-        currentWeekStart.setHours(0, 0, 0, 0);
-    }
-
-    function getWeekDates() {
-        if(!currentWeekStart) updateCurrentWeek();
-        
-        const weekDates = [];
-        for(let i = 0; i < 7; i++) {
-            const date = new Date(currentWeekStart);
-            date.setDate(currentWeekStart.getDate() + i);
-            weekDates.push(date);
-        }
-        return weekDates;
-    }
-
-    function formatDate(date) {
-        return date.toISOString().split('T')[0];
-    }
-
-    function changeWeek(delta) {
-        db.currentWeekOffset += delta;
-        updateCurrentWeek();
-        renderHabits();
-    }
-
-    function setHabitView(view) {
-        db.habitView = view;
-        document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-        renderHabits();
-    }
-
-    function showAddHabitModal() {
-        document.getElementById('addHabitModal').classList.remove('hidden');
-        document.getElementById('habitName').focus();
-    }
-
-    function addHabit() {
-        const name = document.getElementById('habitName').value;
-        if(!name || name.trim() === '') {
-            alert("Введите название привычки!");
-            return;
-        }
-        
-        db.habits.push({
-            id: Date.now(),
-            name: name.trim(),
-            done: [],
-            createdAt: new Date().toISOString()
-        });
-        
-        closeModal('addHabitModal');
-        save();
-        
-        // Вибрация
-        if(tg.HapticFeedback) {
-            tg.HapticFeedback.impactOccurred('light');
-        }
-    }
-
-    function toggleHabit(habitId, date) {
-        const habit = db.habits.find(h => h.id === habitId);
-        if(!habit) return;
-        
-        const dateStr = formatDate(date);
-        const index = habit.done.indexOf(dateStr);
-        
-        if(index === -1) {
-            habit.done.push(dateStr);
-        } else {
-            habit.done.splice(index, 1);
-        }
-        
-        // Вибрация
-        if(tg.HapticFeedback) {
-            tg.HapticFeedback.impactOccurred('light');
-        }
-        
-        save();
-    }
-
-    // --- INSIGHTS LOGIC ---
+    // --- INSIGHTS ---
     function setInsightType(type, el) {
         db.insightType = type;
-        document.querySelectorAll('.insight-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.insight-tab').forEach(btn => btn.classList.remove('active'));
         el.classList.add('active');
-        renderInsights();
+        
+        if(type === 'habits') {
+            document.getElementById('habitsInsights').style.display = 'block';
+            document.getElementById('financeInsights').style.display = 'none';
+            renderHabitsInsights();
+        } else {
+            document.getElementById('habitsInsights').style.display = 'none';
+            document.getElementById('financeInsights').style.display = 'block';
+            renderFinanceInsights();
+        }
     }
 
     function setTimeFilter(filter, el) {
         db.timeFilter = filter;
         document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
         el.classList.add('active');
-        renderInsights();
+        
+        if(db.insightType === 'habits') {
+            renderHabitsInsights();
+        } else {
+            renderFinanceInsights();
+        }
+    }
+
+    function renderHabitsInsights() {
+        let habitsData = db.habits;
+        let timeData = [];
+        
+        // Filter by time
+        const now = new Date();
+        let startDate;
+        
+        switch(db.timeFilter) {
+            case 'week':
+                startDate = new Date(now);
+                startDate.setDate(now.getDate() - 7);
+                break;
+            case 'month':
+                startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                break;
+            case 'year':
+                startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+                break;
+        }
+        
+        // Calculate statistics
+        let totalPossible = 0;
+        let totalCompleted = 0;
+        let dayStats = Array(7).fill(0).map(() => ({ completed: 0, total: 0 }));
+        
+        habitsData.forEach(habit => {
+            habit.completedDays.forEach(dateStr => {
+                const date = new Date(dateStr);
+                if(date >= startDate) {
+                    totalPossible++;
+                    totalCompleted++;
+                    const dayIndex = date.getDay();
+                    dayStats[dayIndex].completed++;
+                    dayStats[dayIndex].total++;
+                }
+            });
+        });
+        
+        // Calculate progress percentage
+        const progressPercent = totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0;
+        document.getElementById('habitsProgressValue').textContent = `${progressPercent}%`;
+        
+        // Update stats
+        document.getElementById('totalHabits').textContent = habitsData.length;
+        document.getElementById('completedHabits').textContent = totalCompleted;
+        document.getElementById('incompleteHabits').textContent = Math.max(0, totalPossible - totalCompleted);
+        
+        // Find most productive day
+        let maxCompletion = 0;
+        let productiveDayIndex = -1;
+        const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+        
+        dayStats.forEach((stat, index) => {
+            if(stat.total > 0) {
+                const completionRate = stat.completed / stat.total;
+                if(completionRate > maxCompletion) {
+                    maxCompletion = completionRate;
+                    productiveDayIndex = index;
+                }
+            }
+        });
+        
+        document.getElementById('productiveDay').textContent = productiveDayIndex >= 0 ? dayNames[productiveDayIndex] : '-';
+        
+        // Update chart
+        const ctx = document.getElementById('habitsChart').getContext('2d');
+        if(window.habitsChart) window.habitsChart.destroy();
+        
+        const labels = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+        const completedData = dayStats.slice(1).concat(dayStats[0]).map(stat => stat.completed);
+        
+        window.habitsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Выполнено',
+                    data: completedData,
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+    }
+
+    function renderFinanceInsights() {
+        let transactions = db.txs;
+        let startDate;
+        const now = new Date();
+        
+        // Filter by time period
+        switch(db.timeFilter) {
+            case 'week':
+                startDate = new Date(now);
+                startDate.setDate(now.getDate() - 7);
+                break;
+            case 'month':
+                startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                break;
+            case 'year':
+                startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+                break;
+        }
+        
+        const filteredTxs = transactions.filter(tx => {
+            const txDate = new Date(tx.fullDate || tx.date);
+            return txDate >= startDate;
+        });
+        
+        // Calculate statistics
+        const income = filteredTxs
+            .filter(tx => tx.type === 'inc')
+            .reduce((sum, tx) => sum + tx.val, 0);
+        
+        const expenses = filteredTxs
+            .filter(tx => tx.type === 'exp')
+            .reduce((sum, tx) => sum + tx.val, 0);
+        
+        const savingsRate = income > 0 ? Math.round((db.savings / income) * 100) : 0;
+        
+        // Update display
+        document.getElementById('financeProgressValue').textContent = `${savingsRate}%`;
+        document.getElementById('totalIncome').textContent = `${income.toLocaleString('ru-RU')} ₽`;
+        document.getElementById('totalExpenses').textContent = `${expenses.toLocaleString('ru-RU')} ₽`;
+        document.getElementById('totalSavings').textContent = `${db.savings.toLocaleString('ru-RU')} ₽`;
+        document.getElementById('savingsRate').textContent = `${savingsRate}%`;
+        
+        // Update chart - group by day for week, by month for year
+        const ctx = document.getElementById('financeChart').getContext('2d');
+        if(window.financeChart) window.financeChart.destroy();
+        
+        let labels, incomeData, expenseData;
+        
+        if(db.timeFilter === 'week') {
+            labels = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+            incomeData = Array(7).fill(0);
+            expenseData = Array(7).fill(0);
+            
+            filteredTxs.forEach(tx => {
+                const txDate = new Date(tx.fullDate || tx.date);
+                const dayIndex = txDate.getDay();
+                const adjustedIndex = dayIndex === 0 ? 6 : dayIndex - 1;
+                
+                if(tx.type === 'inc') {
+                    incomeData[adjustedIndex] += tx.val;
+                } else {
+                    expenseData[adjustedIndex] += tx.val;
+                }
+            });
+        } else {
+            // For month and year, show income vs expenses
+            labels = ['Доход', 'Расход'];
+            incomeData = [income, 0];
+            expenseData = [0, expenses];
+        }
+        
+        window.financeChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Доходы',
+                        data: incomeData,
+                        backgroundColor: '#10b981',
+                        borderRadius: 6,
+                    },
+                    {
+                        label: 'Расходы',
+                        data: expenseData,
+                        backgroundColor: '#ef4444',
+                        borderRadius: 6,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'top' } },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: 'rgba(255,255,255,0.05)' }, 
+                        ticks: { color: '#94a3b8' }
+                    },
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { color: '#94a3b8' }
+                    }
+                }
+            }
+        });
     }
 
     // --- RENDER FUNCTIONS ---
     function render() {
         if(!db.setup) return;
         
-        renderFinance();
+        renderTasks();
         renderHabits();
-        renderInsights();
+        renderFinance();
+        
+        if(db.insightType === 'habits') {
+            renderHabitsInsights();
+        } else {
+            renderFinanceInsights();
+        }
     }
 
     function renderFinance() {
@@ -1657,8 +2161,8 @@
         
         const todayStr = new Date().toLocaleDateString('ru-RU');
         const spentToday = db.txs
-            .filter(t => t.date === todayStr && t.type === 'exp')
-            .reduce((acc, t) => acc + t.val, 0);
+            .filter(tx => tx.date === todayStr && tx.type === 'exp')
+            .reduce((acc, tx) => acc + tx.val, 0);
         
         const virtualBalance = db.balance + spentToday;
         const dailyLimit = Math.floor(virtualBalance / daysRemaining);
@@ -1666,10 +2170,10 @@
         
         // Update header
         const dateFormatted = targetDate.toLocaleDateString('ru-RU', {day: 'numeric', month: 'long'});
-        document.getElementById('salaryDateText').innerText = `до ${dateFormatted} (${daysRemaining} дн)`;
-        document.getElementById('dailyVal').innerText = `${Math.floor(availableNow).toLocaleString('ru-RU')} ₽`;
-        document.getElementById('saveVal').innerText = `${db.savings.toLocaleString('ru-RU')} ₽`;
-        document.getElementById('fixVal').innerText = `${db.fixedCurrent.toLocaleString('ru-RU')} / ${db.fixedTarget.toLocaleString('ru-RU')} ₽`;
+        document.getElementById('salaryDateText').textContent = `до ${dateFormatted} (${daysRemaining} дн)`;
+        document.getElementById('dailyVal').textContent = `${Math.floor(availableNow).toLocaleString('ru-RU')} ₽`;
+        document.getElementById('saveVal').textContent = `${db.savings.toLocaleString('ru-RU')} ₽`;
+        document.getElementById('fixVal').textContent = `${db.fixedCurrent.toLocaleString('ru-RU')} / ${db.fixedTarget.toLocaleString('ru-RU')} ₽`;
         
         // Fixed tasks
         const fixedTasksList = document.getElementById('fixedTasksList');
@@ -1718,283 +2222,6 @@
         }
     }
 
-    function renderHabits() {
-        if(!currentWeekStart) updateCurrentWeek();
-        
-        const weekDates = getWeekDates();
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        // Update week info
-        const weekNumber = Math.ceil((currentWeekStart.getDate() + (currentWeekStart.getDay() || 7) - 1) / 7);
-        document.getElementById('currentWeek').textContent = `${weekNumber} неделя`;
-        
-        const startDate = weekDates[0];
-        const endDate = weekDates[6];
-        const startStr = startDate.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short'});
-        const endStr = endDate.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short'});
-        document.getElementById('currentDates').textContent = `${startStr} – ${endStr}`;
-        
-        // Calculate total progress
-        let totalPossible = db.habits.length * 7;
-        let totalCompleted = 0;
-        
-        db.habits.forEach(habit => {
-            weekDates.forEach(date => {
-                const dateStr = formatDate(date);
-                if(habit.done.includes(dateStr)) {
-                    totalCompleted++;
-                }
-            });
-        });
-        
-        const progressPercent = totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0;
-        document.getElementById('totalProgressFill').style.width = `${progressPercent}%`;
-        document.getElementById('totalProgressText').textContent = `${totalCompleted} / ${totalPossible}`;
-        
-        // Render habits
-        const habitList = document.getElementById('habitListContainer');
-        
-        if(db.habits.length > 0) {
-            habitList.innerHTML = db.habits.map((habit, index) => {
-                const dayDots = weekDates.map((date, dayIndex) => {
-                    const dateStr = formatDate(date);
-                    const isToday = date.toDateString() === today.toDateString();
-                    const isCompleted = habit.done.includes(dateStr);
-                    const isPast = date < today;
-                    
-                    let dayClass = 'day-circle empty';
-                    if(isCompleted) dayClass = 'day-circle completed';
-                    if(isToday && !isCompleted) dayClass = 'day-circle today';
-                    
-                    const dayLabels = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
-                    
-                    return `
-                        <div class="habit-day">
-                            <div class="day-label">${dayLabels[dayIndex]}</div>
-                            <div class="${dayClass}" 
-                                 onclick="toggleHabit(${habit.id}, new Date(${date.getTime()}))"
-                                 ${!isPast ? 'style="cursor: not-allowed; opacity: 0.5;"' : ''}>
-                                ${isCompleted ? '✓' : date.getDate()}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                
-                // Calculate habit completion for the week
-                const habitCompleted = weekDates.filter(date => 
-                    habit.done.includes(formatDate(date))
-                ).length;
-                
-                return `
-                    <div class="glass-panel habit-card animate-enter" style="animation-delay: ${index * 0.05}s">
-                        <div class="habit-card-header">
-                            <div class="habit-name">${habit.name}</div>
-                            <div class="habit-streak">${habitCompleted}/7</div>
-                        </div>
-                        <div class="habit-days-grid">
-                            ${dayDots}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        } else {
-            habitList.innerHTML = `
-                <div class="glass-panel animate-enter" style="text-align: center; padding: 40px 20px;">
-                    <div style="font-size: 48px; margin-bottom: 15px;">📋</div>
-                    <div style="font-weight: 700; margin-bottom: 10px;">Нет привычек</div>
-                    <div style="color: var(--text-muted); font-size: 14px;">Добавьте свою первую привычку для отслеживания</div>
-                </div>
-            `;
-        }
-    }
-
-    function renderInsights() {
-        if(db.insightType === 'habits') {
-            renderHabitInsights();
-        } else {
-            renderFinanceInsights();
-        }
-    }
-
-    function renderHabitInsights() {
-        // Calculate habit statistics
-        const totalHabits = db.habits.length;
-        let totalCompleted = 0;
-        let totalPossible = 0;
-        
-        // Calculate for current week
-        const weekDates = getWeekDates();
-        const dayStats = Array(7).fill(0).map(() => ({ completed: 0, total: 0 }));
-        
-        db.habits.forEach(habit => {
-            weekDates.forEach((date, dayIndex) => {
-                totalPossible++;
-                const dateStr = formatDate(date);
-                if(habit.done.includes(dateStr)) {
-                    totalCompleted++;
-                    dayStats[dayIndex].completed++;
-                }
-                dayStats[dayIndex].total++;
-            });
-        });
-        
-        const progressPercent = totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0;
-        
-        // Update circular progress
-        document.getElementById('progressValue').textContent = `${progressPercent}%`;
-        const circle = document.querySelector('.circular-progress-fill');
-        const circumference = 2 * Math.PI * 80;
-        const dashOffset = circumference - (progressPercent / 100) * circumference;
-        circle.style.strokeDasharray = `${circumference - dashOffset} ${dashOffset}`;
-        
-        // Update stats
-        document.getElementById('totalTasks').textContent = totalPossible;
-        document.getElementById('completedTasks').textContent = totalCompleted;
-        document.getElementById('incompleteTasks').textContent = totalPossible - totalCompleted;
-        
-        // Find most productive day
-        let maxCompletion = 0;
-        let productiveDayIndex = -1;
-        dayStats.forEach((stat, index) => {
-            if(stat.total > 0) {
-                const completionRate = stat.completed / stat.total;
-                if(completionRate > maxCompletion) {
-                    maxCompletion = completionRate;
-                    productiveDayIndex = index;
-                }
-            }
-        });
-        
-        const dayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
-        document.getElementById('productiveDay').textContent = productiveDayIndex >= 0 ? dayNames[productiveDayIndex] : '-';
-        
-        // Update daily chart
-        const ctx = document.getElementById('dailyChart').getContext('2d');
-        if(window.dailyChart) window.dailyChart.destroy();
-        
-        window.dailyChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'],
-                datasets: [{
-                    label: 'Выполнено',
-                    data: dayStats.map(stat => stat.completed),
-                    backgroundColor: '#3b82f6',
-                    borderRadius: 6,
-                    borderSkipped: false,
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(255,255,255,0.05)' },
-                        ticks: { color: '#94a3b8', font: { size: 11 } }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { color: '#94a3b8', font: { size: 11 } }
-                    }
-                }
-            }
-        });
-    }
-
-    function renderFinanceInsights() {
-        // Calculate finance statistics
-        const now = new Date();
-        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-        const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-        
-        const monthTransactions = db.txs.filter(tx => {
-            const txDate = new Date(tx.fullDate || tx.date);
-            return txDate >= monthStart && txDate <= monthEnd;
-        });
-        
-        const income = monthTransactions
-            .filter(tx => tx.type === 'inc')
-            .reduce((sum, tx) => sum + tx.val, 0);
-        
-        const expenses = monthTransactions
-            .filter(tx => tx.type === 'exp')
-            .reduce((sum, tx) => sum + tx.val, 0);
-        
-        const savingsRate = income > 0 ? Math.round((db.savings / income) * 100) : 0;
-        
-        // Update circular progress
-        document.getElementById('progressValue').textContent = `${savingsRate}%`;
-        const circle = document.querySelector('.circular-progress-fill');
-        const circumference = 2 * Math.PI * 80;
-        const dashOffset = circumference - (savingsRate / 100) * circumference;
-        circle.style.strokeDasharray = `${circumference - dashOffset} ${dashOffset}`;
-        
-        // Update stats
-        document.getElementById('totalTasks').textContent = monthTransactions.length;
-        document.getElementById('completedTasks').textContent = `${income.toLocaleString('ru-RU')} ₽`;
-        document.getElementById('incompleteTasks').textContent = `${expenses.toLocaleString('ru-RU')} ₽`;
-        document.getElementById('productiveDay').textContent = `${(income - expenses).toLocaleString('ru-RU')} ₽`;
-        
-        // Update daily chart for expenses by category
-        const expenseCategories = {};
-        monthTransactions
-            .filter(tx => tx.type === 'exp')
-            .forEach(tx => {
-                expenseCategories[tx.cat] = (expenseCategories[tx.cat] || 0) + tx.val;
-            });
-        
-        const categories = Object.keys(expenseCategories).slice(0, 7);
-        const amounts = categories.map(cat => expenseCategories[cat]);
-        
-        const ctx = document.getElementById('dailyChart').getContext('2d');
-        if(window.dailyChart) window.dailyChart.destroy();
-        
-        window.dailyChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: categories,
-                datasets: [{
-                    label: 'Расходы по категориям',
-                    data: amounts,
-                    backgroundColor: '#ef4444',
-                    borderRadius: 6,
-                    borderSkipped: false,
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(255,255,255,0.05)' },
-                        ticks: { 
-                            color: '#94a3b8', 
-                            font: { size: 11 },
-                            callback: function(value) {
-                                return value + ' ₽';
-                            }
-                        }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { 
-                            color: '#94a3b8', 
-                            font: { size: 11 },
-                            maxRotation: 45
-                        }
-                    }
-                }
-            }
-        });
-    }
-
     // --- UI UTILITIES ---
     function switchTab(id, el) {
         // Update navigation
@@ -2021,16 +2248,13 @@
             });
         }, 10);
         
-        // Render specific content if needed
+        // Render specific content
         if(id === 'ins') {
-            setTimeout(renderInsights, 100);
-        } else if(id === 'hab') {
-            renderHabits();
-        }
-        
-        // Вибрация
-        if(tg.HapticFeedback) {
-            tg.HapticFeedback.selectionChanged();
+            if(db.insightType === 'habits') {
+                renderHabitsInsights();
+            } else {
+                renderFinanceInsights();
+            }
         }
     }
 
@@ -2053,16 +2277,14 @@
         }
     }
 
-    function openCalendar() {
-        alert("Выберите дату в календаре устройства");
-        const dateInput = document.createElement('input');
-        dateInput.type = 'date';
-        dateInput.click();
-    }
-
     // --- INITIALIZATION ---
     document.addEventListener('DOMContentLoaded', () => {
         load();
+        
+        // Initialize today's date
+        const today = new Date();
+        const options = { weekday: 'short', day: 'numeric', month: 'short' };
+        document.getElementById('todayDate').textContent = today.toLocaleDateString('ru-RU', options);
         
         // Add keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -2072,16 +2294,6 @@
                 });
             }
         });
-        
-        // Add service worker for PWA capabilities
-        if('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(console.error);
-        }
-    });
-
-    // Handle back button
-    window.addEventListener('popstate', () => {
-        switchTab('fin', document.querySelector('.nav-item'));
     });
 </script>
 </body>
