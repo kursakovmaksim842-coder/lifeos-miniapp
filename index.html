@@ -185,7 +185,7 @@
             word-wrap: break-word;
         }
         
-        .info-container:hover .info-tooltip {
+        .info-container.active .info-tooltip {
             opacity: 1;
         }
         
@@ -256,19 +256,19 @@
             justify-content: center;
         }
         
-        /* Calendar Section */
-        .calendar-section {
+        /* Week View */
+        .week-view-section {
             margin-bottom: 25px;
         }
         
-        .calendar-header {
+        .week-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
         }
         
-        .month-nav {
+        .week-nav {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -288,11 +288,25 @@
             font-size: 14px;
         }
         
-        .current-month {
+        .current-week {
             font-size: 18px;
             font-weight: 700;
             min-width: 140px;
             text-align: center;
+        }
+        
+        .week-dates {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 4px;
+        }
+        
+        /* View Toggle */
+        .view-toggle-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
         }
         
         .view-toggle {
@@ -303,11 +317,11 @@
         }
         
         .view-btn {
-            padding: 6px 12px;
+            padding: 8px 20px;
             border: none;
             background: transparent;
             color: var(--text-muted);
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
@@ -319,62 +333,35 @@
             color: white;
         }
         
-        /* Calendar Grid */
-        .calendar-grid {
-            margin-bottom: 20px;
+        /* Total Progress */
+        .total-progress {
+            margin-bottom: 25px;
         }
         
-        .calendar-weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            margin-bottom: 10px;
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
         }
         
-        .weekday {
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
             font-size: 12px;
             color: var(--text-muted);
-            font-weight: 600;
-            padding: 5px 0;
         }
         
-        .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-        }
-        
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-        
-        .calendar-day.empty {
-            opacity: 0.3;
-            cursor: default;
-        }
-        
-        .calendar-day.today {
-            background: var(--primary-light);
-            color: var(--primary);
-            font-weight: 700;
-        }
-        
-        .calendar-day.completed {
-            background: var(--primary);
-            color: white;
-        }
-        
-        /* Habits List */
-        .habits-list {
+        /* Habits Grid */
+        .habits-grid {
             margin-bottom: 25px;
         }
         
@@ -390,7 +377,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
         
         .habit-name {
@@ -408,22 +395,23 @@
             white-space: nowrap;
         }
         
-        .habit-calendar {
+        .habit-days-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 3px;
+            gap: 6px;
         }
         
         .habit-day {
             aspect-ratio: 1;
-            border-radius: 6px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
+            position: relative;
         }
         
         .habit-day.empty {
@@ -521,6 +509,7 @@
             padding: 15px;
             border-radius: 16px;
             margin-bottom: 10px;
+            position: relative;
         }
         
         .stat-card.safe {
@@ -542,6 +531,55 @@
             display: flex;
             align-items: center;
             margin-bottom: 4px;
+        }
+        
+        .settings-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .settings-btn:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        /* Collapsible History */
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px 0;
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .collapsible-content.expanded {
+            max-height: 500px;
+        }
+        
+        .collapse-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .collapse-icon.rotated {
+            transform: rotate(180deg);
         }
         
         /* Transactions */
@@ -876,6 +914,28 @@
         .modal-input:focus, .modal-textarea:focus {
             border-color: var(--primary);
         }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid var(--glass-border);
+            background: transparent;
+            cursor: pointer;
+        }
+        
+        .checkbox-container label {
+            font-size: 14px;
+            color: var(--text-main);
+            cursor: pointer;
+        }
 
         /* --- TAB LOGIC --- */
         .tab-content { 
@@ -1005,7 +1065,7 @@
             
             <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-muted); font-weight: 600;">
                 Сколько у вас сейчас денег?
-                <span class="info-container">
+                <span class="info-container" onclick="toggleTooltip(this)">
                     <span class="info-icon">i</span>
                     <div class="info-tooltip">Введите ваш текущий баланс</div>
                 </span>
@@ -1013,17 +1073,8 @@
             <input type="number" id="initBalance" class="input-mod" placeholder="0 ₽">
             
             <div style="margin: 20px 0 8px; font-size: 12px; color: var(--text-muted); font-weight: 600;">
-                Ежемесячные обязательные траты
-                <span class="info-container">
-                    <span class="info-icon">i</span>
-                    <div class="info-tooltip">Сумма обязательных платежей в месяц</div>
-                </span>
-            </div>
-            <input type="number" id="initFixed" class="input-mod" placeholder="0 ₽">
-            
-            <div style="margin: 20px 0 8px; font-size: 12px; color: var(--text-muted); font-weight: 600;">
                 Дата следующей зарплаты
-                <span class="info-container">
+                <span class="info-container" onclick="toggleTooltip(this)">
                     <span class="info-icon">i</span>
                     <div class="info-tooltip">Когда получите следующую зарплату</div>
                 </span>
@@ -1041,7 +1092,7 @@
                 <div>
                     <div class="stat-label">
                         Бюджет на сегодня
-                        <span class="info-container">
+                        <span class="info-container" onclick="toggleTooltip(this)">
                             <span class="info-icon">i</span>
                             <div class="info-tooltip">Сколько можно потратить сегодня</div>
                         </span>
@@ -1062,19 +1113,22 @@
                 <div class="stat-card safe">
                     <div class="stat-label" style="color:var(--gold)">
                         Сейф
-                        <span class="info-container">
+                        <span class="info-container" onclick="toggleTooltip(this)">
                             <span class="info-icon">i</span>
-                            <div class="info-tooltip">20% от доходов откладывается сюда</div>
+                            <div class="info-tooltip">Настройте откладывание денег в сейф</div>
                         </span>
                     </div>
                     <div id="saveVal" style="font-size:20px; font-weight:800;">0 ₽</div>
+                    <button class="settings-btn" onclick="showSafeSettings()">
+                        <i class="fas fa-cog"></i>
+                    </button>
                 </div>
                 <div class="stat-card fixed">
                     <div class="stat-label" style="color:var(--text-muted)">
                         Обязательные
-                        <span class="info-container">
+                        <span class="info-container" onclick="toggleTooltip(this)">
                             <span class="info-icon">i</span>
-                            <div class="info-tooltip">На обязательные платежи</div>
+                            <div class="info-tooltip">Платежи, добавленные в очередь</div>
                         </span>
                     </div>
                     <div id="fixVal" style="font-size:16px; font-weight:800;">0 / 0</div>
@@ -1093,17 +1147,20 @@
                 </div>
                 <div id="fixedTasksList"></div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:30px; margin-bottom:10px;">
+                <div class="collapsible-header" onclick="toggleHistory()" style="margin-top:30px; margin-bottom:10px;">
                     <div class="stat-label">История операций</div>
+                    <div class="collapse-icon" id="collapseIcon">▼</div>
                 </div>
                 
-                <div class="seg-control">
-                    <button class="seg-btn active" onclick="setTxFilter('ALL', this)">ВСЕ</button>
-                    <button class="seg-btn" onclick="setTxFilter('INC', this)">ДОХОДЫ</button>
-                    <button class="seg-btn" onclick="setTxFilter('EXP', this)">ТРАТЫ</button>
+                <div class="collapsible-content" id="historyContent">
+                    <div class="seg-control">
+                        <button class="seg-btn active" onclick="setTxFilter('ALL', this)">ВСЕ</button>
+                        <button class="seg-btn" onclick="setTxFilter('INC', this)">ДОХОДЫ</button>
+                        <button class="seg-btn" onclick="setTxFilter('EXP', this)">ТРАТЫ</button>
+                    </div>
+                    
+                    <div class="glass-panel" id="txList" style="padding:5px 0;"></div>
                 </div>
-                
-                <div class="glass-panel" id="txList" style="padding:5px 0;"></div>
             </div>
         </div>
     </div>
@@ -1116,42 +1173,46 @@
                 <button onclick="showAddHabitModal()" class="add-button">+</button>
             </div>
             
-            <!-- Calendar Section -->
-            <div class="calendar-section animate-enter">
+            <!-- Week View -->
+            <div class="week-view-section animate-enter">
                 <div class="glass-panel">
-                    <div class="calendar-header">
-                        <div class="month-nav">
-                            <button class="nav-btn" onclick="changeMonth(-1)">
+                    <div class="week-header">
+                        <div class="week-nav">
+                            <button class="nav-btn" onclick="changeWeek(-1)">
                                 <i class="fas fa-chevron-left"></i>
                             </button>
-                            <div class="current-month" id="currentMonth">Февраль 2026г.</div>
-                            <button class="nav-btn" onclick="changeMonth(1)">
+                            <div>
+                                <div class="current-week" id="currentWeek">0 неделя</div>
+                                <div class="week-dates" id="weekDates">1 янв. - 7 янв.</div>
+                            </div>
+                            <button class="nav-btn" onclick="changeWeek(1)">
                                 <i class="fas fa-chevron-right"></i>
                             </button>
                         </div>
-                        <div class="view-toggle">
-                            <button class="view-btn active" onclick="setHabitView('week')">Неделя</button>
-                            <button class="view-btn" onclick="setHabitView('month')">Месяц</button>
-                        </div>
                     </div>
                     
-                    <div class="calendar-grid">
-                        <div class="calendar-weekdays">
-                            <div class="weekday">ПН</div>
-                            <div class="weekday">ВТ</div>
-                            <div class="weekday">СР</div>
-                            <div class="weekday">ЧТ</div>
-                            <div class="weekday">ПТ</div>
-                            <div class="weekday">СБ</div>
-                            <div class="weekday">ВС</div>
+                    <div class="total-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="weekProgressFill" style="width: 0%"></div>
                         </div>
-                        <div class="calendar-days" id="calendarDays"></div>
+                        <div class="progress-text">
+                            <span>Общий прогресс недели</span>
+                            <span id="weekProgressText">0 / 0</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- View Toggle -->
+            <div class="view-toggle-container animate-enter">
+                <div class="view-toggle">
+                    <button class="view-btn active" onclick="setHabitView('week', this)">Неделя</button>
+                    <button class="view-btn" onclick="setHabitView('month', this)">Месяц</button>
+                </div>
+            </div>
+
             <!-- Habits List -->
-            <div class="habits-list">
+            <div class="habits-grid">
                 <div id="habitsListContainer"></div>
             </div>
 
@@ -1372,6 +1433,48 @@
         </div>
     </div>
 
+    <div id="safeSettingsModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Настройки сейфа</div>
+                <button class="modal-close" onclick="closeModal('safeSettingsModal')">×</button>
+            </div>
+            <div class="modal-form">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="safeEnabled" checked>
+                    <label for="safeEnabled">Включить откладывание в сейф</label>
+                </div>
+                
+                <div style="margin: 10px 0; font-size: 14px; color: var(--text-muted);">
+                    Процент от дохода для сейфа:
+                </div>
+                
+                <input type="range" id="safePercentage" min="0" max="50" value="20" style="width:100%; margin:15px 0;" oninput="document.getElementById('percentageValue').textContent = this.value + '%'">
+                
+                <div style="text-align:center; font-size:18px; font-weight:700; color:var(--primary); margin:10px 0;">
+                    <span id="percentageValue">20%</span>
+                </div>
+                
+                <button onclick="saveSafeSettings()" class="btn-gold">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addFixedTaskModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Добавить платеж</div>
+                <button class="modal-close" onclick="closeModal('addFixedTaskModal')">×</button>
+            </div>
+            <div class="modal-form">
+                <input type="text" id="taskName" class="modal-input" placeholder="Название платежа">
+                <input type="number" id="taskAmount" class="modal-input" placeholder="Сумма (₽)">
+                <input type="date" id="taskDate" class="modal-input" style="color-scheme: dark;">
+                <button onclick="saveFixedTask()" class="btn-gold">Добавить платеж</button>
+            </div>
+        </div>
+    </div>
+
     <div id="resetModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
@@ -1411,15 +1514,21 @@
             gratitude: "",
             thoughts: ""
         },
+        settings: {
+            safeEnabled: true,
+            safePercentage: 20
+        },
         salaryDate: null,
+        currentWeekOffset: 0,
         currentMonth: new Date().getMonth(),
         currentYear: new Date().getFullYear(),
-        habitView: 'month',
+        habitView: 'week',
         insightType: 'habits',
         timeFilter: 'week'
     };
     
     let currentFilter = 'ALL';
+    let historyExpanded = false;
 
     // --- CORE FUNCTIONS ---
     function load() {
@@ -1430,9 +1539,11 @@
             
             // Initialize new fields if they don't exist
             if(!db.notes) db.notes = { notes: "", lesson: "", gratitude: "", thoughts: "" };
+            if(!db.settings) db.settings = { safeEnabled: true, safePercentage: 20 };
+            if(!db.currentWeekOffset) db.currentWeekOffset = 0;
             if(!db.currentMonth) db.currentMonth = new Date().getMonth();
             if(!db.currentYear) db.currentYear = new Date().getFullYear();
-            if(!db.habitView) db.habitView = 'month';
+            if(!db.habitView) db.habitView = 'week';
             if(!db.insightType) db.insightType = 'habits';
             if(!db.timeFilter) db.timeFilter = 'week';
         }
@@ -1455,6 +1566,8 @@
     }
 
     function save() {
+        // Recalculate fixedTarget from fixedTasks
+        db.fixedTarget = db.fixedTasks.reduce((sum, task) => sum + task.amount, 0);
         localStorage.setItem('lifeos_v13_pure', JSON.stringify(db));
         render();
         updateNotesPreview();
@@ -1468,7 +1581,6 @@
 
     function completeSetup() {
         const balance = +document.getElementById('initBalance').value;
-        const fixed = +document.getElementById('initFixed').value;
         const salaryDate = document.getElementById('initDate').value;
         
         if(!salaryDate) {
@@ -1481,42 +1593,73 @@
             return;
         }
         
-        if(isNaN(fixed) || fixed < 0) {
-            alert("Введите корректную сумму обязательных платежей!");
-            return;
-        }
-        
         db.balance = balance;
-        db.fixedTarget = fixed;
         db.salaryDate = salaryDate;
         db.setup = true;
         
         save();
         document.getElementById('setupOverlay').style.display = 'none';
+        
+        // Force render to show main app
+        render();
+    }
+
+    // --- TOOLTIP FUNCTIONS ---
+    function toggleTooltip(element) {
+        // Close all other tooltips
+        document.querySelectorAll('.info-container').forEach(container => {
+            if(container !== element) {
+                container.classList.remove('active');
+            }
+        });
+        
+        // Toggle current tooltip
+        element.classList.toggle('active');
+        
+        // Close tooltip when clicking elsewhere
+        setTimeout(() => {
+            document.addEventListener('click', function closeTooltips(e) {
+                if(!element.contains(e.target)) {
+                    element.classList.remove('active');
+                    document.removeEventListener('click', closeTooltips);
+                }
+            });
+        }, 0);
     }
 
     // --- HABIT MANAGEMENT ---
-    function changeMonth(delta) {
-        let newMonth = db.currentMonth + delta;
-        let newYear = db.currentYear;
+    function getWeekDates(weekOffset = 0) {
+        const now = new Date();
+        const currentDate = new Date(now);
+        currentDate.setDate(now.getDate() + (weekOffset * 7));
         
-        if(newMonth < 0) {
-            newMonth = 11;
-            newYear--;
-        } else if(newMonth > 11) {
-            newMonth = 0;
-            newYear++;
-        }
+        const dayOfWeek = currentDate.getDay();
+        const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
         
-        db.currentMonth = newMonth;
-        db.currentYear = newYear;
+        const monday = new Date(currentDate);
+        monday.setDate(currentDate.getDate() + diffToMonday);
+        
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        
+        return { monday, sunday };
+    }
+
+    function getWeekNumber(date) {
+        const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+        const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    }
+
+    function changeWeek(delta) {
+        db.currentWeekOffset += delta;
         renderHabits();
     }
 
-    function setHabitView(view) {
+    function setHabitView(view, element) {
         db.habitView = view;
         document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
+        element.classList.add('active');
         renderHabits();
     }
 
@@ -1557,77 +1700,63 @@
         save();
     }
 
-    function getDaysInMonth(year, month) {
-        return new Date(year, month + 1, 0).getDate();
-    }
-
-    function getWeekNumber(date) {
-        const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-        const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
-        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-    }
-
     function renderHabits() {
-        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-        document.getElementById('currentMonth').textContent = `${monthNames[db.currentMonth]} ${db.currentYear}г.`;
-        
-        // Render calendar days
-        const firstDay = new Date(db.currentYear, db.currentMonth, 1);
-        const startingDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-        const daysInMonth = getDaysInMonth(db.currentYear, db.currentMonth);
-        const today = new Date();
-        const todayStr = today.toISOString().split('T')[0];
-        
-        let calendarHTML = '';
-        
-        // Empty days at start
-        for(let i = 0; i < startingDay; i++) {
-            calendarHTML += `<div class="calendar-day empty"></div>`;
+        if(db.habitView === 'week') {
+            renderWeekView();
+        } else {
+            renderMonthView();
         }
+    }
+
+    function renderWeekView() {
+        const { monday, sunday } = getWeekDates(db.currentWeekOffset);
+        const weekNumber = getWeekNumber(monday);
         
-        // Days of the month
-        for(let day = 1; day <= daysInMonth; day++) {
-            const date = new Date(db.currentYear, db.currentMonth, day);
-            const dateStr = date.toISOString().split('T')[0];
-            const isToday = dateStr === todayStr;
-            
-            // Check if any habit is completed for this day
-            let isCompleted = false;
-            db.habits.forEach(habit => {
-                if(habit.completedDays.includes(dateStr)) {
-                    isCompleted = true;
+        // Format dates
+        const formatDate = (date) => {
+            const day = date.getDate();
+            const month = date.toLocaleString('ru-RU', { month: 'short' });
+            return `${day} ${month}`;
+        };
+        
+        document.getElementById('currentWeek').textContent = `${weekNumber} неделя`;
+        document.getElementById('weekDates').textContent = `${formatDate(monday)} - ${formatDate(sunday)}`;
+        
+        // Calculate week progress
+        const weekStartStr = monday.toISOString().split('T')[0];
+        const weekEndStr = sunday.toISOString().split('T')[0];
+        
+        let totalPossible = db.habits.length * 7;
+        let totalCompleted = 0;
+        
+        db.habits.forEach(habit => {
+            habit.completedDays.forEach(dateStr => {
+                if(dateStr >= weekStartStr && dateStr <= weekEndStr) {
+                    totalCompleted++;
                 }
             });
-            
-            let dayClass = 'calendar-day';
-            if(isToday) dayClass += ' today';
-            if(isCompleted) dayClass += ' completed';
-            
-            calendarHTML += `<div class="${dayClass}">${day}</div>`;
-        }
+        });
         
-        document.getElementById('calendarDays').innerHTML = calendarHTML;
+        const progressPercent = totalPossible > 0 ? (totalCompleted / totalPossible) * 100 : 0;
+        document.getElementById('weekProgressFill').style.width = `${progressPercent}%`;
+        document.getElementById('weekProgressText').textContent = `${totalCompleted} / ${totalPossible}`;
         
-        // Render habits list
+        // Render habits grid
         const habitsContainer = document.getElementById('habitsListContainer');
         
         if(db.habits.length > 0) {
+            const dayLabels = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            
             habitsContainer.innerHTML = db.habits.map((habit, index) => {
-                // Calculate progress for current month
-                const monthStart = new Date(db.currentYear, db.currentMonth, 1).toISOString().split('T')[0];
-                const monthEnd = new Date(db.currentYear, db.currentMonth + 1, 0).toISOString().split('T')[0];
+                // Generate week days
+                let weekDaysHTML = '';
                 
-                const monthCompleted = habit.completedDays.filter(date => {
-                    return date >= monthStart && date <= monthEnd;
-                }).length;
-                
-                // Generate habit calendar for current month
-                let habitCalendarHTML = '';
-                const daysInMonth = getDaysInMonth(db.currentYear, db.currentMonth);
-                
-                for(let day = 1; day <= daysInMonth; day++) {
-                    const date = new Date(db.currentYear, db.currentMonth, day);
-                    const dateStr = date.toISOString().split('T')[0];
+                for(let i = 0; i < 7; i++) {
+                    const dayDate = new Date(monday);
+                    dayDate.setDate(monday.getDate() + i);
+                    const dateStr = dayDate.toISOString().split('T')[0];
                     const isToday = dateStr === todayStr;
                     const isCompleted = habit.completedDays.includes(dateStr);
                     
@@ -1640,18 +1769,23 @@
                         dayClass += ' empty';
                     }
                     
-                    habitCalendarHTML += `<div class="${dayClass}" 
-                                           onclick="toggleHabitDay(${habit.id}, '${dateStr}')">${day}</div>`;
+                    weekDaysHTML += `<div class="${dayClass}" 
+                                           onclick="toggleHabitDay(${habit.id}, '${dateStr}')">${dayLabels[i]}</div>`;
                 }
+                
+                // Calculate habit completion for the week
+                const weekCompleted = habit.completedDays.filter(date => {
+                    return date >= weekStartStr && date <= weekEndStr;
+                }).length;
                 
                 return `
                     <div class="habit-item animate-enter" style="animation-delay: ${index * 0.05}s">
                         <div class="habit-header">
                             <div class="habit-name">${habit.name}</div>
-                            <div class="habit-progress">${monthCompleted}/${daysInMonth}</div>
+                            <div class="habit-progress">${weekCompleted}/7</div>
                         </div>
-                        <div class="habit-calendar">
-                            ${habitCalendarHTML}
+                        <div class="habit-days-grid">
+                            ${weekDaysHTML}
                         </div>
                     </div>
                 `;
@@ -1665,6 +1799,23 @@
                 </div>
             `;
         }
+    }
+
+    function renderMonthView() {
+        // Month view implementation
+        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+        document.getElementById('currentWeek').textContent = `${monthNames[db.currentMonth]} ${db.currentYear}`;
+        document.getElementById('weekDates').textContent = "Месячный просмотр";
+        
+        // Simplified month view for now
+        const habitsContainer = document.getElementById('habitsListContainer');
+        habitsContainer.innerHTML = `
+            <div class="glass-panel animate-enter" style="text-align: center; padding: 40px 20px;">
+                <div style="font-size: 48px; margin-bottom: 15px;">📅</div>
+                <div style="font-weight: 700; margin-bottom: 10px;">Месячный просмотр</div>
+                <div style="color: var(--text-muted); font-size: 14px;">Переключитесь на недельный просмотр для отметки привычек</div>
+            </div>
+        `;
     }
 
     // --- NOTES MANAGEMENT ---
@@ -1714,7 +1865,11 @@
 
     // --- FINANCE MANAGEMENT ---
     function smartDistribute(val) {
-        let toSave = Math.floor(val * 0.2);
+        if(!db.settings.safeEnabled) {
+            return { toSave: 0, toFix: 0, toBalance: val };
+        }
+        
+        let toSave = Math.floor(val * (db.settings.safePercentage / 100));
         let rem = val - toSave;
         let needed = db.fixedTarget - db.fixedCurrent;
         let toFix = 0;
@@ -1847,18 +2002,42 @@
     }
 
     function addFixedTask() {
-        const name = prompt("Название платежа:");
-        if(!name) return;
+        document.getElementById('addFixedTaskModal').classList.remove('hidden');
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('taskDate').valueAsDate = tomorrow;
+        document.getElementById('taskName').focus();
+    }
+
+    function saveFixedTask() {
+        const name = document.getElementById('taskName').value;
+        const amount = +document.getElementById('taskAmount').value;
+        const date = document.getElementById('taskDate').value;
         
-        const amount = +prompt("Сумма (₽):");
-        if(!amount || amount <= 0) return;
+        if(!name || name.trim() === '') {
+            alert("Введите название платежа!");
+            return;
+        }
+        
+        if(!amount || amount <= 0) {
+            alert("Введите корректную сумму!");
+            return;
+        }
+        
+        if(!date) {
+            alert("Выберите дату!");
+            return;
+        }
         
         db.fixedTasks.push({
             id: Date.now(),
-            name: name,
-            amount: amount
+            name: name.trim(),
+            amount: amount,
+            date: date,
+            createdAt: new Date().toISOString()
         });
         
+        closeModal('addFixedTaskModal');
         save();
     }
 
@@ -1880,6 +2059,36 @@
             save();
         } else {
             alert("Недостаточно средств в разделе 'Обязательные'!");
+        }
+    }
+
+    // --- SAFE SETTINGS ---
+    function showSafeSettings() {
+        document.getElementById('safeEnabled').checked = db.settings.safeEnabled;
+        document.getElementById('safePercentage').value = db.settings.safePercentage;
+        document.getElementById('percentageValue').textContent = db.settings.safePercentage + '%';
+        document.getElementById('safeSettingsModal').classList.remove('hidden');
+    }
+
+    function saveSafeSettings() {
+        db.settings.safeEnabled = document.getElementById('safeEnabled').checked;
+        db.settings.safePercentage = +document.getElementById('safePercentage').value;
+        closeModal('safeSettingsModal');
+        save();
+    }
+
+    // --- HISTORY TOGGLE ---
+    function toggleHistory() {
+        historyExpanded = !historyExpanded;
+        const content = document.getElementById('historyContent');
+        const icon = document.getElementById('collapseIcon');
+        
+        if(historyExpanded) {
+            content.classList.add('expanded');
+            icon.classList.add('rotated');
+        } else {
+            content.classList.remove('expanded');
+            icon.classList.remove('rotated');
         }
     }
 
@@ -2202,16 +2411,24 @@
         
         // Fixed tasks
         const fixedTasksList = document.getElementById('fixedTasksList');
+        const nowDate = new Date();
+        
         if(db.fixedTasks.length > 0) {
-            fixedTasksList.innerHTML = db.fixedTasks.map(task => `
-                <div class="glass-panel animate-enter" style="display:flex; justify-content:space-between; align-items:center; padding:12px; margin-bottom:8px;">
-                    <div style="flex:1; min-width:0;">
-                        <div style="font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${task.name}</div>
-                        <div style="font-size:10px; color:var(--text-muted);">${task.amount.toLocaleString('ru-RU')} ₽</div>
+            fixedTasksList.innerHTML = db.fixedTasks.map(task => {
+                const taskDate = new Date(task.date);
+                const isOverdue = taskDate < nowDate && !task.paid;
+                
+                return `
+                    <div class="glass-panel animate-enter" style="display:flex; justify-content:space-between; align-items:center; padding:12px; margin-bottom:8px; border-color: ${isOverdue ? 'var(--danger)' : 'var(--glass-border)'};">
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${task.name}</div>
+                            <div style="font-size:10px; color:var(--text-muted);">${task.amount.toLocaleString('ru-RU')} ₽ • ${new Date(task.date).toLocaleDateString('ru-RU')}</div>
+                            ${isOverdue ? '<div style="font-size:9px; color:var(--danger); margin-top:2px;">Просрочено</div>' : ''}
+                        </div>
+                        <button onclick="payFixed(${task.id}, ${task.amount})" style="background:var(--success); border:none; color:black; padding:6px 12px; border-radius:8px; font-weight:700; font-size:11px; cursor: pointer; white-space:nowrap; margin-left:10px;">✓ Оплатить</button>
                     </div>
-                    <button onclick="payFixed(${task.id}, ${task.amount})" style="background:var(--success); border:none; color:black; padding:6px 12px; border-radius:8px; font-weight:700; font-size:11px; cursor: pointer; white-space:nowrap; margin-left:10px;">✓ Оплатить</button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         } else {
             fixedTasksList.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:12px; padding:20px;">Очередь пуста</div>';
         }
@@ -2308,6 +2525,9 @@
     document.addEventListener('DOMContentLoaded', () => {
         load();
         
+        // Initialize history as collapsed
+        document.getElementById('historyContent').classList.remove('expanded');
+        
         // Add keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if(e.key === 'Escape') {
@@ -2317,22 +2537,13 @@
             }
         });
         
-        // Initialize tooltips for mobile
-        document.querySelectorAll('.info-icon').forEach(icon => {
-            icon.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const tooltip = this.parentElement.querySelector('.info-tooltip');
-                if(tooltip) {
-                    tooltip.style.opacity = tooltip.style.opacity === '1' ? '0' : '1';
-                }
-            });
-        });
-        
         // Close tooltips when tapping elsewhere
-        document.addEventListener('click', function() {
-            document.querySelectorAll('.info-tooltip').forEach(tooltip => {
-                tooltip.style.opacity = '0';
-            });
+        document.addEventListener('click', function(e) {
+            if(!e.target.closest('.info-container')) {
+                document.querySelectorAll('.info-container').forEach(container => {
+                    container.classList.remove('active');
+                });
+            }
         });
     });
 </script>
