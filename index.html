@@ -13,21 +13,21 @@
         /* --- BASE STYLES --- */
         :root {
             --bg: #000000;
-            --card: rgba(22, 22, 29, 0.95);
+            --card: rgba(22, 22, 29, 0.98);
             --primary: #3b82f6;
             --primary-light: rgba(59, 130, 246, 0.15);
             --primary-glow: rgba(59, 130, 246, 0.4);
             --accent: #8b5cf6;
             --danger: #ef4444;
-            --danger-light: rgba(239, 68, 68, 0.15);
+            --danger-light: rgba(239, 68, 68, 0.1);
             --success: #10b981;
-            --success-light: rgba(16, 185, 129, 0.15);
-            --gold: #f59e0b;
-            --gold-light: rgba(245, 158, 11, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --success-light: rgba(16, 185, 129, 0.1);
+            --warning: #f59e0b;
+            --warning-light: rgba(245, 158, 11, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --text-main: #ffffff;
             --text-muted: #94a3b8;
-            --nav-bg: rgba(20, 20, 25, 0.95);
+            --nav-bg: rgba(20, 20, 25, 0.98);
         }
 
         * { 
@@ -47,11 +47,13 @@
             overflow-x: hidden; 
             min-height: 100vh;
             padding-bottom: 120px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         /* --- ANIMATIONS --- */
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
@@ -70,9 +72,14 @@
             50% { transform: scale(1.02); }
             100% { transform: scale(1); }
         }
+        
+        @keyframes progress {
+            0% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
+        }
 
         .animate-enter { 
-            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
+            animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
         }
         
         .animate-exit {
@@ -83,189 +90,609 @@
             animation: pulse 2s infinite;
         }
 
-        /* --- UI COMPONENTS --- */
-        .glass-panel {
+        /* --- SETUP SCREEN --- */
+        #setupOverlay { 
+            position: fixed; 
+            inset: 0; 
+            z-index: 5000; 
+            background: #000; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+        }
+        
+        .setup-card { 
+            width: 100%; 
+            max-width: 340px; 
+            animation: slideUp 0.8s ease; 
             background: var(--card);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
             border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            transition: transform 0.2s ease;
-        }
-
-        .btn-gold {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border: none; 
-            color: white; 
-            padding: 16px; 
-            border-radius: 16px; 
-            width: 100%; 
-            font-size: 16px; 
-            font-weight: 700; 
-            box-shadow: 0 4px 15px var(--primary-glow);
-            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-            cursor: pointer;
+            padding: 30px 25px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.8);
         }
         
-        .btn-gold:active { 
-            transform: scale(0.96); 
+        .setup-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-
-        .input-mod {
-            background: rgba(255,255,255,0.03);
+        
+        .setup-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        
+        .setup-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            margin-left: 4px;
+        }
+        
+        .setup-input {
+            background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
-            color: white; 
-            padding: 18px;
-            border-radius: 16px; 
+            border-radius: 16px;
+            padding: 18px 20px;
             width: 100%;
-            margin: 8px 0; 
-            font-size: 18px;
-            text-align: center; 
+            color: white;
+            font-size: 17px;
             font-weight: 600;
             font-family: inherit;
-            transition: border-color 0.2s ease;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
         }
         
-        .input-mod:focus {
+        .setup-input:focus {
             border-color: var(--primary);
+            background: rgba(255,255,255,0.08);
+        }
+        
+        .setup-btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            color: white;
+            padding: 18px;
+            border-radius: 16px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
+        
+        .setup-btn:active {
+            transform: scale(0.98);
         }
 
-        /* --- HEADER & INFO --- */
-        .header-row {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-end;
-            margin: 15px 20px 25px;
+        /* --- UI COMPONENTS --- */
+        .container {
+            max-width: 100%;
+            padding: 0 20px;
+            margin: 0 auto;
         }
         
-        .info-container {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            margin-left: 5px;
+        .glass-panel {
+            background: var(--card);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease;
         }
         
-        .info-icon {
-            display: inline-flex;
+        .glass-panel:active {
+            transform: scale(0.99);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            color: white;
+            padding: 16px;
+            border-radius: 14px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 16px;
+            border-radius: 14px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-secondary:active {
+            background: rgba(255,255,255,0.08);
+            transform: scale(0.96);
+        }
+        
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            width: 44px;
+            height: 44px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 16px;
-            height: 16px;
-            background: var(--primary-light);
-            color: var(--primary);
-            border-radius: 50%;
-            font-size: 10px;
-            font-weight: 800;
             cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.2s ease;
         }
         
-        .info-tooltip {
-            position: absolute;
-            bottom: 100%;
+        .btn-icon:active {
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* --- HEADER & NAV --- */
+        .main-header {
+            padding: 15px 20px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        
+        .nav-dock {
+            position: fixed;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--card);
+            width: calc(100% - 40px);
+            max-width: 380px;
+            height: 70px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--glass-border);
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 11px;
+            border-radius: 22px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            padding: 0 10px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
             color: var(--text-muted);
-            width: 180px;
-            margin-bottom: 8px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 1000;
-            text-align: center;
-            line-height: 1.4;
-            white-space: normal;
-            word-wrap: break-word;
-        }
-        
-        .info-container.active .info-tooltip {
-            opacity: 1;
-        }
-        
-        .date-wrapper { 
-            position: relative; 
-            display: inline-block;
-        }
-        
-        .date-input-hidden {
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            opacity: 0; 
-            z-index: 10; 
+            opacity: 0.6;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
             cursor: pointer;
+            padding: 12px 16px;
+            border-radius: 16px;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .nav-item.active {
+            opacity: 1;
+            color: var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+        }
+        
+        .nav-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- FINANCE TAB --- */
+        .finance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 25px;
+        }
+        
+        .budget-display {
+            margin-bottom: 5px;
+        }
+        
+        .budget-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .budget-value {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
         }
         
         .salary-badge {
-            background: rgba(255,255,255,0.05); 
+            background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
-            padding: 8px 12px; 
-            border-radius: 12px;
-            font-size: 12px; 
-            color: var(--text-muted); 
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 12px;
+            color: var(--text-muted);
             font-weight: 600;
-            display: flex; 
-            align-items: center; 
-            gap: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
-            min-width: 120px;
+        }
+        
+        .salary-badge:active {
+            background: rgba(255,255,255,0.08);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            padding: 18px;
+            border-radius: 18px;
+            position: relative;
+        }
+        
+        .stat-card.safe {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .stat-card.fixed {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+        }
+        
+        .stat-progress {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .action-buttons .btn-primary {
+            font-size: 15px;
+            padding: 16px;
+        }
+        
+        .action-buttons .btn-secondary {
+            font-size: 15px;
+            padding: 16px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        
+        .fixed-tasks-list {
+            margin-bottom: 30px;
+        }
+        
+        .fixed-task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: var(--card);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .fixed-task-item:active {
+            background: rgba(255,255,255,0.03);
+        }
+        
+        .task-info {
+            flex: 1;
+        }
+        
+        .task-name {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+        
+        .task-details {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .task-amount {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        
+        .task-date {
+            color: var(--text-muted);
+        }
+        
+        .task-pay-btn {
+            background: var(--success);
+            border: none;
+            color: black;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .task-pay-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .history-section {
+            margin-top: 30px;
+        }
+        
+        .segmented-control {
+            display: flex;
+            background: rgba(255,255,255,0.05);
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .seg-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .seg-btn.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .transaction-list {
+            max-height: 400px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .transaction-item.deleting {
+            animation: slideOutRight 0.3s ease forwards;
+        }
+        
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
             justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .transaction-icon.income {
+            background: var(--success-light);
+            color: var(--success);
+        }
+        
+        .transaction-icon.expense {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+        
+        .transaction-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .transaction-category {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .transaction-time {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 16px;
+            margin-left: 10px;
+            white-space: nowrap;
+        }
+        
+        .transaction-amount.positive {
+            color: var(--success);
+        }
+        
+        .transaction-amount.negative {
+            color: var(--text-main);
+        }
+        
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            opacity: 0.5;
+            transition: all 0.2s ease;
+            margin-left: 10px;
+        }
+        
+        .delete-btn:active {
+            opacity: 1;
+            color: var(--danger);
         }
 
-        /* --- HABITS CONTAINER --- */
+        /* --- HABITS TAB --- */
         .habits-container {
-            padding: 0 20px 120px;
-            max-width: 500px;
-            margin: 0 auto;
+            padding-bottom: 30px;
         }
         
         .habits-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 15px 0 20px;
+            margin-bottom: 20px;
         }
         
         .habits-title {
             font-size: 28px;
             font-weight: 800;
+            letter-spacing: -0.5px;
         }
         
-        .add-button {
+        .habits-add-btn {
             background: var(--primary);
             color: white;
             border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            font-weight: 800;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
             font-size: 24px;
+            font-weight: 800;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s ease;
         }
         
-        /* Week View */
-        .week-view-section {
-            margin-bottom: 25px;
+        .habits-add-btn:active {
+            transform: scale(0.95);
         }
         
-        .week-header {
+        /* Week Selector */
+        .week-selector {
+            background: var(--card);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
         }
         
         .week-nav {
@@ -274,71 +701,91 @@
             gap: 10px;
         }
         
-        .nav-btn {
+        .nav-arrow {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
             background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            color: var(--text-main);
-            font-size: 14px;
+            transition: all 0.2s ease;
         }
         
-        .current-week {
-            font-size: 18px;
-            font-weight: 700;
-            min-width: 140px;
+        .nav-arrow:active {
+            background: rgba(255,255,255,0.08);
+        }
+        
+        .week-info {
             text-align: center;
+        }
+        
+        .week-number {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 4px;
         }
         
         .week-dates {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-muted);
-            text-align: center;
-            margin-top: 4px;
-        }
-        
-        /* View Toggle */
-        .view-toggle-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
         }
         
         .view-toggle {
             display: flex;
             background: rgba(255,255,255,0.05);
-            padding: 4px;
-            border-radius: 12px;
+            padding: 6px;
+            border-radius: 14px;
         }
         
-        .view-btn {
-            padding: 8px 20px;
+        .view-toggle-btn {
+            padding: 10px 20px;
             border: none;
             background: transparent;
             color: var(--text-muted);
             font-size: 13px;
             font-weight: 600;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
+            transition: all 0.2s ease;
             white-space: nowrap;
         }
         
-        .view-btn.active {
+        .view-toggle-btn.active {
             background: var(--primary);
             color: white;
         }
         
-        /* Total Progress */
-        .total-progress {
-            margin-bottom: 25px;
+        /* Progress Overview */
+        .progress-overview {
+            background: var(--card);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
         
-        .progress-bar {
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .progress-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+        
+        .progress-stats {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        
+        .progress-bar-container {
             height: 8px;
             background: rgba(255,255,255,0.05);
             border-radius: 4px;
@@ -346,56 +793,55 @@
             margin-bottom: 8px;
         }
         
-        .progress-fill {
+        .progress-bar-fill {
             height: 100%;
             background: var(--primary);
             border-radius: 4px;
-            transition: width 0.5s ease;
+            transform-origin: left;
+            animation: progress 0.8s ease-out forwards;
         }
         
-        .progress-text {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-muted);
+        /* Habits List */
+        .habits-list {
+            margin-bottom: 20px;
         }
         
-        /* Habits Grid */
-        .habits-grid {
-            margin-bottom: 25px;
-        }
-        
-        .habit-item {
+        .habit-card {
             background: var(--card);
             border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 16px;
+            border-radius: 18px;
+            padding: 20px;
             margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+        
+        .habit-card:active {
+            background: rgba(255,255,255,0.03);
         }
         
         .habit-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
         
         .habit-name {
             font-weight: 700;
-            font-size: 15px;
+            font-size: 17px;
             flex: 1;
         }
         
         .habit-progress {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-muted);
             background: rgba(255,255,255,0.05);
-            padding: 4px 8px;
-            border-radius: 10px;
-            white-space: nowrap;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-weight: 600;
         }
         
-        .habit-days-grid {
+        .habit-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 6px;
@@ -403,15 +849,23 @@
         
         .habit-day {
             aspect-ratio: 1;
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
+        }
+        
+        .habit-day-label {
+            position: absolute;
+            top: -20px;
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
         }
         
         .habit-day.empty {
@@ -427,282 +881,77 @@
         .habit-day.today {
             border: 2px solid var(--primary);
             background: transparent;
-            color: var(--text-main);
+            color: var(--primary);
         }
         
-        /* Notes Section */
-        .notes-section {
-            margin-top: 25px;
+        .habit-day:active {
+            transform: scale(0.95);
         }
         
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
+        .empty-habits {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
             margin-bottom: 15px;
+            opacity: 0.5;
         }
         
-        .notes-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .note-card {
-            background: var(--card);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 16px;
-            min-height: 120px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .note-card:active {
-            transform: scale(0.98);
-        }
-        
-        .note-title {
+        .empty-title {
             font-weight: 700;
-            font-size: 14px;
+            font-size: 17px;
             margin-bottom: 8px;
-            color: var(--primary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         
-        .note-content {
+        .empty-subtitle {
             color: var(--text-muted);
-            font-size: 13px;
-            line-height: 1.5;
-            flex: 1;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
-        
-        .note-placeholder {
-            color: var(--text-muted);
-            opacity: 0.5;
-            font-style: italic;
-        }
-        
-        .note-edit {
-            color: var(--primary);
-            font-size: 12px;
-            margin-top: 8px;
-            text-align: right;
+            font-size: 14px;
+            line-height: 1.4;
         }
 
-        /* --- FINANCE CONTAINER --- */
-        .finance-container {
-            padding: 0 20px 120px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        .stat-card {
-            padding: 15px;
-            border-radius: 16px;
-            margin-bottom: 10px;
-            position: relative;
-        }
-        
-        .stat-card.safe {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(139, 92, 246, 0.1));
-            border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-        
-        .stat-card.fixed {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--glass-border);
-        }
-        
-        .stat-label {
-            font-size: 11px; 
-            font-weight: 700; 
-            color: var(--text-muted); 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-        
-        .settings-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 14px;
-            cursor: pointer;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-        
-        .settings-btn:hover {
-            background: rgba(255,255,255,0.05);
-        }
-        
-        /* Collapsible History */
-        .collapsible-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            padding: 10px 0;
-        }
-        
-        .collapsible-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-        
-        .collapsible-content.expanded {
-            max-height: 500px;
-        }
-        
-        .collapse-icon {
-            transition: transform 0.3s ease;
-        }
-        
-        .collapse-icon.rotated {
-            transform: rotate(180deg);
-        }
-        
-        /* Transactions */
-        .tx-row {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 12px 0; 
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            transition: all 0.3s ease;
-        }
-        
-        .tx-row.deleting {
-            animation: slideOutRight 0.3s ease forwards;
-        }
-        
-        .tx-category {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-        
-        .tx-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-        
-        .tx-icon.income {
-            background: var(--success-light);
-            color: var(--success);
-        }
-        
-        .tx-icon.expense {
-            background: var(--danger-light);
-            color: var(--danger);
-        }
-        
-        .tx-details {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .tx-details .category {
-            font-weight: 700;
-            font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .tx-details .date {
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-        
-        .tx-amount {
-            font-weight: 700;
-            font-size: 15px;
-            white-space: nowrap;
-            margin-left: 10px;
-        }
-        
-        .tx-amount.positive {
-            color: var(--success);
-        }
-        
-        .tx-amount.negative {
-            color: var(--text-main);
-        }
-        
-        .tx-delete {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 16px;
-            cursor: pointer;
-            padding: 5px;
-            opacity: 0.5;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-            margin-left: 5px;
-        }
-        
-        .tx-delete:active {
-            opacity: 1;
-            color: var(--danger);
-        }
-
-        /* --- INSIGHTS CONTAINER --- */
+        /* --- INSIGHTS TAB --- */
         .insights-container {
-            padding: 0 20px 120px;
-            max-width: 500px;
-            margin: 0 auto;
+            padding-bottom: 30px;
+        }
+        
+        .insights-header {
+            margin-bottom: 25px;
+        }
+        
+        .insights-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .insights-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.4;
         }
         
         .insights-tabs {
             display: flex;
             background: rgba(255,255,255,0.05);
-            padding: 4px;
-            border-radius: 12px;
+            padding: 6px;
+            border-radius: 14px;
             margin-bottom: 20px;
         }
         
         .insight-tab {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: none;
             background: transparent;
             color: var(--text-muted);
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             border-radius: 10px;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
         
         .insight-tab.active {
@@ -713,23 +962,29 @@
         .time-filter {
             display: flex;
             gap: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             overflow-x: auto;
             padding-bottom: 5px;
             -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .time-filter::-webkit-scrollbar {
+            display: none;
         }
         
         .time-btn {
-            padding: 8px 16px;
+            padding: 12px 20px;
             background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
-            border-radius: 10px;
+            border-radius: 12px;
             color: var(--text-muted);
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             white-space: nowrap;
             flex-shrink: 0;
+            transition: all 0.2s ease;
         }
         
         .time-btn.active {
@@ -738,95 +993,125 @@
             border-color: var(--primary);
         }
         
+        .time-btn:active {
+            transform: scale(0.98);
+        }
+        
         /* Progress Circle */
-        .progress-container {
+        .progress-circle-container {
             text-align: center;
             margin-bottom: 30px;
         }
         
         .progress-circle {
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
-            background: conic-gradient(var(--primary) 0% 0%, rgba(255,255,255,0.05) 0% 100%);
+            margin: 0 auto 20px;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            position: relative;
-            transition: background 0.5s ease;
         }
         
-        .progress-inner {
-            width: 100px;
-            height: 100px;
+        .progress-circle-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0% 0%, rgba(255,255,255,0.05) 0% 100%);
+            transition: background 1s ease;
+        }
+        
+        .progress-circle-inner {
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
             background: var(--card);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
+            position: relative;
+            z-index: 2;
         }
         
         .progress-value {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 800;
-        }
-        
-        .progress-label {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-        
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-item {
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            padding: 12px;
-        }
-        
-        .stat-item .stat-label {
-            font-size: 10px;
-            color: var(--text-muted);
+            line-height: 1;
             margin-bottom: 4px;
         }
         
-        .stat-item .stat-value {
+        .progress-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        
+        /* Stats Grid */
+        .stats-grid-insights {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item-insight {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 16px;
+        }
+        
+        .stat-label-insight {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        
+        .stat-value-insight {
+            font-size: 20px;
+            font-weight: 800;
+        }
+        
+        /* Chart */
+        .chart-container {
+            margin-top: 25px;
+        }
+        
+        .chart-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+        
+        .chart-wrapper {
+            height: 200px;
+            position: relative;
+        }
+        
+        .reset-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--danger);
+            padding: 18px;
+            border-radius: 16px;
+            width: 100%;
             font-size: 16px;
             font-weight: 700;
-        }
-
-        /* --- SEGMENTED CONTROL --- */
-        .seg-control {
-            display: flex; 
-            background: rgba(255,255,255,0.05);
-            padding: 4px; 
-            border-radius: 12px; 
-            margin-bottom: 15px;
-        }
-        
-        .seg-btn {
-            flex: 1; 
-            padding: 10px; 
-            border: none; 
-            background: transparent;
-            color: var(--text-muted); 
-            font-size: 12px; 
-            font-weight: 700;
-            border-radius: 10px; 
+            margin-top: 30px;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
         
-        .seg-btn.active { 
-            background: rgba(255,255,255,0.1); 
-            color: white; 
+        .reset-btn:active {
+            background: rgba(239, 68, 68, 0.2);
+            transform: scale(0.98);
         }
 
         /* --- MODALS --- */
@@ -836,12 +1121,13 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.9);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 2000;
+            z-index: 1000;
             padding: 20px;
             animation: fadeIn 0.3s ease;
         }
@@ -850,24 +1136,25 @@
             background: var(--card);
             border: 1px solid var(--glass-border);
             border-radius: 24px;
-            padding: 25px;
+            padding: 30px 25px;
             width: 100%;
-            max-width: 400px;
-            animation: slideUp 0.4s ease;
-            max-height: 80vh;
+            max-width: 380px;
+            animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            max-height: 85vh;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .modal-title {
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
         }
         
         .modal-close {
@@ -876,145 +1163,76 @@
             color: var(--text-muted);
             font-size: 24px;
             cursor: pointer;
-            width: 30px;
-            height: 30px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-close:active {
+            background: rgba(255,255,255,0.05);
         }
         
         .modal-form {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 16px;
         }
         
         .modal-input {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 16px;
+            border-radius: 14px;
+            padding: 18px 20px;
             color: white;
             font-size: 16px;
             font-family: inherit;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-input:focus {
+            border-color: var(--primary);
+            background: rgba(255,255,255,0.08);
         }
         
         .modal-textarea {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 16px;
+            border-radius: 14px;
+            padding: 18px 20px;
             color: white;
             font-size: 16px;
             font-family: inherit;
             resize: none;
             min-height: 120px;
+            transition: all 0.2s ease;
         }
         
-        .modal-input:focus, .modal-textarea:focus {
+        .modal-textarea:focus {
             border-color: var(--primary);
+            background: rgba(255,255,255,0.08);
         }
         
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0;
-        }
-        
-        .checkbox-container input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            border-radius: 6px;
-            border: 2px solid var(--glass-border);
-            background: transparent;
+        .modal-btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            color: white;
+            padding: 18px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 20px var(--primary-glow);
         }
         
-        .checkbox-container label {
-            font-size: 14px;
-            color: var(--text-main);
-            cursor: pointer;
-        }
-
-        /* --- TAB LOGIC --- */
-        .tab-content { 
-            display: none; 
-            max-width: 500px; 
-            margin: 0 auto;
-        }
-        
-        .tab-content.active { 
-            display: block; 
-        }
-
-        /* --- SETUP SCREEN --- */
-        #setupOverlay { 
-            position: fixed; 
-            inset: 0; 
-            z-index: 5000; 
-            background: #000; 
-            display: none; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 20px; 
-        }
-        
-        .setup-card { 
-            width: 100%; 
-            max-width: 350px; 
-            animation: slideUp 0.8s ease; 
-        }
-
-        /* --- NAVIGATION --- */
-        .nav-dock {
-            position: fixed; 
-            bottom: 20px; 
-            left: 50%; 
-            transform: translateX(-50%);
-            width: calc(100% - 40px); 
-            max-width: 400px; 
-            height: 70px;
-            background: var(--nav-bg); 
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid var(--glass-border); 
-            border-radius: 24px;
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center;
-            z-index: 100; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-        }
-        
-        .nav-item { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 4px;
-            color: var(--text-muted); 
-            opacity: 0.6; 
-            transition: 0.3s; 
-            cursor: pointer;
-            padding: 10px;
-            flex: 1;
-            text-align: center;
-        }
-        
-        .nav-item.active { 
-            opacity: 1; 
-            color: var(--primary); 
-            transform: translateY(-2px); 
-        }
-        
-        .nav-icon { 
-            font-size: 20px; 
-        }
-        
-        .nav-label { 
-            font-size: 10px; 
-            font-weight: 600;
+        .modal-btn:active {
+            transform: scale(0.98);
         }
 
         /* --- UTILITIES --- */
@@ -1027,30 +1245,39 @@
         .full-width { width: 100%; }
 
         /* --- RESPONSIVE --- */
-        @media (max-width: 380px) {
-            .habits-container, .finance-container, .insights-container {
-                padding-left: 15px;
-                padding-right: 15px;
+        @media (max-width: 360px) {
+            .container {
+                padding: 0 16px;
             }
             
-            .header-row {
-                margin-left: 15px;
-                margin-right: 15px;
-            }
-            
-            .notes-grid {
-                grid-template-columns: 1fr;
-                gap: 10px;
+            .main-header {
+                padding: 15px 16px 10px;
             }
             
             .nav-dock {
-                width: calc(100% - 30px);
-                bottom: 15px;
-                height: 65px;
+                width: calc(100% - 32px);
+                bottom: 16px;
+                height: 68px;
             }
             
-            .nav-icon {
-                font-size: 18px;
+            .page-title, .habits-title, .insights-title {
+                font-size: 26px;
+            }
+            
+            .budget-value {
+                font-size: 38px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            .week-selector {
+                padding: 16px;
+            }
+            
+            .view-toggle-btn {
+                padding: 10px 16px;
             }
         }
     </style>
@@ -1059,305 +1286,224 @@
 
     <!-- Setup Screen -->
     <div id="setupOverlay">
-        <div class="setup-card glass-panel">
-            <h1 style="text-align:center; font-size:28px; font-weight:800; margin-bottom:10px;">LifeOS <span style="color:var(--accent)">Pure</span></h1>
-            <p style="text-align:center; color:var(--text-muted); font-size:14px; margin-bottom:30px;">Система чистого контроля</p>
+        <div class="setup-card">
+            <div class="setup-title">LifeOS Pure</div>
+            <div class="setup-subtitle">Система чистого контроля</div>
             
-            <div style="margin-bottom: 8px; font-size: 12px; color: var(--text-muted); font-weight: 600;">
-                Сколько у вас сейчас денег?
-                <span class="info-container" onclick="toggleTooltip(this)">
-                    <span class="info-icon">i</span>
-                    <div class="info-tooltip">Введите ваш текущий баланс</div>
-                </span>
-            </div>
-            <input type="number" id="initBalance" class="input-mod" placeholder="0 ₽">
+            <div class="setup-label">Сколько у вас сейчас денег?</div>
+            <input type="number" id="initBalance" class="setup-input" placeholder="0 ₽" inputmode="numeric">
             
-            <div style="margin: 20px 0 8px; font-size: 12px; color: var(--text-muted); font-weight: 600;">
-                Дата следующей зарплаты
-                <span class="info-container" onclick="toggleTooltip(this)">
-                    <span class="info-icon">i</span>
-                    <div class="info-tooltip">Когда получите следующую зарплату</div>
-                </span>
-            </div>
-            <input type="date" id="initDate" class="input-mod" style="color-scheme: dark;">
+            <div class="setup-label">Дата следующей зарплаты</div>
+            <input type="date" id="initDate" class="setup-input" style="color-scheme: dark;">
             
-            <button onclick="completeSetup()" class="btn-gold" style="margin-top:30px;">Запустить систему</button>
+            <button onclick="completeSetup()" class="setup-btn">Запустить систему</button>
         </div>
     </div>
 
     <!-- Finance Tab -->
-    <div id="tab-fin" class="tab-content active">
-        <div class="finance-container">
-            <div class="header-row animate-enter">
+    <div id="tab-fin" class="tab-content hidden">
+        <div class="container">
+            <div class="finance-header animate-enter">
                 <div>
-                    <div class="stat-label">
-                        Бюджет на сегодня
-                        <span class="info-container" onclick="toggleTooltip(this)">
-                            <span class="info-icon">i</span>
-                            <div class="info-tooltip">Сколько можно потратить сегодня</div>
-                        </span>
-                    </div>
-                    <div id="dailyVal" style="font-size: 42px; font-weight: 800; letter-spacing: -1px; background: -webkit-linear-gradient(0deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">0 ₽</div>
+                    <div class="budget-label">Бюджет на сегодня</div>
+                    <div class="budget-value" id="dailyVal">0 ₽</div>
                 </div>
                 
-                <div class="date-wrapper">
-                    <input type="date" class="date-input-hidden" onchange="updateSalaryDate(this.value)">
-                    <div class="salary-badge">
-                        <span>📅</span>
-                        <span id="salaryDateText">...</span>
-                    </div>
+                <div class="salary-badge" onclick="openDatePicker()">
+                    <span>📅</span>
+                    <span id="salaryDateText">...</span>
                 </div>
             </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin:0 20px 16px;" class="animate-enter" style="animation-delay: 0.1s;">
+            <div class="stats-grid animate-enter">
                 <div class="stat-card safe">
-                    <div class="stat-label" style="color:var(--gold)">
-                        Сейф
-                        <span class="info-container" onclick="toggleTooltip(this)">
-                            <span class="info-icon">i</span>
-                            <div class="info-tooltip">Настройте откладывание денег в сейф</div>
-                        </span>
-                    </div>
-                    <div id="saveVal" style="font-size:20px; font-weight:800;">0 ₽</div>
-                    <button class="settings-btn" onclick="showSafeSettings()">
-                        <i class="fas fa-cog"></i>
-                    </button>
+                    <div class="stat-label">Сейф</div>
+                    <div class="stat-value" id="saveVal">0 ₽</div>
                 </div>
                 <div class="stat-card fixed">
-                    <div class="stat-label" style="color:var(--text-muted)">
-                        Обязательные
-                        <span class="info-container" onclick="toggleTooltip(this)">
-                            <span class="info-icon">i</span>
-                            <div class="info-tooltip">Платежи, добавленные в очередь</div>
-                        </span>
+                    <div class="stat-label">Обязательные</div>
+                    <div class="stat-value" id="fixVal">0 ₽</div>
+                    <div class="stat-progress" id="fixProgress">0/0 ₽</div>
+                </div>
+            </div>
+
+            <div class="action-buttons animate-enter">
+                <button onclick="showIncomeModal()" class="btn-primary">+ Доход</button>
+                <button onclick="showExpenseModal()" class="btn-secondary">- Трата</button>
+            </div>
+
+            <div class="animate-enter">
+                <div class="section-header">
+                    <div class="section-title">Очередь платежей</div>
+                    <button onclick="addFixedTask()" class="btn-icon">+</button>
+                </div>
+                <div class="fixed-tasks-list" id="fixedTasksList"></div>
+
+                <div class="history-section">
+                    <div class="section-header">
+                        <div class="section-title">История операций</div>
                     </div>
-                    <div id="fixVal" style="font-size:16px; font-weight:800;">0 / 0</div>
-                </div>
-            </div>
-
-            <div class="glass-panel animate-enter" style="margin:0 20px 16px; padding:15px; display:flex; gap:10px; animation-delay: 0.2s;">
-                <button onclick="showIncomeModal()" class="btn-gold" style="font-size:14px; padding:12px; flex:1;">+ Доход</button>
-                <button onclick="showExpenseModal()" class="btn-gold" style="background:rgba(255,255,255,0.05); font-size:14px; padding:12px; flex:1;">- Трата</button>
-            </div>
-
-            <div class="animate-enter" style="animation-delay: 0.3s; padding:0 20px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                     <div class="stat-label">Очередь платежей</div>
-                     <button onclick="addFixedTask()" style="background:none; border:none; color:var(--primary); font-size:20px; font-weight:800; cursor: pointer;">+</button>
-                </div>
-                <div id="fixedTasksList"></div>
-
-                <div class="collapsible-header" onclick="toggleHistory()" style="margin-top:30px; margin-bottom:10px;">
-                    <div class="stat-label">История операций</div>
-                    <div class="collapse-icon" id="collapseIcon">▼</div>
-                </div>
-                
-                <div class="collapsible-content" id="historyContent">
-                    <div class="seg-control">
+                    
+                    <div class="segmented-control">
                         <button class="seg-btn active" onclick="setTxFilter('ALL', this)">ВСЕ</button>
                         <button class="seg-btn" onclick="setTxFilter('INC', this)">ДОХОДЫ</button>
                         <button class="seg-btn" onclick="setTxFilter('EXP', this)">ТРАТЫ</button>
                     </div>
                     
-                    <div class="glass-panel" id="txList" style="padding:5px 0;"></div>
+                    <div class="transaction-list" id="txList"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Habits Tab -->
-    <div id="tab-hab" class="tab-content">
-        <div class="habits-container">
+    <div id="tab-hab" class="tab-content hidden">
+        <div class="container">
             <div class="habits-header animate-enter">
                 <h1 class="habits-title">Дисциплина</h1>
-                <button onclick="showAddHabitModal()" class="add-button">+</button>
+                <button onclick="showAddHabitModal()" class="habits-add-btn">+</button>
             </div>
             
-            <!-- Week View -->
-            <div class="week-view-section animate-enter">
-                <div class="glass-panel">
-                    <div class="week-header">
-                        <div class="week-nav">
-                            <button class="nav-btn" onclick="changeWeek(-1)">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <div>
-                                <div class="current-week" id="currentWeek">0 неделя</div>
-                                <div class="week-dates" id="weekDates">1 янв. - 7 янв.</div>
-                            </div>
-                            <button class="nav-btn" onclick="changeWeek(1)">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="total-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="weekProgressFill" style="width: 0%"></div>
-                        </div>
-                        <div class="progress-text">
-                            <span>Общий прогресс недели</span>
-                            <span id="weekProgressText">0 / 0</span>
-                        </div>
-                    </div>
+            <div class="week-selector animate-enter">
+                <div class="week-nav">
+                    <button class="nav-arrow" onclick="changeWeek(-1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                </div>
+                
+                <div class="week-info">
+                    <div class="week-number" id="currentWeek">0 неделя</div>
+                    <div class="week-dates" id="weekDates">1 янв. - 7 янв.</div>
+                </div>
+                
+                <div class="week-nav">
+                    <button class="nav-arrow" onclick="changeWeek(1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
-
-            <!-- View Toggle -->
+            
             <div class="view-toggle-container animate-enter">
                 <div class="view-toggle">
-                    <button class="view-btn active" onclick="setHabitView('week', this)">Неделя</button>
-                    <button class="view-btn" onclick="setHabitView('month', this)">Месяц</button>
+                    <button class="view-toggle-btn active" onclick="setHabitView('week', this)">Неделя</button>
+                    <button class="view-toggle-btn" onclick="setHabitView('month', this)">Месяц</button>
                 </div>
             </div>
 
-            <!-- Habits List -->
-            <div class="habits-grid">
-                <div id="habitsListContainer"></div>
-            </div>
-
-            <!-- Notes Section -->
-            <div class="notes-section animate-enter">
-                <div class="section-title">Заметки</div>
-                <div class="notes-grid">
-                    <div class="note-card" onclick="showNoteModal('notes')">
-                        <div class="note-title">
-                            <span>Заметки</span>
-                            <i class="fas fa-edit" style="font-size:12px;"></i>
-                        </div>
-                        <div class="note-content" id="notesPreview">Нажмите чтобы добавить</div>
-                        <div class="note-edit">Нажмите для редактирования</div>
-                    </div>
-                    
-                    <div class="note-card" onclick="showNoteModal('lesson')">
-                        <div class="note-title">
-                            <span>Урок дня</span>
-                            <i class="fas fa-edit" style="font-size:12px;"></i>
-                        </div>
-                        <div class="note-content" id="lessonPreview">Введите текст...</div>
-                        <div class="note-edit">Нажмите для редактирования</div>
-                    </div>
-                    
-                    <div class="note-card" onclick="showNoteModal('gratitude')">
-                        <div class="note-title">
-                            <span>Благодарность</span>
-                            <i class="fas fa-edit" style="font-size:12px;"></i>
-                        </div>
-                        <div class="note-content" id="gratitudePreview">Введите текст...</div>
-                        <div class="note-edit">Нажмите для редактирования</div>
-                    </div>
-                    
-                    <div class="note-card" onclick="showNoteModal('thoughts')">
-                        <div class="note-title">
-                            <span>Мысли</span>
-                            <i class="fas fa-edit" style="font-size:12px;"></i>
-                        </div>
-                        <div class="note-content" id="thoughtsPreview">Введите текст...</div>
-                        <div class="note-edit">Нажмите для редактирования</div>
-                    </div>
+            <div class="progress-overview animate-enter">
+                <div class="progress-header">
+                    <div class="progress-title">Прогресс недели</div>
+                    <div class="progress-stats" id="weekProgressText">0/0</div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="weekProgressFill" style="width: 0%"></div>
                 </div>
             </div>
+
+            <div class="habits-list" id="habitsListContainer"></div>
         </div>
     </div>
 
     <!-- Insights Tab -->
-    <div id="tab-ins" class="tab-content">
-        <div class="insights-container">
-            <h1 class="animate-enter" style="margin:15px 0 10px; font-size:28px;">Аналитика</h1>
-            <p class="animate-enter text-muted" style="margin-bottom:30px; padding:0 5px;">Здесь вы можете посмотреть аналитику ваших задач и привычек</p>
+    <div id="tab-ins" class="tab-content hidden">
+        <div class="container">
+            <div class="insights-header animate-enter">
+                <h1 class="insights-title">Аналитика</h1>
+                <div class="insights-subtitle">Здесь вы можете посмотреть аналитику ваших задач и привычек</div>
+            </div>
             
-            <!-- Tabs -->
             <div class="insights-tabs animate-enter">
                 <button class="insight-tab active" onclick="setInsightType('habits', this)">Привычки</button>
                 <button class="insight-tab" onclick="setInsightType('finance', this)">Финансы</button>
             </div>
             
-            <!-- Time Filter -->
-            <div class="time-filter animate-enter" style="animation-delay: 0.1s;">
+            <div class="time-filter animate-enter">
                 <button class="time-btn active" onclick="setTimeFilter('week', this)">Неделя</button>
                 <button class="time-btn" onclick="setTimeFilter('month', this)">Месяц</button>
                 <button class="time-btn" onclick="setTimeFilter('year', this)">Год</button>
             </div>
             
-            <!-- Habits Insights -->
-            <div id="habitsInsights" class="animate-enter" style="animation-delay: 0.2s;">
+            <div id="habitsInsights" class="animate-enter">
                 <div class="glass-panel">
-                    <div class="progress-container">
-                        <div class="progress-circle" id="habitsProgressCircle">
-                            <div class="progress-inner">
+                    <div class="progress-circle-container">
+                        <div class="progress-circle">
+                            <div class="progress-circle-bg" id="habitsProgressCircle"></div>
+                            <div class="progress-circle-inner">
                                 <div class="progress-value" id="habitsProgressValue">0%</div>
                                 <div class="progress-label">Выполнено</div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-label">Всего привычек</div>
-                            <div class="stat-value" id="totalHabits">0</div>
+                    <div class="stats-grid-insights">
+                        <div class="stat-item-insight">
+                            <div class="stat-label-insight">Всего привычек</div>
+                            <div class="stat-value-insight" id="totalHabits">0</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Выполнено</div>
-                            <div class="stat-value" id="completedHabits">0</div>
+                        <div class="stat-item-insight">
+                            <div class="stat-label-insight">Выполнено</div>
+                            <div class="stat-value-insight" id="completedHabits">0</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Невыполнено</div>
-                            <div class="stat-value" id="incompleteHabits">0</div>
+                        <div class="stat-item-insight">
+                            <div class="stat-label-insight">Невыполнено</div>
+                            <div class="stat-value-insight" id="incompleteHabits">0</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Продуктивный день</div>
-                            <div class="stat-value" id="productiveDay">-</div>
+                        <div class="stat-item-insight">
+                            <div class="stat-label-insight">Продуктивный день</div>
+                            <div class="stat-value-insight" id="productiveDay">-</div>
                         </div>
                     </div>
                     
-                    <div style="margin-top:25px;">
-                        <div class="stat-label" style="margin-bottom:15px;">Прогресс по дням</div>
-                        <canvas id="habitsChart" height="200"></canvas>
+                    <div class="chart-container">
+                        <div class="chart-title">Прогресс по дням</div>
+                        <div class="chart-wrapper">
+                            <canvas id="habitsChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Finance Insights -->
-            <div id="financeInsights" class="animate-enter" style="animation-delay: 0.2s; display: none;">
+            <div id="financeInsights" class="animate-enter hidden">
                 <div class="glass-panel">
-                    <div class="progress-container">
-                        <div class="progress-circle" id="financeProgressCircle">
-                            <div class="progress-inner">
+                    <div class="progress-circle-container">
+                        <div class="progress-circle">
+                            <div class="progress-circle-bg" id="financeProgressCircle"></div>
+                            <div class="progress-circle-inner">
                                 <div class="progress-value" id="financeProgressValue">0%</div>
                                 <div class="progress-label">Экономия</div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-label">Доходы</div>
-                            <div class="stat-value" id="totalIncome">0 ₽</div>
+                    <div class="stats-grid-insights">
+                        <div class="stat-item-insight">
+                            <div class="stat-label-insight">Доходы</div>
+                            <div class="stat-value-insight" id="totalIncome">0 ₽</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Расходы</div>
-                            <div class="stat-value" id="totalExpenses">0 ₽</div>
+                        <div class="stat-item-insight">
+                            <div class="stat-label-insight">Расходы</div>
+                            <div class="stat-value-insight" id="totalExpenses">0 ₽</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Накоплено</div>
-                            <div class="stat-value" id="totalSavings">0 ₽</div>
+                        <div class="stat-item-insight">
+                            <div class="stat-label-insight">Накоплено</div>
+                            <div class="stat-value-insight" id="totalSavings">0 ₽</div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Экономия</div>
-                            <div class="stat-value" id="savingsRate">0%</div>
+                        <div class="stat-item-insight">
+                            <div class="stat-label-insight">Экономия</div>
+                            <div class="stat-value-insight" id="savingsRate">0%</div>
                         </div>
                     </div>
                     
-                    <div style="margin-top:25px;">
-                        <div class="stat-label" style="margin-bottom:15px;">Финансовый поток</div>
-                        <canvas id="financeChart" height="200"></canvas>
+                    <div class="chart-container">
+                        <div class="chart-title">Финансовый поток</div>
+                        <div class="chart-wrapper">
+                            <canvas id="financeChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="animate-enter" style="animation-delay: 0.4s; margin-top:20px;">
-                <button onclick="showResetModal()" style="width:100%; padding:15px; border-radius:12px; background:rgba(239, 68, 68, 0.1); color:var(--danger); border:1px solid rgba(239, 68, 68, 0.3); font-weight:700; cursor: pointer;">⚠ Сброс системы</button>
-            </div>
+            <button onclick="showResetModal()" class="reset-btn animate-enter">⚠ Сброс системы</button>
         </div>
     </div>
 
@@ -1372,7 +1518,7 @@
             <span class="nav-label">Привычки</span>
         </div>
         <div class="nav-item" onclick="switchTab('ins', this)">
-            <span class="nav-icon">⚛</span>
+            <span class="nav-icon">📊</span>
             <span class="nav-label">Итоги</span>
         </div>
     </div>
@@ -1385,9 +1531,9 @@
                 <button class="modal-close" onclick="closeModal('incomeModal')">×</button>
             </div>
             <div class="modal-form">
-                <input type="number" id="incomeAmount" class="modal-input" placeholder="Сумма (₽)">
+                <input type="number" id="incomeAmount" class="modal-input" placeholder="Сумма (₽)" inputmode="numeric">
                 <input type="text" id="incomeCategory" class="modal-input" placeholder="Категория">
-                <button onclick="addIncome()" class="btn-gold">Добавить доход</button>
+                <button onclick="addIncome()" class="modal-btn">Добавить доход</button>
             </div>
         </div>
     </div>
@@ -1399,9 +1545,9 @@
                 <button class="modal-close" onclick="closeModal('expenseModal')">×</button>
             </div>
             <div class="modal-form">
-                <input type="number" id="expenseAmount" class="modal-input" placeholder="Сумма (₽)">
+                <input type="number" id="expenseAmount" class="modal-input" placeholder="Сумма (₽)" inputmode="numeric">
                 <input type="text" id="expenseCategory" class="modal-input" placeholder="На что потратили">
-                <button onclick="addExpense()" class="btn-gold">Добавить трату</button>
+                <button onclick="addExpense()" class="modal-btn">Добавить трату</button>
             </div>
         </div>
     </div>
@@ -1414,48 +1560,7 @@
             </div>
             <div class="modal-form">
                 <input type="text" id="habitName" class="modal-input" placeholder="Название привычки">
-                <button onclick="addHabit()" class="btn-gold">Создать привычку</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="noteModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="noteModalTitle">Заметки</div>
-                <button class="modal-close" onclick="closeModal('noteModal')">×</button>
-            </div>
-            <div class="modal-form">
-                <textarea id="noteText" class="modal-textarea" placeholder="Введите текст..."></textarea>
-                <input type="hidden" id="noteType">
-                <button onclick="saveNote()" class="btn-gold">Сохранить</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="safeSettingsModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Настройки сейфа</div>
-                <button class="modal-close" onclick="closeModal('safeSettingsModal')">×</button>
-            </div>
-            <div class="modal-form">
-                <div class="checkbox-container">
-                    <input type="checkbox" id="safeEnabled" checked>
-                    <label for="safeEnabled">Включить откладывание в сейф</label>
-                </div>
-                
-                <div style="margin: 10px 0; font-size: 14px; color: var(--text-muted);">
-                    Процент от дохода для сейфа:
-                </div>
-                
-                <input type="range" id="safePercentage" min="0" max="50" value="20" style="width:100%; margin:15px 0;" oninput="document.getElementById('percentageValue').textContent = this.value + '%'">
-                
-                <div style="text-align:center; font-size:18px; font-weight:700; color:var(--primary); margin:10px 0;">
-                    <span id="percentageValue">20%</span>
-                </div>
-                
-                <button onclick="saveSafeSettings()" class="btn-gold">Сохранить</button>
+                <button onclick="addHabit()" class="modal-btn">Создать привычку</button>
             </div>
         </div>
     </div>
@@ -1468,9 +1573,9 @@
             </div>
             <div class="modal-form">
                 <input type="text" id="taskName" class="modal-input" placeholder="Название платежа">
-                <input type="number" id="taskAmount" class="modal-input" placeholder="Сумма (₽)">
+                <input type="number" id="taskAmount" class="modal-input" placeholder="Сумма (₽)" inputmode="numeric">
                 <input type="date" id="taskDate" class="modal-input" style="color-scheme: dark;">
-                <button onclick="saveFixedTask()" class="btn-gold">Добавить платеж</button>
+                <button onclick="saveFixedTask()" class="modal-btn">Добавить платеж</button>
             </div>
         </div>
     </div>
@@ -1482,13 +1587,26 @@
                 <button class="modal-close" onclick="closeModal('resetModal')">×</button>
             </div>
             <div class="modal-form">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <div style="font-size: 48px; color: var(--danger); margin-bottom: 10px;">⚠</div>
-                    <div style="color: var(--text-main); font-weight: 600; margin-bottom: 10px;">Вы уверены?</div>
-                    <div style="color: var(--text-muted); font-size: 14px;">Все данные будут удалены без возможности восстановления</div>
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="font-size: 48px; color: var(--danger); margin-bottom: 12px;">⚠</div>
+                    <div style="color: var(--text-main); font-weight: 700; font-size: 18px; margin-bottom: 8px;">Вы уверены?</div>
+                    <div style="color: var(--text-muted); font-size: 14px; line-height: 1.4;">Все данные будут удалены без возможности восстановления</div>
                 </div>
-                <button onclick="hardReset()" style="background: var(--danger);" class="btn-gold">Да, сбросить всё</button>
-                <button onclick="closeModal('resetModal')" style="background: rgba(255,255,255,0.05); margin-top: 10px;" class="btn-gold">Отмена</button>
+                <button onclick="hardReset()" style="background: var(--danger);" class="modal-btn">Да, сбросить всё</button>
+                <button onclick="closeModal('resetModal')" style="background: rgba(255,255,255,0.05); margin-top: 12px;" class="modal-btn">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="datePickerModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Изменить дату зарплаты</div>
+                <button class="modal-close" onclick="closeModal('datePickerModal')">×</button>
+            </div>
+            <div class="modal-form">
+                <input type="date" id="newSalaryDate" class="modal-input" style="color-scheme: dark;">
+                <button onclick="updateSalaryDate()" class="modal-btn">Сохранить</button>
             </div>
         </div>
     </div>
@@ -1508,75 +1626,56 @@
         txs: [],
         fixedTasks: [],
         habits: [],
-        notes: {
-            notes: "",
-            lesson: "",
-            gratitude: "",
-            thoughts: ""
-        },
-        settings: {
-            safeEnabled: true,
-            safePercentage: 20
-        },
         salaryDate: null,
         currentWeekOffset: 0,
-        currentMonth: new Date().getMonth(),
-        currentYear: new Date().getFullYear(),
         habitView: 'week',
         insightType: 'habits',
-        timeFilter: 'week'
+        timeFilter: 'week',
+        settings: {
+            safePercentage: 20,
+            safeEnabled: true
+        }
     };
     
     let currentFilter = 'ALL';
-    let historyExpanded = false;
 
     // --- CORE FUNCTIONS ---
     function load() {
         const saved = localStorage.getItem('lifeos_v13_pure');
         if(saved) {
-            const parsed = JSON.parse(saved);
-            db = {...db, ...parsed};
-            
-            // Initialize new fields if they don't exist
-            if(!db.notes) db.notes = { notes: "", lesson: "", gratitude: "", thoughts: "" };
-            if(!db.settings) db.settings = { safeEnabled: true, safePercentage: 20 };
-            if(!db.currentWeekOffset) db.currentWeekOffset = 0;
-            if(!db.currentMonth) db.currentMonth = new Date().getMonth();
-            if(!db.currentYear) db.currentYear = new Date().getFullYear();
-            if(!db.habitView) db.habitView = 'week';
-            if(!db.insightType) db.insightType = 'habits';
-            if(!db.timeFilter) db.timeFilter = 'week';
+            try {
+                const parsed = JSON.parse(saved);
+                db = {...db, ...parsed};
+                
+                // Initialize new fields
+                if(!db.settings) db.settings = { safePercentage: 20, safeEnabled: true };
+                if(!db.currentWeekOffset) db.currentWeekOffset = 0;
+                if(!db.habitView) db.habitView = 'week';
+                if(!db.insightType) db.insightType = 'habits';
+                if(!db.timeFilter) db.timeFilter = 'week';
+            } catch(e) {
+                console.error('Error loading data:', e);
+            }
         }
         
-        if(db.setup && !db.salaryDate) {
-            let d = new Date();
-            d.setDate(d.getDate() + 30);
-            db.salaryDate = d.toISOString().split('T')[0];
-        }
-
-        if(!db.setup) {
+        if(db.setup) {
+            document.getElementById('setupOverlay').style.display = 'none';
+            document.getElementById('tab-fin').classList.remove('hidden');
+            render();
+        } else {
             document.getElementById('setupOverlay').style.display = 'flex';
             const today = new Date();
             document.getElementById('initDate').valueAsDate = today;
             document.getElementById('initDate').min = today.toISOString().split('T')[0];
         }
-        
-        render();
-        updateNotesPreview();
     }
 
     function save() {
-        // Recalculate fixedTarget from fixedTasks
+        // Calculate fixedTarget from tasks
         db.fixedTarget = db.fixedTasks.reduce((sum, task) => sum + task.amount, 0);
+        
         localStorage.setItem('lifeos_v13_pure', JSON.stringify(db));
         render();
-        updateNotesPreview();
-        
-        if(db.insightType === 'habits') {
-            renderHabitsInsights();
-        } else {
-            renderFinanceInsights();
-        }
     }
 
     function completeSetup() {
@@ -1589,7 +1688,7 @@
         }
         
         if(isNaN(balance) || balance < 0) {
-            alert("Введите корректную сумму текущего баланса!");
+            alert("Введите корректную сумму!");
             return;
         }
         
@@ -1599,287 +1698,37 @@
         
         save();
         document.getElementById('setupOverlay').style.display = 'none';
+        document.getElementById('tab-fin').classList.remove('hidden');
         
-        // Force render to show main app
-        render();
-    }
-
-    // --- TOOLTIP FUNCTIONS ---
-    function toggleTooltip(element) {
-        // Close all other tooltips
-        document.querySelectorAll('.info-container').forEach(container => {
-            if(container !== element) {
-                container.classList.remove('active');
-            }
-        });
-        
-        // Toggle current tooltip
-        element.classList.toggle('active');
-        
-        // Close tooltip when clicking elsewhere
+        // Trigger animation
         setTimeout(() => {
-            document.addEventListener('click', function closeTooltips(e) {
-                if(!element.contains(e.target)) {
-                    element.classList.remove('active');
-                    document.removeEventListener('click', closeTooltips);
-                }
+            document.querySelectorAll('.animate-enter').forEach((el, i) => {
+                el.style.animationDelay = `${i * 0.1}s`;
+                el.style.animation = 'none';
+                setTimeout(() => el.style.animation = '', 10);
             });
-        }, 0);
+        }, 100);
     }
 
-    // --- HABIT MANAGEMENT ---
-    function getWeekDates(weekOffset = 0) {
-        const now = new Date();
-        const currentDate = new Date(now);
-        currentDate.setDate(now.getDate() + (weekOffset * 7));
-        
-        const dayOfWeek = currentDate.getDay();
-        const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-        
-        const monday = new Date(currentDate);
-        monday.setDate(currentDate.getDate() + diffToMonday);
-        
-        const sunday = new Date(monday);
-        sunday.setDate(monday.getDate() + 6);
-        
-        return { monday, sunday };
-    }
-
-    function getWeekNumber(date) {
-        const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-        const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
-        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-    }
-
-    function changeWeek(delta) {
-        db.currentWeekOffset += delta;
-        renderHabits();
-    }
-
-    function setHabitView(view, element) {
-        db.habitView = view;
-        document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-        element.classList.add('active');
-        renderHabits();
-    }
-
-    function showAddHabitModal() {
-        document.getElementById('addHabitModal').classList.remove('hidden');
-        document.getElementById('habitName').focus();
-    }
-
-    function addHabit() {
-        const name = document.getElementById('habitName').value;
-        if(!name || name.trim() === '') {
-            alert("Введите название привычки!");
-            return;
-        }
-        
-        db.habits.push({
-            id: Date.now(),
-            name: name.trim(),
-            completedDays: [],
-            createdAt: new Date().toISOString()
-        });
-        
-        closeModal('addHabitModal');
-        save();
-    }
-
-    function toggleHabitDay(habitId, dateStr) {
-        const habit = db.habits.find(h => h.id === habitId);
-        if(!habit) return;
-        
-        const index = habit.completedDays.indexOf(dateStr);
-        if(index === -1) {
-            habit.completedDays.push(dateStr);
-        } else {
-            habit.completedDays.splice(index, 1);
-        }
-        
-        save();
-    }
-
-    function renderHabits() {
-        if(db.habitView === 'week') {
-            renderWeekView();
-        } else {
-            renderMonthView();
-        }
-    }
-
-    function renderWeekView() {
-        const { monday, sunday } = getWeekDates(db.currentWeekOffset);
-        const weekNumber = getWeekNumber(monday);
-        
-        // Format dates
-        const formatDate = (date) => {
-            const day = date.getDate();
-            const month = date.toLocaleString('ru-RU', { month: 'short' });
-            return `${day} ${month}`;
-        };
-        
-        document.getElementById('currentWeek').textContent = `${weekNumber} неделя`;
-        document.getElementById('weekDates').textContent = `${formatDate(monday)} - ${formatDate(sunday)}`;
-        
-        // Calculate week progress
-        const weekStartStr = monday.toISOString().split('T')[0];
-        const weekEndStr = sunday.toISOString().split('T')[0];
-        
-        let totalPossible = db.habits.length * 7;
-        let totalCompleted = 0;
-        
-        db.habits.forEach(habit => {
-            habit.completedDays.forEach(dateStr => {
-                if(dateStr >= weekStartStr && dateStr <= weekEndStr) {
-                    totalCompleted++;
-                }
-            });
-        });
-        
-        const progressPercent = totalPossible > 0 ? (totalCompleted / totalPossible) * 100 : 0;
-        document.getElementById('weekProgressFill').style.width = `${progressPercent}%`;
-        document.getElementById('weekProgressText').textContent = `${totalCompleted} / ${totalPossible}`;
-        
-        // Render habits grid
-        const habitsContainer = document.getElementById('habitsListContainer');
-        
-        if(db.habits.length > 0) {
-            const dayLabels = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
-            const today = new Date();
-            const todayStr = today.toISOString().split('T')[0];
-            
-            habitsContainer.innerHTML = db.habits.map((habit, index) => {
-                // Generate week days
-                let weekDaysHTML = '';
-                
-                for(let i = 0; i < 7; i++) {
-                    const dayDate = new Date(monday);
-                    dayDate.setDate(monday.getDate() + i);
-                    const dateStr = dayDate.toISOString().split('T')[0];
-                    const isToday = dateStr === todayStr;
-                    const isCompleted = habit.completedDays.includes(dateStr);
-                    
-                    let dayClass = 'habit-day';
-                    if(isCompleted) {
-                        dayClass += ' completed';
-                    } else if(isToday) {
-                        dayClass += ' today';
-                    } else {
-                        dayClass += ' empty';
-                    }
-                    
-                    weekDaysHTML += `<div class="${dayClass}" 
-                                           onclick="toggleHabitDay(${habit.id}, '${dateStr}')">${dayLabels[i]}</div>`;
-                }
-                
-                // Calculate habit completion for the week
-                const weekCompleted = habit.completedDays.filter(date => {
-                    return date >= weekStartStr && date <= weekEndStr;
-                }).length;
-                
-                return `
-                    <div class="habit-item animate-enter" style="animation-delay: ${index * 0.05}s">
-                        <div class="habit-header">
-                            <div class="habit-name">${habit.name}</div>
-                            <div class="habit-progress">${weekCompleted}/7</div>
-                        </div>
-                        <div class="habit-days-grid">
-                            ${weekDaysHTML}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        } else {
-            habitsContainer.innerHTML = `
-                <div class="glass-panel animate-enter" style="text-align: center; padding: 40px 20px;">
-                    <div style="font-size: 48px; margin-bottom: 15px;">📋</div>
-                    <div style="font-weight: 700; margin-bottom: 10px;">Нет привычек</div>
-                    <div style="color: var(--text-muted); font-size: 14px;">Добавьте свою первую привычку для отслеживания</div>
-                </div>
-            `;
-        }
-    }
-
-    function renderMonthView() {
-        // Month view implementation
-        const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-        document.getElementById('currentWeek').textContent = `${monthNames[db.currentMonth]} ${db.currentYear}`;
-        document.getElementById('weekDates').textContent = "Месячный просмотр";
-        
-        // Simplified month view for now
-        const habitsContainer = document.getElementById('habitsListContainer');
-        habitsContainer.innerHTML = `
-            <div class="glass-panel animate-enter" style="text-align: center; padding: 40px 20px;">
-                <div style="font-size: 48px; margin-bottom: 15px;">📅</div>
-                <div style="font-weight: 700; margin-bottom: 10px;">Месячный просмотр</div>
-                <div style="color: var(--text-muted); font-size: 14px;">Переключитесь на недельный просмотр для отметки привычек</div>
-            </div>
-        `;
-    }
-
-    // --- NOTES MANAGEMENT ---
-    function showNoteModal(type) {
-        const titles = {
-            'notes': 'Заметки',
-            'lesson': 'Урок дня',
-            'gratitude': 'Благодарность',
-            'thoughts': 'Мысли'
-        };
-        
-        document.getElementById('noteModalTitle').textContent = titles[type];
-        document.getElementById('noteType').value = type;
-        document.getElementById('noteText').value = db.notes[type] || '';
-        document.getElementById('noteModal').classList.remove('hidden');
-        document.getElementById('noteText').focus();
-    }
-
-    function saveNote() {
-        const type = document.getElementById('noteType').value;
-        const text = document.getElementById('noteText').value;
-        
-        db.notes[type] = text;
-        closeModal('noteModal');
-        save();
-    }
-
-    function updateNotesPreview() {
-        const previews = {
-            'notes': document.getElementById('notesPreview'),
-            'lesson': document.getElementById('lessonPreview'),
-            'gratitude': document.getElementById('gratitudePreview'),
-            'thoughts': document.getElementById('thoughtsPreview')
-        };
-        
-        for(const [type, element] of Object.entries(previews)) {
-            const text = db.notes[type];
-            if(text && text.trim() !== '') {
-                element.textContent = text.length > 100 ? text.substring(0, 100) + '...' : text;
-                element.classList.remove('note-placeholder');
-            } else {
-                element.textContent = type === 'notes' ? 'Нажмите чтобы добавить' : 'Введите текст...';
-                element.classList.add('note-placeholder');
-            }
-        }
-    }
-
-    // --- FINANCE MANAGEMENT ---
+    // --- FINANCE FUNCTIONS ---
     function smartDistribute(val) {
-        if(!db.settings.safeEnabled) {
-            return { toSave: 0, toFix: 0, toBalance: val };
-        }
-        
-        let toSave = Math.floor(val * (db.settings.safePercentage / 100));
-        let rem = val - toSave;
-        let needed = db.fixedTarget - db.fixedCurrent;
+        let toSave = 0;
         let toFix = 0;
+        let toBalance = val;
         
-        if(needed > 0) { 
-            toFix = Math.min(rem, needed); 
-            rem -= toFix; 
+        // Only save to safe if enabled
+        if(db.settings.safeEnabled) {
+            toSave = Math.floor(val * (db.settings.safePercentage / 100));
+            toBalance -= toSave;
         }
         
-        let toBalance = rem;
+        // Add to fixed if there are pending tasks
+        if(db.fixedCurrent < db.fixedTarget) {
+            const needed = db.fixedTarget - db.fixedCurrent;
+            toFix = Math.min(toBalance, needed);
+            toBalance -= toFix;
+        }
+        
         return { toSave, toFix, toBalance };
     }
 
@@ -1904,8 +1753,13 @@
         
         const distribution = smartDistribute(amount);
         
-        // Save distribution to transaction for correct deletion
-        const tx = {
+        // Apply distribution
+        db.savings += distribution.toSave;
+        db.fixedCurrent += distribution.toFix;
+        db.balance += distribution.toBalance;
+        
+        // Add transaction
+        db.txs.unshift({
             id: Date.now(),
             val: amount,
             type: 'inc',
@@ -1914,14 +1768,7 @@
             date: new Date().toLocaleDateString('ru-RU'),
             fullDate: new Date().toISOString(),
             distribution: distribution
-        };
-        
-        // Apply distribution
-        db.savings += distribution.toSave;
-        db.fixedCurrent += distribution.toFix;
-        db.balance += distribution.toBalance;
-        
-        db.txs.unshift(tx);
+        });
         
         closeModal('incomeModal');
         save();
@@ -1971,7 +1818,7 @@
             setTimeout(() => {
                 const tx = db.txs.find(x => x.id === id);
                 if(tx) {
-                    // Correctly reverse distribution for income transactions
+                    // Reverse distribution for income transactions
                     if(tx.type === 'inc' && tx.distribution) {
                         db.savings -= tx.distribution.toSave;
                         db.fixedCurrent -= tx.distribution.toFix;
@@ -1987,9 +1834,16 @@
         }
     }
 
-    function updateSalaryDate(val) {
+    function openDatePicker() {
+        document.getElementById('newSalaryDate').value = db.salaryDate;
+        document.getElementById('datePickerModal').classList.remove('hidden');
+    }
+
+    function updateSalaryDate() {
+        const val = document.getElementById('newSalaryDate').value;
         if(val) {
             db.salaryDate = val;
+            closeModal('datePickerModal');
             save();
         }
     }
@@ -2034,7 +1888,7 @@
             name: name.trim(),
             amount: amount,
             date: date,
-            createdAt: new Date().toISOString()
+            paid: false
         });
         
         closeModal('addFixedTaskModal');
@@ -2062,49 +1916,92 @@
         }
     }
 
-    // --- SAFE SETTINGS ---
-    function showSafeSettings() {
-        document.getElementById('safeEnabled').checked = db.settings.safeEnabled;
-        document.getElementById('safePercentage').value = db.settings.safePercentage;
-        document.getElementById('percentageValue').textContent = db.settings.safePercentage + '%';
-        document.getElementById('safeSettingsModal').classList.remove('hidden');
+    // --- HABITS FUNCTIONS ---
+    function getWeekDates(weekOffset = 0) {
+        const now = new Date();
+        const currentDate = new Date(now);
+        currentDate.setDate(now.getDate() + (weekOffset * 7));
+        
+        const dayOfWeek = currentDate.getDay();
+        const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        
+        const monday = new Date(currentDate);
+        monday.setDate(currentDate.getDate() + diffToMonday);
+        
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        
+        return { monday, sunday };
     }
 
-    function saveSafeSettings() {
-        db.settings.safeEnabled = document.getElementById('safeEnabled').checked;
-        db.settings.safePercentage = +document.getElementById('safePercentage').value;
-        closeModal('safeSettingsModal');
+    function getWeekNumber(date) {
+        const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+        const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    }
+
+    function changeWeek(delta) {
+        db.currentWeekOffset += delta;
+        renderHabits();
+    }
+
+    function setHabitView(view, element) {
+        db.habitView = view;
+        document.querySelectorAll('.view-toggle-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+        renderHabits();
+    }
+
+    function showAddHabitModal() {
+        document.getElementById('addHabitModal').classList.remove('hidden');
+        document.getElementById('habitName').focus();
+    }
+
+    function addHabit() {
+        const name = document.getElementById('habitName').value;
+        if(!name || name.trim() === '') {
+            alert("Введите название привычки!");
+            return;
+        }
+        
+        db.habits.push({
+            id: Date.now(),
+            name: name.trim(),
+            completedDays: [],
+            createdAt: new Date().toISOString()
+        });
+        
+        closeModal('addHabitModal');
         save();
     }
 
-    // --- HISTORY TOGGLE ---
-    function toggleHistory() {
-        historyExpanded = !historyExpanded;
-        const content = document.getElementById('historyContent');
-        const icon = document.getElementById('collapseIcon');
+    function toggleHabitDay(habitId, dateStr) {
+        const habit = db.habits.find(h => h.id === habitId);
+        if(!habit) return;
         
-        if(historyExpanded) {
-            content.classList.add('expanded');
-            icon.classList.add('rotated');
+        const index = habit.completedDays.indexOf(dateStr);
+        if(index === -1) {
+            habit.completedDays.push(dateStr);
         } else {
-            content.classList.remove('expanded');
-            icon.classList.remove('rotated');
+            habit.completedDays.splice(index, 1);
         }
+        
+        save();
     }
 
-    // --- INSIGHTS ---
+    // --- INSIGHTS FUNCTIONS ---
     function setInsightType(type, el) {
         db.insightType = type;
         document.querySelectorAll('.insight-tab').forEach(btn => btn.classList.remove('active'));
         el.classList.add('active');
         
         if(type === 'habits') {
-            document.getElementById('habitsInsights').style.display = 'block';
-            document.getElementById('financeInsights').style.display = 'none';
+            document.getElementById('habitsInsights').classList.remove('hidden');
+            document.getElementById('financeInsights').classList.add('hidden');
             renderHabitsInsights();
         } else {
-            document.getElementById('habitsInsights').style.display = 'none';
-            document.getElementById('financeInsights').style.display = 'block';
+            document.getElementById('habitsInsights').classList.add('hidden');
+            document.getElementById('financeInsights').classList.remove('hidden');
             renderFinanceInsights();
         }
     }
@@ -2121,24 +2018,216 @@
         }
     }
 
+    // --- RENDER FUNCTIONS ---
+    function render() {
+        renderFinance();
+        renderHabits();
+        
+        if(db.insightType === 'habits') {
+            renderHabitsInsights();
+        } else {
+            renderFinanceInsights();
+        }
+    }
+
+    function renderFinance() {
+        if(!db.salaryDate) return;
+        
+        // Calculate daily budget
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        
+        let targetDate = new Date(db.salaryDate);
+        targetDate.setHours(0, 0, 0, 0);
+        
+        const diffTime = targetDate - now;
+        let daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if(daysRemaining < 1) daysRemaining = 1;
+        
+        const todayStr = new Date().toLocaleDateString('ru-RU');
+        const spentToday = db.txs
+            .filter(tx => tx.date === todayStr && tx.type === 'exp')
+            .reduce((acc, tx) => acc + tx.val, 0);
+        
+        const dailyLimit = Math.floor(db.balance / daysRemaining);
+        const availableNow = Math.max(0, dailyLimit - spentToday);
+        
+        // Update header
+        const dateFormatted = targetDate.toLocaleDateString('ru-RU', {day: 'numeric', month: 'long'});
+        document.getElementById('salaryDateText').textContent = `до ${dateFormatted} (${daysRemaining} дн)`;
+        document.getElementById('dailyVal').textContent = `${Math.floor(availableNow).toLocaleString('ru-RU')} ₽`;
+        document.getElementById('saveVal').textContent = `${db.savings.toLocaleString('ru-RU')} ₽`;
+        document.getElementById('fixVal').textContent = `${db.fixedCurrent.toLocaleString('ru-RU')} ₽`;
+        document.getElementById('fixProgress').textContent = `${db.fixedCurrent.toLocaleString('ru-RU')}/${db.fixedTarget.toLocaleString('ru-RU')} ₽`;
+        
+        // Fixed tasks
+        const fixedTasksList = document.getElementById('fixedTasksList');
+        const nowDate = new Date();
+        nowDate.setHours(0, 0, 0, 0);
+        
+        if(db.fixedTasks.length > 0) {
+            fixedTasksList.innerHTML = db.fixedTasks.map(task => {
+                const taskDate = new Date(task.date);
+                const isOverdue = taskDate < nowDate;
+                
+                return `
+                    <div class="fixed-task-item">
+                        <div class="task-info">
+                            <div class="task-name">${task.name}</div>
+                            <div class="task-details">
+                                <span class="task-amount">${task.amount.toLocaleString('ru-RU')} ₽</span>
+                                <span class="task-date">${new Date(task.date).toLocaleDateString('ru-RU')}</span>
+                                ${isOverdue ? '<span style="color:var(--danger); font-size:11px; font-weight:600;">Просрочено</span>' : ''}
+                            </div>
+                        </div>
+                        <button onclick="payFixed(${task.id}, ${task.amount})" class="task-pay-btn">Оплатить</button>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            fixedTasksList.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:14px; padding:40px;">Очередь пуста</div>';
+        }
+        
+        // Transactions
+        let filteredTxs = db.txs;
+        if(currentFilter === 'INC') filteredTxs = db.txs.filter(t => t.type === 'inc');
+        if(currentFilter === 'EXP') filteredTxs = db.txs.filter(t => t.type === 'exp');
+        
+        const txList = document.getElementById('txList');
+        if(filteredTxs.length > 0) {
+            txList.innerHTML = filteredTxs.slice(0, 20).map(tx => `
+                <div class="transaction-item" id="tx-${tx.id}">
+                    <div class="transaction-info">
+                        <div class="transaction-icon ${tx.type === 'inc' ? 'income' : 'expense'}">
+                            ${tx.type === 'inc' ? '↑' : '↓'}
+                        </div>
+                        <div class="transaction-details">
+                            <div class="transaction-category">${tx.cat}</div>
+                            <div class="transaction-time">${tx.date} ${tx.t}</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center;">
+                        <div class="transaction-amount ${tx.type === 'inc' ? 'positive' : 'negative'}">
+                            ${tx.type === 'inc' ? '+' : '-'}${tx.val.toLocaleString('ru-RU')} ₽
+                        </div>
+                        <button onclick="deleteTx(${tx.id})" class="delete-btn">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            txList.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:14px; padding:40px;">Нет операций</div>';
+        }
+    }
+
+    function renderHabits() {
+        const { monday, sunday } = getWeekDates(db.currentWeekOffset);
+        const weekNumber = getWeekNumber(monday);
+        
+        // Format dates
+        const formatDate = (date) => {
+            const day = date.getDate();
+            const month = date.toLocaleString('ru-RU', { month: 'short' });
+            return `${day} ${month}`;
+        };
+        
+        document.getElementById('currentWeek').textContent = `${weekNumber} неделя`;
+        document.getElementById('weekDates').textContent = `${formatDate(monday)} - ${formatDate(sunday)}`;
+        
+        // Calculate week progress
+        const weekStartStr = monday.toISOString().split('T')[0];
+        const weekEndStr = sunday.toISOString().split('T')[0];
+        const dayLabels = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        
+        let totalPossible = db.habits.length * 7;
+        let totalCompleted = 0;
+        
+        db.habits.forEach(habit => {
+            habit.completedDays.forEach(dateStr => {
+                if(dateStr >= weekStartStr && dateStr <= weekEndStr) {
+                    totalCompleted++;
+                }
+            });
+        });
+        
+        const progressPercent = totalPossible > 0 ? (totalCompleted / totalPossible) * 100 : 0;
+        document.getElementById('weekProgressFill').style.width = `${progressPercent}%`;
+        document.getElementById('weekProgressText').textContent = `${totalCompleted}/${totalPossible}`;
+        
+        // Render habits
+        const habitsContainer = document.getElementById('habitsListContainer');
+        
+        if(db.habits.length > 0) {
+            habitsContainer.innerHTML = db.habits.map((habit, index) => {
+                // Generate week days
+                let weekDaysHTML = '';
+                let weekCompleted = 0;
+                
+                for(let i = 0; i < 7; i++) {
+                    const dayDate = new Date(monday);
+                    dayDate.setDate(monday.getDate() + i);
+                    const dateStr = dayDate.toISOString().split('T')[0];
+                    const isToday = dateStr === todayStr;
+                    const isCompleted = habit.completedDays.includes(dateStr);
+                    
+                    if(isCompleted) weekCompleted++;
+                    
+                    let dayClass = 'habit-day';
+                    if(isCompleted) {
+                        dayClass += ' completed';
+                    } else if(isToday) {
+                        dayClass += ' today';
+                    } else {
+                        dayClass += ' empty';
+                    }
+                    
+                    weekDaysHTML += `
+                        <div class="${dayClass}" onclick="toggleHabitDay(${habit.id}, '${dateStr}')">
+                            ${dayLabels[i]}
+                        </div>
+                    `;
+                }
+                
+                return `
+                    <div class="habit-card animate-enter" style="animation-delay: ${index * 0.05}s">
+                        <div class="habit-header">
+                            <div class="habit-name">${habit.name}</div>
+                            <div class="habit-progress">${weekCompleted}/7</div>
+                        </div>
+                        <div class="habit-grid">
+                            ${weekDaysHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            habitsContainer.innerHTML = `
+                <div class="empty-habits">
+                    <div class="empty-icon">📋</div>
+                    <div class="empty-title">Нет привычек</div>
+                    <div class="empty-subtitle">Добавьте свою первую привычку для отслеживания</div>
+                </div>
+            `;
+        }
+    }
+
     function renderHabitsInsights() {
         let habitsData = db.habits;
-        let timeData = [];
         
-        // Filter by time
-        const now = new Date();
-        let startDate;
+        // Calculate statistics based on time filter
+        let startDate = new Date();
+        let endDate = new Date();
         
         switch(db.timeFilter) {
             case 'week':
-                startDate = new Date(now);
-                startDate.setDate(now.getDate() - 7);
+                startDate.setDate(startDate.getDate() - 7);
                 break;
             case 'month':
-                startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                startDate.setMonth(startDate.getMonth() - 1);
                 break;
             case 'year':
-                startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+                startDate.setFullYear(startDate.getFullYear() - 1);
                 break;
         }
         
@@ -2189,7 +2278,7 @@
             }
         });
         
-        document.getElementById('productiveDay').textContent = productiveDayIndex >= 0 ? fullDayNames[productiveDayIndex] : '-';
+        document.getElementById('productiveDay').textContent = productiveDayIndex >= 0 ? dayNames[productiveDayIndex] : '-';
         
         // Update chart
         const ctx = document.getElementById('habitsChart');
@@ -2213,7 +2302,8 @@
                     label: 'Выполнено',
                     data: completedData,
                     backgroundColor: '#3b82f6',
-                    borderRadius: 6,
+                    borderRadius: 8,
+                    borderSkipped: false,
                 }]
             },
             options: {
@@ -2226,11 +2316,11 @@
                     y: { 
                         beginAtZero: true, 
                         grid: { color: 'rgba(255,255,255,0.05)' }, 
-                        ticks: { color: '#94a3b8', font: { size: 10 } }
+                        ticks: { color: '#94a3b8', font: { size: 11 } }
                     },
                     x: { 
                         grid: { display: false }, 
-                        ticks: { color: '#94a3b8', font: { size: 10 } }
+                        ticks: { color: '#94a3b8', font: { size: 11 } }
                     }
                 }
             }
@@ -2239,27 +2329,34 @@
 
     function renderFinanceInsights() {
         let transactions = db.txs;
-        let startDate;
-        const now = new Date();
         
-        // Filter by time period
+        // Calculate statistics based on time filter
+        let startDate = new Date();
+        let filteredTxs = transactions;
+        
         switch(db.timeFilter) {
             case 'week':
-                startDate = new Date(now);
-                startDate.setDate(now.getDate() - 7);
+                startDate.setDate(startDate.getDate() - 7);
+                filteredTxs = transactions.filter(tx => {
+                    const txDate = new Date(tx.fullDate || tx.date);
+                    return txDate >= startDate;
+                });
                 break;
             case 'month':
-                startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                startDate.setMonth(startDate.getMonth() - 1);
+                filteredTxs = transactions.filter(tx => {
+                    const txDate = new Date(tx.fullDate || tx.date);
+                    return txDate >= startDate;
+                });
                 break;
             case 'year':
-                startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+                startDate.setFullYear(startDate.getFullYear() - 1);
+                filteredTxs = transactions.filter(tx => {
+                    const txDate = new Date(tx.fullDate || tx.date);
+                    return txDate >= startDate;
+                });
                 break;
         }
-        
-        const filteredTxs = transactions.filter(tx => {
-            const txDate = new Date(tx.fullDate || tx.date);
-            return txDate >= startDate;
-        });
         
         // Calculate statistics
         const income = filteredTxs
@@ -2300,7 +2397,7 @@
         let labels, incomeData, expenseData;
         
         if(db.timeFilter === 'week') {
-            labels = ['ПН', 'ВТ', 'СР', 'Чт', 'Пт', 'Сб', 'Вс'];
+            labels = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
             incomeData = Array(7).fill(0);
             expenseData = Array(7).fill(0);
             
@@ -2331,13 +2428,15 @@
                         label: 'Доходы',
                         data: incomeData,
                         backgroundColor: '#10b981',
-                        borderRadius: 6,
+                        borderRadius: 8,
+                        borderSkipped: false,
                     },
                     {
                         label: 'Расходы',
                         data: expenseData,
                         backgroundColor: '#ef4444',
-                        borderRadius: 6,
+                        borderRadius: 8,
+                        borderSkipped: false,
                     }
                 ]
             },
@@ -2347,141 +2446,41 @@
                 plugins: { 
                     legend: { 
                         position: 'top',
-                        labels: { color: '#94a3b8', font: { size: 10 } }
+                        labels: { color: '#94a3b8', font: { size: 12 } }
                     } 
                 },
                 scales: {
                     y: { 
                         beginAtZero: true, 
                         grid: { color: 'rgba(255,255,255,0.05)' }, 
-                        ticks: { color: '#94a3b8', font: { size: 10 } }
+                        ticks: { color: '#94a3b8', font: { size: 11 } }
                     },
                     x: { 
                         grid: { display: false }, 
-                        ticks: { color: '#94a3b8', font: { size: 10 } }
+                        ticks: { color: '#94a3b8', font: { size: 11 } }
                     }
                 }
             }
         });
     }
 
-    // --- RENDER FUNCTIONS ---
-    function render() {
-        if(!db.setup) return;
-        
-        renderFinance();
-        renderHabits();
-        
-        if(db.insightType === 'habits') {
-            renderHabitsInsights();
-        } else {
-            renderFinanceInsights();
-        }
-    }
-
-    function renderFinance() {
-        if(!db.salaryDate) return;
-        
-        // Calculate daily budget
-        const now = new Date();
-        now.setHours(0, 0, 0, 0);
-        
-        let targetDate = new Date(db.salaryDate);
-        targetDate.setHours(0, 0, 0, 0);
-        
-        const diffTime = targetDate - now;
-        let daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        if(daysRemaining < 1) daysRemaining = 1;
-        
-        const todayStr = new Date().toLocaleDateString('ru-RU');
-        const spentToday = db.txs
-            .filter(tx => tx.date === todayStr && tx.type === 'exp')
-            .reduce((acc, tx) => acc + tx.val, 0);
-        
-        const virtualBalance = db.balance + spentToday;
-        const dailyLimit = Math.floor(virtualBalance / daysRemaining);
-        const availableNow = Math.max(0, dailyLimit - spentToday);
-        
-        // Update header
-        const dateFormatted = targetDate.toLocaleDateString('ru-RU', {day: 'numeric', month: 'long'});
-        document.getElementById('salaryDateText').textContent = `до ${dateFormatted} (${daysRemaining} дн)`;
-        document.getElementById('dailyVal').textContent = `${Math.floor(availableNow).toLocaleString('ru-RU')} ₽`;
-        document.getElementById('saveVal').textContent = `${db.savings.toLocaleString('ru-RU')} ₽`;
-        document.getElementById('fixVal').textContent = `${db.fixedCurrent.toLocaleString('ru-RU')} / ${db.fixedTarget.toLocaleString('ru-RU')} ₽`;
-        
-        // Fixed tasks
-        const fixedTasksList = document.getElementById('fixedTasksList');
-        const nowDate = new Date();
-        
-        if(db.fixedTasks.length > 0) {
-            fixedTasksList.innerHTML = db.fixedTasks.map(task => {
-                const taskDate = new Date(task.date);
-                const isOverdue = taskDate < nowDate && !task.paid;
-                
-                return `
-                    <div class="glass-panel animate-enter" style="display:flex; justify-content:space-between; align-items:center; padding:12px; margin-bottom:8px; border-color: ${isOverdue ? 'var(--danger)' : 'var(--glass-border)'};">
-                        <div style="flex:1; min-width:0;">
-                            <div style="font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${task.name}</div>
-                            <div style="font-size:10px; color:var(--text-muted);">${task.amount.toLocaleString('ru-RU')} ₽ • ${new Date(task.date).toLocaleDateString('ru-RU')}</div>
-                            ${isOverdue ? '<div style="font-size:9px; color:var(--danger); margin-top:2px;">Просрочено</div>' : ''}
-                        </div>
-                        <button onclick="payFixed(${task.id}, ${task.amount})" style="background:var(--success); border:none; color:black; padding:6px 12px; border-radius:8px; font-weight:700; font-size:11px; cursor: pointer; white-space:nowrap; margin-left:10px;">✓ Оплатить</button>
-                    </div>
-                `;
-            }).join('');
-        } else {
-            fixedTasksList.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:12px; padding:20px;">Очередь пуста</div>';
-        }
-        
-        // Transaction history
-        let filteredTxs = db.txs;
-        if(currentFilter === 'INC') filteredTxs = db.txs.filter(t => t.type === 'inc');
-        if(currentFilter === 'EXP') filteredTxs = db.txs.filter(t => t.type === 'exp');
-        
-        const txList = document.getElementById('txList');
-        if(filteredTxs.length > 0) {
-            txList.innerHTML = filteredTxs.slice(0, 10).map(tx => `
-                <div class="tx-row" id="tx-${tx.id}">
-                    <div class="tx-category">
-                        <div class="tx-icon ${tx.type === 'inc' ? 'income' : 'expense'}">
-                            ${tx.type === 'inc' ? '↑' : '↓'}
-                        </div>
-                        <div class="tx-details">
-                            <div class="category">${tx.cat}</div>
-                            <div class="date">${tx.date} ${tx.t}</div>
-                        </div>
-                    </div>
-                    <div style="display:flex; align-items:center;">
-                        <div class="tx-amount ${tx.type === 'inc' ? 'positive' : 'negative'}">
-                            ${tx.type === 'inc' ? '+' : '-'}${tx.val.toLocaleString('ru-RU')} ₽
-                        </div>
-                        <button onclick="deleteTx(${tx.id})" class="tx-delete">✕</button>
-                    </div>
-                </div>
-            `).join('');
-        } else {
-            txList.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:12px; padding:30px;">Нет операций</div>';
-        }
-    }
-
     // --- UI UTILITIES ---
     function switchTab(id, el) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.add('hidden');
+        });
+        
+        // Show selected tab
+        document.getElementById(`tab-${id}`).classList.remove('hidden');
+        
         // Update navigation
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         el.classList.add('active');
         
-        // Hide all tabs
-        document.querySelectorAll('.tab-content').forEach(tab => {
-            tab.classList.remove('active');
-        });
-        
-        // Show selected tab
-        const targetTab = document.getElementById(`tab-${id}`);
-        targetTab.classList.add('active');
-        
         // Trigger animations
         setTimeout(() => {
-            targetTab.querySelectorAll('.animate-enter').forEach((element, index) => {
+            document.querySelectorAll('.animate-enter').forEach((element, index) => {
                 element.style.animationDelay = `${index * 0.1}s`;
                 element.style.animation = 'none';
                 setTimeout(() => {
@@ -2525,23 +2524,22 @@
     document.addEventListener('DOMContentLoaded', () => {
         load();
         
-        // Initialize history as collapsed
-        document.getElementById('historyContent').classList.remove('expanded');
+        // Initialize date picker for mobile
+        if('ontouchstart' in window) {
+            document.querySelectorAll('input[type="date"]').forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.showPicker();
+                });
+            });
+        }
         
         // Add keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if(e.key === 'Escape') {
                 document.querySelectorAll('.modal-overlay').forEach(modal => {
-                    modal.classList.add('hidden');
-                });
-            }
-        });
-        
-        // Close tooltips when tapping elsewhere
-        document.addEventListener('click', function(e) {
-            if(!e.target.closest('.info-container')) {
-                document.querySelectorAll('.info-container').forEach(container => {
-                    container.classList.remove('active');
+                    if(!modal.classList.contains('hidden')) {
+                        closeModal(modal.id);
+                    }
                 });
             }
         });
