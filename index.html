@@ -77,6 +77,12 @@
             0% { transform: scaleX(0); }
             100% { transform: scaleX(1); }
         }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
 
         .animate-enter { 
             animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; 
@@ -88,6 +94,10 @@
         
         .pulse-animation {
             animation: pulse 2s infinite;
+        }
+        
+        .shake-animation {
+            animation: shake 0.5s ease;
         }
 
         /* --- SETUP SCREEN --- */
@@ -256,6 +266,86 @@
         
         .btn-icon:active {
             background: rgba(255,255,255,0.05);
+        }
+        
+        /* Switch Toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255,255,255,0.1);
+            transition: .4s;
+            border-radius: 34px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(28px);
+        }
+
+        /* Range Slider */
+        .range-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: 2px solid var(--card);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .range-slider::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: 2px solid var(--card);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
         /* --- HEADER & NAV --- */
@@ -551,6 +641,7 @@
             max-height: 400px;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
         }
         
         .transaction-item {
@@ -1113,6 +1204,45 @@
             background: rgba(239, 68, 68, 0.2);
             transform: scale(0.98);
         }
+        
+        /* Data Management */
+        .data-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .data-buttons button {
+            flex: 1;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .export-btn {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--success);
+        }
+        
+        .export-btn:active {
+            background: rgba(16, 185, 129, 0.2);
+            transform: scale(0.98);
+        }
+        
+        .import-btn {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--primary);
+        }
+        
+        .import-btn:active {
+            background: rgba(59, 130, 246, 0.2);
+            transform: scale(0.98);
+        }
 
         /* --- MODALS --- */
         .modal-overlay {
@@ -1234,6 +1364,28 @@
         .modal-btn:active {
             transform: scale(0.98);
         }
+        
+        .modal-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .modal-row:last-child {
+            border-bottom: none;
+        }
+        
+        .modal-row-label {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        
+        .modal-row-value {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
 
         /* --- UTILITIES --- */
         .hidden { display: none !important; }
@@ -1243,9 +1395,45 @@
         .mb-20 { margin-bottom: 20px; }
         .mt-20 { margin-top: 20px; }
         .full-width { width: 100%; }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 2000;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease, fadeIn 0.3s ease;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .toast.success {
+            border-color: rgba(16, 185, 129, 0.3);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .toast.error {
+            border-color: rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .toast.info {
+            border-color: rgba(59, 130, 246, 0.3);
+            background: rgba(59, 130, 246, 0.1);
+        }
 
         /* --- RESPONSIVE --- */
-        @media (max-width: 360px) {
+        @media (max-width: 480px) {
             .container {
                 padding: 0 16px;
             }
@@ -1279,6 +1467,57 @@
             .view-toggle-btn {
                 padding: 10px 16px;
             }
+            
+            .modal-content {
+                padding: 20px 15px;
+                margin: 0 15px;
+            }
+            
+            .stats-grid-insights {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            
+            .progress-circle {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .progress-circle-inner {
+                width: 90px;
+                height: 90px;
+            }
+            
+            .progress-value {
+                font-size: 24px;
+            }
+            
+            .data-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .budget-value {
+                font-size: 32px;
+            }
+            
+            .stat-value {
+                font-size: 18px;
+            }
+            
+            .nav-dock {
+                height: 64px;
+            }
+            
+            .nav-item {
+                padding: 8px 12px;
+            }
+            
+            .nav-label {
+                font-size: 9px;
+            }
         }
     </style>
 </head>
@@ -1291,7 +1530,7 @@
             <div class="setup-subtitle">Система чистого контроля</div>
             
             <div class="setup-label">Сколько у вас сейчас денег?</div>
-            <input type="number" id="initBalance" class="setup-input" placeholder="0 ₽" inputmode="numeric">
+            <input type="number" id="initBalance" class="setup-input" placeholder="0 ₽" inputmode="numeric" min="0">
             
             <div class="setup-label">Дата следующей зарплаты</div>
             <input type="date" id="initDate" class="setup-input" style="color-scheme: dark;">
@@ -1445,8 +1684,8 @@
                             <div class="stat-value-insight" id="completedHabits">0</div>
                         </div>
                         <div class="stat-item-insight">
-                            <div class="stat-label-insight">Невыполнено</div>
-                            <div class="stat-value-insight" id="incompleteHabits">0</div>
+                            <div class="stat-label-insight">Рекорд серии</div>
+                            <div class="stat-value-insight" id="longestStreak">0 дн</div>
                         </div>
                         <div class="stat-item-insight">
                             <div class="stat-label-insight">Продуктивный день</div>
@@ -1503,6 +1742,11 @@
                 </div>
             </div>
             
+            <div class="data-buttons animate-enter">
+                <button onclick="exportData()" class="export-btn">📤 Экспорт данных</button>
+                <button onclick="importData()" class="import-btn">📥 Импорт данных</button>
+            </div>
+            
             <button onclick="showResetModal()" class="reset-btn animate-enter">⚠ Сброс системы</button>
         </div>
     </div>
@@ -1521,6 +1765,10 @@
             <span class="nav-icon">📊</span>
             <span class="nav-label">Итоги</span>
         </div>
+        <div class="nav-item" onclick="showSettingsModal()">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Настройки</span>
+        </div>
     </div>
 
     <!-- Modals -->
@@ -1531,7 +1779,7 @@
                 <button class="modal-close" onclick="closeModal('incomeModal')">×</button>
             </div>
             <div class="modal-form">
-                <input type="number" id="incomeAmount" class="modal-input" placeholder="Сумма (₽)" inputmode="numeric">
+                <input type="number" id="incomeAmount" class="modal-input" placeholder="Сумма (₽)" inputmode="numeric" min="1">
                 <input type="text" id="incomeCategory" class="modal-input" placeholder="Категория">
                 <button onclick="addIncome()" class="modal-btn">Добавить доход</button>
             </div>
@@ -1545,7 +1793,7 @@
                 <button class="modal-close" onclick="closeModal('expenseModal')">×</button>
             </div>
             <div class="modal-form">
-                <input type="number" id="expenseAmount" class="modal-input" placeholder="Сумма (₽)" inputmode="numeric">
+                <input type="number" id="expenseAmount" class="modal-input" placeholder="Сумма (₽)" inputmode="numeric" min="1">
                 <input type="text" id="expenseCategory" class="modal-input" placeholder="На что потратили">
                 <button onclick="addExpense()" class="modal-btn">Добавить трату</button>
             </div>
@@ -1573,7 +1821,7 @@
             </div>
             <div class="modal-form">
                 <input type="text" id="taskName" class="modal-input" placeholder="Название платежа">
-                <input type="number" id="taskAmount" class="modal-input" placeholder="Сумма (₽)" inputmode="numeric">
+                <input type="number" id="taskAmount" class="modal-input" placeholder="Сумма (₽)" inputmode="numeric" min="1">
                 <input type="date" id="taskDate" class="modal-input" style="color-scheme: dark;">
                 <button onclick="saveFixedTask()" class="modal-btn">Добавить платеж</button>
             </div>
@@ -1592,6 +1840,7 @@
                     <div style="color: var(--text-main); font-weight: 700; font-size: 18px; margin-bottom: 8px;">Вы уверены?</div>
                     <div style="color: var(--text-muted); font-size: 14px; line-height: 1.4;">Все данные будут удалены без возможности восстановления</div>
                 </div>
+                <input type="text" id="resetConfirm" class="modal-input" placeholder="Введите 'СБРОС'" style="text-align: left;">
                 <button onclick="hardReset()" style="background: var(--danger);" class="modal-btn">Да, сбросить всё</button>
                 <button onclick="closeModal('resetModal')" style="background: rgba(255,255,255,0.05); margin-top: 12px;" class="modal-btn">Отмена</button>
             </div>
@@ -1607,6 +1856,44 @@
             <div class="modal-form">
                 <input type="date" id="newSalaryDate" class="modal-input" style="color-scheme: dark;">
                 <button onclick="updateSalaryDate()" class="modal-btn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Настройки сейфа</div>
+                <button class="modal-close" onclick="closeModal('settingsModal')">×</button>
+            </div>
+            <div class="modal-form">
+                <div class="modal-row">
+                    <div class="modal-row-label">Включить сейф</div>
+                    <label class="switch">
+                        <input type="checkbox" id="safeEnabledToggle" onchange="toggleSafeEnabled()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">
+                        Процент для сейфа: <span id="safePercentageValue">20%</span>
+                    </div>
+                    <input type="range" class="range-slider" id="safePercentageSlider" min="5" max="50" step="5" value="20" 
+                           oninput="updateSafePercentage(this.value)">
+                </div>
+                
+                <div class="modal-row">
+                    <div class="modal-row-label">Автосохранение</div>
+                    <div class="modal-row-value" id="autoSaveStatus">Вкл</div>
+                </div>
+                
+                <div class="modal-row">
+                    <div class="modal-row-label">Версия приложения</div>
+                    <div class="modal-row-value">v1.3</div>
+                </div>
+                
+                <button onclick="closeModal('settingsModal')" class="modal-btn">Сохранить</button>
             </div>
         </div>
     </div>
@@ -1633,11 +1920,49 @@
         timeFilter: 'week',
         settings: {
             safePercentage: 20,
-            safeEnabled: true
+            safeEnabled: true,
+            autoSave: true
         }
     };
     
     let currentFilter = 'ALL';
+    let saveTimeout = null;
+    let toastTimeout = null;
+
+    // --- TOAST NOTIFICATIONS ---
+    function showToast(message, type = 'info') {
+        // Remove existing toast
+        const existingToast = document.querySelector('.toast');
+        if (existingToast) {
+            existingToast.remove();
+            clearTimeout(toastTimeout);
+        }
+        
+        // Create new toast
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        // Remove after 3 seconds
+        toastTimeout = setTimeout(() => {
+            if (toast.parentNode) {
+                toast.style.animation = 'slideOutRight 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }
+        }, 3000);
+    }
+
+    // --- HAPTIC FEEDBACK ---
+    function playHapticFeedback() {
+        if (tg && tg.HapticFeedback) {
+            try {
+                tg.HapticFeedback.impactOccurred('light');
+            } catch (e) {
+                console.log('Haptic feedback not available');
+            }
+        }
+    }
 
     // --- CORE FUNCTIONS ---
     function load() {
@@ -1645,16 +1970,43 @@
         if(saved) {
             try {
                 const parsed = JSON.parse(saved);
-                db = {...db, ...parsed};
-                
-                // Initialize new fields
-                if(!db.settings) db.settings = { safePercentage: 20, safeEnabled: true };
-                if(!db.currentWeekOffset) db.currentWeekOffset = 0;
-                if(!db.habitView) db.habitView = 'week';
-                if(!db.insightType) db.insightType = 'habits';
-                if(!db.timeFilter) db.timeFilter = 'week';
+                // Валидация и безопасная загрузка данных
+                db = {
+                    setup: parsed.setup !== undefined ? parsed.setup : false,
+                    balance: Number(parsed.balance) || 0,
+                    fixedTarget: Number(parsed.fixedTarget) || 0,
+                    fixedCurrent: Number(parsed.fixedCurrent) || 0,
+                    savings: Number(parsed.savings) || 0,
+                    txs: Array.isArray(parsed.txs) ? parsed.txs.map(tx => ({
+                        ...tx,
+                        val: Number(tx.val) || 0,
+                        distribution: tx.distribution ? {
+                            toSave: Number(tx.distribution.toSave) || 0,
+                            toFix: Number(tx.distribution.toFix) || 0,
+                            toBalance: Number(tx.distribution.toBalance) || 0
+                        } : undefined
+                    })) : [],
+                    fixedTasks: Array.isArray(parsed.fixedTasks) ? parsed.fixedTasks.map(task => ({
+                        ...task,
+                        amount: Number(task.amount) || 0
+                    })) : [],
+                    habits: Array.isArray(parsed.habits) ? parsed.habits : [],
+                    salaryDate: parsed.salaryDate || null,
+                    currentWeekOffset: Number(parsed.currentWeekOffset) || 0,
+                    habitView: parsed.habitView || 'week',
+                    insightType: parsed.insightType || 'habits',
+                    timeFilter: parsed.timeFilter || 'week',
+                    settings: {
+                        safePercentage: parsed.settings?.safePercentage || 20,
+                        safeEnabled: parsed.settings?.safeEnabled !== false,
+                        autoSave: parsed.settings?.autoSave !== false
+                    }
+                };
             } catch(e) {
                 console.error('Error loading data:', e);
+                showToast('Ошибка загрузки данных', 'error');
+                // Создаем чистую структуру при ошибке
+                db = {...db};
             }
         }
         
@@ -1662,20 +2014,39 @@
             document.getElementById('setupOverlay').style.display = 'none';
             document.getElementById('tab-fin').classList.remove('hidden');
             render();
+            showToast('Данные загружены', 'success');
         } else {
             document.getElementById('setupOverlay').style.display = 'flex';
             const today = new Date();
-            document.getElementById('initDate').valueAsDate = today;
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 30);
+            document.getElementById('initDate').valueAsDate = tomorrow;
             document.getElementById('initDate').min = today.toISOString().split('T')[0];
         }
     }
 
-    function save() {
-        // Calculate fixedTarget from tasks
-        db.fixedTarget = db.fixedTasks.reduce((sum, task) => sum + task.amount, 0);
+    function scheduleSave() {
+        if (!db.settings.autoSave) return;
         
-        localStorage.setItem('lifeos_v13_pure', JSON.stringify(db));
-        render();
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+            save();
+            console.log("Автосохранение выполнено");
+        }, 2000);
+    }
+
+    function save() {
+        try {
+            // Calculate fixedTarget from tasks
+            db.fixedTarget = db.fixedTasks.reduce((sum, task) => sum + (task.amount || 0), 0);
+            
+            localStorage.setItem('lifeos_v13_pure', JSON.stringify(db));
+            render();
+            playHapticFeedback();
+        } catch(e) {
+            console.error('Error saving data:', e);
+            showToast('Ошибка сохранения данных', 'error');
+        }
     }
 
     function completeSetup() {
@@ -1683,12 +2054,16 @@
         const salaryDate = document.getElementById('initDate').value;
         
         if(!salaryDate) {
-            alert("Дата зарплаты обязательна!");
+            showToast("Дата зарплаты обязательна!", "error");
+            document.getElementById('initDate').classList.add('shake-animation');
+            setTimeout(() => document.getElementById('initDate').classList.remove('shake-animation'), 500);
             return;
         }
         
         if(isNaN(balance) || balance < 0) {
-            alert("Введите корректную сумму!");
+            showToast("Введите корректную сумму!", "error");
+            document.getElementById('initBalance').classList.add('shake-animation');
+            setTimeout(() => document.getElementById('initBalance').classList.remove('shake-animation'), 500);
             return;
         }
         
@@ -1699,6 +2074,8 @@
         save();
         document.getElementById('setupOverlay').style.display = 'none';
         document.getElementById('tab-fin').classList.remove('hidden');
+        
+        showToast("Система запущена!", "success");
         
         // Trigger animation
         setTimeout(() => {
@@ -1714,20 +2091,25 @@
     function smartDistribute(val) {
         let toSave = 0;
         let toFix = 0;
-        let toBalance = val;
+        let toBalance = Math.max(0, val);
         
         // Only save to safe if enabled
-        if(db.settings.safeEnabled) {
-            toSave = Math.floor(val * (db.settings.safePercentage / 100));
-            toBalance -= toSave;
+        if(db.settings.safeEnabled && db.settings.safePercentage > 0) {
+            toSave = Math.max(0, Math.floor(val * (db.settings.safePercentage / 100)));
+            toBalance = Math.max(0, toBalance - toSave);
         }
         
         // Add to fixed if there are pending tasks
         if(db.fixedCurrent < db.fixedTarget) {
-            const needed = db.fixedTarget - db.fixedCurrent;
+            const needed = Math.max(0, db.fixedTarget - db.fixedCurrent);
             toFix = Math.min(toBalance, needed);
-            toBalance -= toFix;
+            toBalance = Math.max(0, toBalance - toFix);
         }
+        
+        // Final validation
+        toSave = Math.max(0, Math.min(toSave, val));
+        toFix = Math.max(0, Math.min(toFix, val));
+        toBalance = Math.max(0, Math.min(toBalance, val));
         
         return { toSave, toFix, toBalance };
     }
@@ -1747,7 +2129,7 @@
         const category = document.getElementById('incomeCategory').value || "Доход";
         
         if(!amount || amount <= 0) {
-            alert("Введите корректную сумму!");
+            showToast("Введите корректную сумму!", "error");
             return;
         }
         
@@ -1771,7 +2153,9 @@
         });
         
         closeModal('incomeModal');
-        save();
+        scheduleSave();
+        
+        showToast(`Доход добавлен: +${amount} ₽`, "success");
         
         // Animation
         document.getElementById('saveVal').classList.add('pulse-animation');
@@ -1785,12 +2169,12 @@
         const category = document.getElementById('expenseCategory').value || "Прочее";
         
         if(!amount || amount <= 0) {
-            alert("Введите корректную сумму!");
+            showToast("Введите корректную сумму!", "error");
             return;
         }
         
         if(amount > db.balance) {
-            alert("Недостаточно средств!");
+            showToast("Недостаточно средств!", "error");
             return;
         }
         
@@ -1807,7 +2191,9 @@
         });
         
         closeModal('expenseModal');
-        save();
+        scheduleSave();
+        
+        showToast(`Трата добавлена: -${amount} ₽`, "info");
     }
 
     function deleteTx(id) {
@@ -1828,7 +2214,8 @@
                     }
                     
                     db.txs = db.txs.filter(x => x.id !== id);
-                    save();
+                    scheduleSave();
+                    showToast("Операция удалена", "info");
                 }
             }, 300);
         }
@@ -1844,7 +2231,8 @@
         if(val) {
             db.salaryDate = val;
             closeModal('datePickerModal');
-            save();
+            scheduleSave();
+            showToast("Дата зарплаты обновлена", "success");
         }
     }
 
@@ -1869,17 +2257,17 @@
         const date = document.getElementById('taskDate').value;
         
         if(!name || name.trim() === '') {
-            alert("Введите название платежа!");
+            showToast("Введите название платежа!", "error");
             return;
         }
         
         if(!amount || amount <= 0) {
-            alert("Введите корректную сумму!");
+            showToast("Введите корректную сумму!", "error");
             return;
         }
         
         if(!date) {
-            alert("Выберите дату!");
+            showToast("Выберите дату!", "error");
             return;
         }
         
@@ -1892,7 +2280,8 @@
         });
         
         closeModal('addFixedTaskModal');
-        save();
+        scheduleSave();
+        showToast("Платеж добавлен", "success");
     }
 
     function payFixed(id, amount) {
@@ -1910,10 +2299,32 @@
                 fullDate: new Date().toISOString()
             });
             
-            save();
+            scheduleSave();
+            showToast("Платеж оплачен", "success");
         } else {
-            alert("Недостаточно средств в разделе 'Обязательные'!");
+            showToast("Недостаточно средств в разделе 'Обязательные'!", "error");
         }
+    }
+
+    // --- SETTINGS FUNCTIONS ---
+    function showSettingsModal() {
+        document.getElementById('settingsModal').classList.remove('hidden');
+        document.getElementById('safeEnabledToggle').checked = db.settings.safeEnabled;
+        document.getElementById('safePercentageSlider').value = db.settings.safePercentage;
+        document.getElementById('safePercentageValue').textContent = `${db.settings.safePercentage}%`;
+        document.getElementById('autoSaveStatus').textContent = db.settings.autoSave ? 'Вкл' : 'Выкл';
+    }
+
+    function toggleSafeEnabled() {
+        db.settings.safeEnabled = document.getElementById('safeEnabledToggle').checked;
+        scheduleSave();
+        showToast("Настройки сейфа обновлены", "success");
+    }
+
+    function updateSafePercentage(value) {
+        db.settings.safePercentage = Number(value);
+        document.getElementById('safePercentageValue').textContent = `${value}%`;
+        scheduleSave();
     }
 
     // --- HABITS FUNCTIONS ---
@@ -1960,7 +2371,7 @@
     function addHabit() {
         const name = document.getElementById('habitName').value;
         if(!name || name.trim() === '') {
-            alert("Введите название привычки!");
+            showToast("Введите название привычки!", "error");
             return;
         }
         
@@ -1972,7 +2383,8 @@
         });
         
         closeModal('addHabitModal');
-        save();
+        scheduleSave();
+        showToast("Привычка добавлена", "success");
     }
 
     function toggleHabitDay(habitId, dateStr) {
@@ -1982,11 +2394,50 @@
         const index = habit.completedDays.indexOf(dateStr);
         if(index === -1) {
             habit.completedDays.push(dateStr);
+            playHapticFeedback();
         } else {
             habit.completedDays.splice(index, 1);
         }
         
-        save();
+        scheduleSave();
+    }
+
+    // --- ANALYTICS FUNCTIONS ---
+    function calculateHabitStreaks(habit) {
+        if (!habit.completedDays || habit.completedDays.length === 0) {
+            return { currentStreak: 0, longestStreak: 0 };
+        }
+        
+        const sortedDays = [...habit.completedDays].sort();
+        let currentStreak = 1;
+        let longestStreak = 1;
+        let tempStreak = 1;
+        
+        for (let i = 1; i < sortedDays.length; i++) {
+            const prevDate = new Date(sortedDays[i - 1]);
+            const currDate = new Date(sortedDays[i]);
+            const diffDays = Math.floor((currDate - prevDate) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) {
+                tempStreak++;
+                currentStreak = tempStreak;
+            } else {
+                longestStreak = Math.max(longestStreak, tempStreak);
+                tempStreak = 1;
+            }
+        }
+        
+        longestStreak = Math.max(longestStreak, tempStreak);
+        
+        // Check current streak (from today backwards)
+        const today = new Date().toISOString().split('T')[0];
+        const todayIndex = sortedDays.indexOf(today);
+        if (todayIndex === -1) {
+            // If today is not completed, streak is 0
+            currentStreak = 0;
+        }
+        
+        return { currentStreak, longestStreak };
     }
 
     // --- INSIGHTS FUNCTIONS ---
@@ -2018,6 +2469,70 @@
         }
     }
 
+    // --- DATA EXPORT/IMPORT ---
+    function exportData() {
+        try {
+            const data = localStorage.getItem('lifeos_v13_pure');
+            if (!data) {
+                showToast("Нет данных для экспорта", "error");
+                return;
+            }
+            
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `lifeos_backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast("Данные экспортированы", "success");
+        } catch (e) {
+            console.error('Export error:', e);
+            showToast("Ошибка экспорта", "error");
+        }
+    }
+
+    function importData() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                try {
+                    const importedData = JSON.parse(event.target.result);
+                    
+                    // Basic validation
+                    if (!importedData || typeof importedData !== 'object') {
+                        showToast("Некорректный файл данных", "error");
+                        return;
+                    }
+                    
+                    // Ask for confirmation
+                    if (confirm("Заменить текущие данные импортированными? Текущие данные будут потеряны.")) {
+                        localStorage.setItem('lifeos_v13_pure', JSON.stringify(importedData));
+                        location.reload();
+                    }
+                } catch(err) {
+                    console.error('Import error:', err);
+                    showToast("Ошибка при чтении файла", "error");
+                }
+            };
+            
+            reader.readAsText(file);
+        };
+        
+        input.click();
+    }
+
     // --- RENDER FUNCTIONS ---
     function render() {
         renderFinance();
@@ -2047,9 +2562,9 @@
         const todayStr = new Date().toLocaleDateString('ru-RU');
         const spentToday = db.txs
             .filter(tx => tx.date === todayStr && tx.type === 'exp')
-            .reduce((acc, tx) => acc + tx.val, 0);
+            .reduce((acc, tx) => acc + (tx.val || 0), 0);
         
-        const dailyLimit = Math.floor(db.balance / daysRemaining);
+        const dailyLimit = Math.floor(db.balance / Math.max(1, daysRemaining));
         const availableNow = Math.max(0, dailyLimit - spentToday);
         
         // Update header
@@ -2075,7 +2590,7 @@
                         <div class="task-info">
                             <div class="task-name">${task.name}</div>
                             <div class="task-details">
-                                <span class="task-amount">${task.amount.toLocaleString('ru-RU')} ₽</span>
+                                <span class="task-amount">${(task.amount || 0).toLocaleString('ru-RU')} ₽</span>
                                 <span class="task-date">${new Date(task.date).toLocaleDateString('ru-RU')}</span>
                                 ${isOverdue ? '<span style="color:var(--danger); font-size:11px; font-weight:600;">Просрочено</span>' : ''}
                             </div>
@@ -2108,7 +2623,7 @@
                     </div>
                     <div style="display:flex; align-items:center;">
                         <div class="transaction-amount ${tx.type === 'inc' ? 'positive' : 'negative'}">
-                            ${tx.type === 'inc' ? '+' : '-'}${tx.val.toLocaleString('ru-RU')} ₽
+                            ${tx.type === 'inc' ? '+' : '-'}${(tx.val || 0).toLocaleString('ru-RU')} ₽
                         </div>
                         <button onclick="deleteTx(${tx.id})" class="delete-btn">✕</button>
                     </div>
@@ -2235,8 +2750,12 @@
         let totalPossible = 0;
         let totalCompleted = 0;
         let dayStats = Array(7).fill(0).map(() => ({ completed: 0, total: 0 }));
+        let longestStreakOverall = 0;
         
         habitsData.forEach(habit => {
+            const streaks = calculateHabitStreaks(habit);
+            longestStreakOverall = Math.max(longestStreakOverall, streaks.longestStreak);
+            
             habit.completedDays.forEach(dateStr => {
                 const date = new Date(dateStr);
                 if(date >= startDate) {
@@ -2260,7 +2779,7 @@
         // Update stats
         document.getElementById('totalHabits').textContent = habitsData.length;
         document.getElementById('completedHabits').textContent = totalCompleted;
-        document.getElementById('incompleteHabits').textContent = Math.max(0, totalPossible - totalCompleted);
+        document.getElementById('longestStreak').textContent = `${longestStreakOverall} дн`;
         
         // Find most productive day
         let maxCompletion = 0;
@@ -2361,11 +2880,11 @@
         // Calculate statistics
         const income = filteredTxs
             .filter(tx => tx.type === 'inc')
-            .reduce((sum, tx) => sum + tx.val, 0);
+            .reduce((sum, tx) => sum + (tx.val || 0), 0);
         
         const expenses = filteredTxs
             .filter(tx => tx.type === 'exp')
-            .reduce((sum, tx) => sum + tx.val, 0);
+            .reduce((sum, tx) => sum + (tx.val || 0), 0);
         
         const savings = db.savings;
         const savingsRate = income > 0 ? Math.round((savings / income) * 100) : 0;
@@ -2407,9 +2926,9 @@
                 const adjustedIndex = dayIndex === 0 ? 6 : dayIndex - 1;
                 
                 if(tx.type === 'inc') {
-                    incomeData[adjustedIndex] += tx.val;
+                    incomeData[adjustedIndex] += (tx.val || 0);
                 } else {
-                    expenseData[adjustedIndex] += tx.val;
+                    expenseData[adjustedIndex] += (tx.val || 0);
                 }
             });
         } else {
@@ -2511,12 +3030,22 @@
 
     function showResetModal() {
         document.getElementById('resetModal').classList.remove('hidden');
+        document.getElementById('resetConfirm').value = '';
     }
 
     function hardReset() {
+        const confirmText = document.getElementById('resetConfirm').value;
+        if(confirmText !== "СБРОС") {
+            showToast("Введите 'СБРОС' для подтверждения", "error");
+            document.getElementById('resetConfirm').classList.add('shake-animation');
+            setTimeout(() => document.getElementById('resetConfirm').classList.remove('shake-animation'), 500);
+            return;
+        }
+        
         if(confirm("ВСЕ данные будут удалены безвозвратно. Вы уверены?")) {
             localStorage.removeItem('lifeos_v13_pure');
-            location.reload();
+            showToast("Все данные сброшены", "info");
+            setTimeout(() => location.reload(), 1500);
         }
     }
 
@@ -2543,6 +3072,25 @@
                 });
             }
         });
+        
+        // Auto-save protection
+        window.addEventListener('beforeunload', (e) => {
+            if(db.txs.length > 0 || db.habits.length > 0) {
+                save(); // Force save before unload
+            }
+        });
+        
+        // Initialize tooltips for mobile
+        if ('ontouchstart' in window) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('touchstart', function() {
+                    this.style.opacity = '0.8';
+                });
+                item.addEventListener('touchend', function() {
+                    this.style.opacity = '';
+                });
+            });
+        }
     });
 </script>
 </body>
